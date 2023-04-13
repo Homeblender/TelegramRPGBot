@@ -11,22 +11,15 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "class", schema = "fixed")
+@Table(name = "item_types", schema = "fixed")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Class {
+public class ItemTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(columnDefinition = "Text")
-    String name;
-    @Column(columnDefinition = "Text")
-    String description;
-    @JoinColumn(name = "required_level")
-    Long requiredLevel;
-    @ManyToOne
-    @JoinColumn(name = "base_class")
-    Class baseClass;
+    String type;
 }

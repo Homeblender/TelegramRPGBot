@@ -11,12 +11,12 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "class", schema = "fixed")
+@Table(name = "skill", schema = "fixed")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Class {
+public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -24,9 +24,9 @@ public class Class {
     String name;
     @Column(columnDefinition = "Text")
     String description;
-    @JoinColumn(name = "required_level")
-    Long requiredLevel;
     @ManyToOne
-    @JoinColumn(name = "base_class")
-    Class baseClass;
+    @JoinColumn(name = "class_id")
+    Class classId;
+    @JoinColumn(name = "passive_points_required")
+    Long passivePointsRequired;
 }

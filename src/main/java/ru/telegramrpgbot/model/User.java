@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "usr")
+@Table(name = "usr", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
