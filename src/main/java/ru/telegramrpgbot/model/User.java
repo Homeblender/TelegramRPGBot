@@ -44,7 +44,7 @@ public class User {
     @Column(columnDefinition = "Text")
     BotState currentUserState = BotState.START;
     @OneToOne
-    @JoinColumn(name = "chatId")
+    @JoinColumn(name = "partner_chat_id")
     User partner = null;
     Long classId = null;
     @Builder.Default
