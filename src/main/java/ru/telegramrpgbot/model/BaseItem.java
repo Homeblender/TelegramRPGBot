@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.telegramrpgbot.bot.BotState;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "base_item", schema = "fixed")
@@ -28,7 +25,7 @@ public class BaseItem {
     Long armor;
     @ManyToOne
     @JoinColumn(name = "type_id")
-    ItemTypes typeId;
+    ItemType typeId;
     @JoinColumn(name = "buy_price")
     Long buyPrice;
     @JoinColumn(name = "sell_price")

@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.telegramrpgbot.bot.BotState;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "item_types", schema = "fixed")
@@ -16,7 +13,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ItemTypes {
+public class ItemType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
