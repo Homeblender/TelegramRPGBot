@@ -3,7 +3,8 @@ package ru.telegramrpgbot.bot.handler;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.telegramrpgbot.bot.BotState;
+import ru.telegramrpgbot.enums.BotState;
+import ru.telegramrpgbot.enums.Command;
 import ru.telegramrpgbot.repository.UserRepository;
 import ru.telegramrpgbot.model.User;
 
@@ -39,6 +40,11 @@ public class StartCommandHandler implements Handler{
     @Override
     public BotState operatedBotState() {
         return BotState.START;
+    }
+
+    @Override
+    public Command operatedCommand() {
+        return null;
     }
 
     @Override

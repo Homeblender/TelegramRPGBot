@@ -2,6 +2,8 @@ package ru.telegramrpgbot.bot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.telegramrpgbot.enums.BotState;
+import ru.telegramrpgbot.enums.Command;
 import ru.telegramrpgbot.bot.handler.Handler;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.UserRepository;
@@ -30,7 +32,9 @@ public class UpdateReceiver {
                 Long chatId = message.getFrom().getId();
                 User user = userRepository.getUserByChatId(chatId)
                         .orElseGet(() -> userRepository.save(User.builder().chatId(chatId).name(update.getMessage().getChat().getFirstName()).build()));
-                return getHandlerByState(user.getCurrentUserState()).handle(user, message.getText());
+
+                Handler handler = getHandlerByState(user.getCurrentUserState()) == null?  getHandlerByCommand(Command.valueOf(message.getText().substring(1))): getHandlerByState(user.getCurrentUserState());
+                return handler.handle(user, message.getText());
 
             } else if (update.hasCallbackQuery()) {
                 CallbackQuery callbackQuery = update.getCallbackQuery();
@@ -42,12 +46,20 @@ public class UpdateReceiver {
             }
             return Collections.emptyList();
     }
+
     private Handler getHandlerByState(BotState state) {
         return handlers.stream()
                 .filter(h -> h.operatedBotState() != null)
                 .filter(h -> h.operatedBotState().equals(state))
                 .findAny()
-                .orElseThrow(UnsupportedOperationException::new);
+                .orElse(null);
+    }
+    private Handler getHandlerByCommand(Command command) {
+        return handlers.stream()
+                .filter(h -> h.operatedCommand() != null)
+                .filter(h -> h.operatedCommand().equals(command))
+                .findAny()
+                .orElse(null);
     }
 
     private Handler getHandlerByCallBackQuery(String query) {
@@ -55,7 +67,7 @@ public class UpdateReceiver {
                 .filter(h -> h.operatedCallBackQuery().stream()
                         .anyMatch(query::startsWith))
                 .findAny()
-                .orElseThrow(UnsupportedOperationException::new);
+                .orElse(null);
     }
 
     private boolean isMessageWithText(Update update) {

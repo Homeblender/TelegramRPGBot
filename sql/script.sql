@@ -37,7 +37,8 @@ CREATE TABLE fixed.skill (
 );
 
 CREATE TABLE fixed.skill_bonus (
-    skill_id bigint PRIMARY KEY references fixed.skill(id),
+    skill_bonus_id serial primary key,
+    skill_id bigint references fixed.skill(id),
     damage_bonus bigint,
     armor_bonus bigint,
     health_bonus bigint,
@@ -137,7 +138,8 @@ CREATE TABLE public.inventory_cell (
 -- );
 
 CREATE TABLE public.party (
-	user_id bigint PRIMARY KEY references public.usr(chat_id),
+    party_id serial primary key,
+	user_id bigint references public.usr(chat_id),
 	name TEXT UNIQUE,
 	current_state TEXT
 );

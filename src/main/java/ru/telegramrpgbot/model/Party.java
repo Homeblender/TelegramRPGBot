@@ -4,12 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.telegramrpgbot.bot.BotState;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "party", schema = "public")
@@ -17,8 +13,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Party implements Serializable {
+public class Party{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long partyId;
     @OneToOne
     @JoinColumn(name = "user_id")
     User userId;
