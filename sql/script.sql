@@ -1,5 +1,7 @@
-CREATE DATABASE RPG_telegrambot
-
+drop database if exists RPG_telegrambot;
+CREATE DATABASE  RPG_telegrambot;
+drop schema if exists public cascade;
+drop schema if exists  fixed cascade;
 CREATE SCHEMA public;
 CREATE SCHEMA fixed;
 
@@ -103,7 +105,8 @@ CREATE TABLE fixed.activity_result_message (
 );
 
 CREATE TABLE fixed.solo_activity_reward (
-    solo_activity_id bigint PRIMARY KEY references fixed.solo_activity(id),
+    solo_activity_reward_id serial PRIMARY KEY,
+    solo_activity_id bigint references fixed.solo_activity(id),
     gold_reward bigint,
     exp_reward bigint,
     item_reward bigint references fixed.base_item(id)
@@ -116,19 +119,22 @@ CREATE TABLE public.ingame_item (
 );
 
 CREATE TABLE public.inventory_cell (
-	item_id bigint PRIMARY KEY references public.ingame_item(id),
-	user_id bigint references public.usr(chat_id)
+    inventory_cell_id serial PRIMARY KEY,
+	item_id bigint unique references public.ingame_item(id),
+	user_id bigint references public.usr(chat_id),
+	is_equipped boolean
 );
 
-CREATE TABLE public.equipment (
-	user_id bigint PRIMARY KEY references public.usr(chat_id),
-	helmet bigint references public.inventory_cell(item_id),
-	chest_armor bigint references public.inventory_cell(item_id),
-	leg_armor bigint references public.inventory_cell(item_id),
-	boots bigint references public.inventory_cell(item_id),
-	left_hand bigint references public.inventory_cell(item_id),
-	right_hand bigint references public.inventory_cell(item_id)
-);
+-- CREATE TABLE public.equipment (
+--     equipment_id serial PRIMARY KEY,
+-- 	user_id bigint references public.usr(chat_id),
+-- 	helmet bigint references public.inventory_cell(item_id),
+-- 	chest_armor bigint references public.inventory_cell(item_id),
+-- 	leg_armor bigint references public.inventory_cell(item_id),
+-- 	boots bigint references public.inventory_cell(item_id),
+-- 	left_hand bigint references public.inventory_cell(item_id),
+-- 	right_hand bigint references public.inventory_cell(item_id)
+-- );
 
 CREATE TABLE public.party (
 	user_id bigint PRIMARY KEY references public.usr(chat_id),

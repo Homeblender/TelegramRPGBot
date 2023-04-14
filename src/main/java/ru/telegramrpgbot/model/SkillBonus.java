@@ -8,6 +8,8 @@ import ru.telegramrpgbot.bot.BotState;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serial;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
@@ -16,7 +18,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SkillBonus {
+public class SkillBonus implements Serializable {
     @Id
     @JoinColumn(name = "skill_id")
     @OneToOne

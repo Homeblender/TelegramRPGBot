@@ -8,6 +8,7 @@ import ru.telegramrpgbot.bot.BotState;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
@@ -16,7 +17,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Party {
+public class Party implements Serializable {
     @Id
     @OneToOne
     @JoinColumn(name = "user_id")
