@@ -54,8 +54,11 @@ public class ActivityHandler implements Handler{
         if (activity == null) throw new NullPointerException("oops");
 
         user.setActivityId(activity);
+
         var delay = TimeUnit.MILLISECONDS.convert(activity.getActivityDuration(), TimeUnit.MINUTES);
         user.setActivityEnds(new Timestamp(System.currentTimeMillis()+delay));
+
+        userRepository.save(user);
 
         var reply = createMessageTemplate(user);
         reply.setText(String.format("Ты отправился в *%s*.%nВремя до возвращения - *%d* мин.",activity.getName(),activity.getActivityDuration()));
