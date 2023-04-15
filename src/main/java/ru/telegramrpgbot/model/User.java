@@ -24,7 +24,7 @@ public class User {
     @Builder.Default
     Long passivePoints = 0L;
     @Builder.Default
-    Long currentExp = 0L;
+    Long exp = 0L;
     @Builder.Default
     Long currentHealth = 100L;
     @Builder.Default
@@ -46,14 +46,14 @@ public class User {
     @Builder.Default
     Timestamp staminaRestor = null;
     @Builder.Default
-    @Column(columnDefinition = "Text")
-    BotState currentUserState = BotState.START;
+    @Column(columnDefinition = "integer")
+    BotState userState = BotState.START;
     @OneToOne
     @JoinColumn(name = "partner_chat_id")
     User partner = null;
     @ManyToOne
     @JoinColumn(name = "class_id")
-    Class classId = null;
+    Class userClass = null;
     @Builder.Default
     Long gold = 0L;
     @Builder.Default

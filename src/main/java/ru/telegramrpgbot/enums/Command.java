@@ -2,5 +2,6 @@ package ru.telegramrpgbot.enums;
 
 public enum Command {
     ME,
-    Activity
+    Activity,
+    CHANGE_NAME
 }

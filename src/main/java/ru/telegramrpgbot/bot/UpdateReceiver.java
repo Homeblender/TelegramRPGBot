@@ -35,7 +35,7 @@ public class UpdateReceiver {
                                 chatId(chatId).
                                 name(update.getMessage().getChat().getFirstName()).build()));
 
-                Handler handler = getHandlerByState(user.getCurrentUserState()) == null?  getHandlerByCommand(Command.valueOf(message.getText().substring(1))): getHandlerByState(user.getCurrentUserState());
+                Handler handler = getHandlerByState(user.getUserState()) == null?  getHandlerByCommand(Command.valueOf(message.getText().substring(1))): getHandlerByState(user.getUserState());
                 return handler.handle(user, message.getText());
 
             } else if (update.hasCallbackQuery()) {

@@ -50,6 +50,7 @@ CREATE TABLE fixed.solo_activity (
 	state_name text,
 	description text,
 	required_level bigint,
+	required_stamina bigint,
 	activity_duration bigint
 );
 
@@ -58,20 +59,20 @@ CREATE TABLE public.usr (
     name TEXT,
     level bigint,
     passive_points bigint,
-    current_exp bigint,
     current_health bigint,
     max_health bigint,
     current_stamina bigint,
     max_stamina bigint,
     current_mana bigint,
     max_mana bigint,
-    current_user_state TEXT,
+    user_state integer,
     activity_ends TIMESTAMP,
     activity_id bigint references fixed.solo_activity(id),
     stamina_restor TIMESTAMP,
     partner_chat_id bigint references public.usr(chat_id),
     class_id bigint references fixed.class(id),
     gold bigint,
+    exp bigint,
     offline_points bigint
 );
 
@@ -98,20 +99,13 @@ CREATE TABLE fixed.base_item (
 	sell_price bigint
 );
 
-
-
-CREATE TABLE fixed.activity_result_message (
-    id serial PRIMARY KEY,
-    solo_activity_id bigint references fixed.solo_activity(id),
-    result_message text
-);
-
 CREATE TABLE fixed.solo_activity_reward (
-    solo_activity_reward_id serial PRIMARY KEY,
+    id serial PRIMARY KEY,
     solo_activity_id bigint references fixed.solo_activity(id),
     gold_reward bigint,
     exp_reward bigint,
-    item_reward bigint references fixed.base_item(id)
+    item_reward bigint references fixed.base_item(id),
+    result_message text
 );
 
 CREATE TABLE public.ingame_item (
@@ -149,10 +143,9 @@ CREATE TABLE public.party (
 
 
 
-insert into fixed.solo_activity(name, state_name, description, required_level, activity_duration)
+insert into fixed.solo_activity(name, state_name, description, required_level,required_stamina, activity_duration)
 values ('Руины',
         'Исследование руин',
-        'Заброшеные руины недалеко от города. Чего-то редкого там не найдешь, но наберешься опыта для более сложных приключений и, если повезет, пару монет.', 1, 1);
+        'Заброшеные руины недалеко от города. Чего-то редкого там не найдешь, но наберешься опыта для более сложных приключений и, если повезет, пару монет.',1, 1, 1);
 
-insert into fixed.activity_result_message(solo_activity_id, result_message) values (1, 'Ты побродил по руинам пару часов, было очень скучно.%nТвоя награда:%n');
-insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward) values (1, 2, 2, null);
+insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward,result_message) values (1, 2, 3, null,'Ты побродил по руинам пару часов, было очень скучно.');

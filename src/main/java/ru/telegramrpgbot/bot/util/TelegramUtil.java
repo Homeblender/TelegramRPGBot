@@ -1,4 +1,4 @@
-package ru.telegramrpgbot.util;
+package ru.telegramrpgbot.bot.util;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -35,7 +35,7 @@ public class TelegramUtil {
 
     public static ReplyKeyboard createBaseReplyKeyboard(){
 
-        var buttons = new KeyboardButton[] { new KeyboardButton("🆔ME"), new KeyboardButton("❔Activity")};
+        var buttons = new KeyboardButton[] { new KeyboardButton("/ME"), new KeyboardButton("\u2754Activity")};
         KeyboardRow row = new KeyboardRow(2);
         row.add(0,buttons[0]);
         row.add(1,buttons[1]);

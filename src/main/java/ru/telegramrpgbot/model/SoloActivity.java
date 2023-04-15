@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "solo_activity", schema = "fixed")
@@ -24,8 +25,7 @@ public class SoloActivity {
     @JoinColumn(name = "state_name")
     @Column(columnDefinition = "Text")
     String stateName;
-    @JoinColumn(name = "required_level")
     Long requiredLevel;
-    @JoinColumn(name = "activity_duration")
+    Long requiredStamina;
     Long activityDuration;
 }

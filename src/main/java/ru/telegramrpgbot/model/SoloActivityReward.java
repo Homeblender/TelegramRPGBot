@@ -16,13 +16,14 @@ import javax.persistence.*;
 public class SoloActivityReward{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long solo_activity_reward_id;
-    @OneToOne
+    Long id;
+    @ManyToOne
     @JoinColumn(name = "solo_activity_id")
-    SoloActivity soloActivityId;
+    SoloActivity soloActivity;
     Long goldReward;
     Long expReward;
     @ManyToOne
     @JoinColumn(name = "item_reward")
     BaseItem itemReward;
+    String resultMessage;
 }

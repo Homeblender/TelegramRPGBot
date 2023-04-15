@@ -3,7 +3,6 @@ package ru.telegramrpgbot.bot.handler;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.telegramrpgbot.enums.BotState;
@@ -14,7 +13,7 @@ import ru.telegramrpgbot.repository.UserRepository;
 import java.io.Serializable;
 import java.util.List;
 
-import static ru.telegramrpgbot.util.TelegramUtil.*;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
 public class NameChosingHandler implements Handler {
@@ -43,7 +42,7 @@ public class NameChosingHandler implements Handler {
 
     private List<PartialBotApiMethod<? extends Serializable>> accept(User user) {
         // Если пользователь принял имя - меняем статус и сохраняем
-        user.setCurrentUserState(BotState.NONE);
+        user.setUserState(BotState.NONE);
         userRepository.save(user);
         var reply = createMessageTemplate(user);
         reply.setText(String.format("Теперь тебя зовут: *%s*", user.getName()));
@@ -79,7 +78,7 @@ public class NameChosingHandler implements Handler {
 
     private List<PartialBotApiMethod<? extends Serializable>> changeName(User user) {
         // При запросе изменения имени мы меняем BotState
-        user.setCurrentUserState(BotState.WAITING_FOR_NAME);
+        user.setUserState(BotState.WAITING_FOR_NAME);
         userRepository.save(user);
 
         // Создаем кнопку для отмены операции

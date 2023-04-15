@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.telegramrpgbot.util.TelegramUtil.createMessageTemplate;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
 public class StartCommandHandler implements Handler{
@@ -31,7 +31,7 @@ public class StartCommandHandler implements Handler{
         SendMessage registrationMessage = createMessageTemplate(user);
         registrationMessage.setText("Назови себя.");
         // Меняем пользователю статус на - "ожидание ввода имени"
-        user.setCurrentUserState(BotState.WAITING_FOR_NAME);
+        user.setUserState(BotState.WAITING_FOR_NAME);
         userRepository.save(user);
 
         return List.of(welcomeMessage, registrationMessage);
