@@ -44,6 +44,14 @@ CREATE TABLE fixed.skill_bonus (
     health_bonus bigint,
     mana_bonus bigint
 );
+CREATE TABLE fixed.solo_activity (
+	id serial PRIMARY KEY,
+	name text,
+	state_name text,
+	description text,
+	required_level bigint,
+	activity_duration bigint
+);
 
 CREATE TABLE public.usr (
     chat_id bigint PRIMARY KEY,
@@ -58,7 +66,8 @@ CREATE TABLE public.usr (
     current_mana bigint,
     max_mana bigint,
     current_user_state TEXT,
-    last_action TIMESTAMP,
+    activity_ends TIMESTAMP,
+    activity_id bigint references fixed.solo_activity(id),
     stamina_restor TIMESTAMP,
     partner_chat_id bigint references public.usr(chat_id),
     class_id bigint references fixed.class(id),
@@ -89,15 +98,7 @@ CREATE TABLE fixed.base_item (
 	sell_price bigint
 );
 
-CREATE TABLE fixed.solo_activity (
-	id serial PRIMARY KEY,
-	name text,
-	state_name text,
-	description text,
-	required_level bigint,
-	activity_duration bigint
 
-);
 
 CREATE TABLE fixed.activity_result_message (
     id serial PRIMARY KEY,
@@ -148,13 +149,10 @@ CREATE TABLE public.party (
 
 
 
+insert into fixed.solo_activity(name, state_name, description, required_level, activity_duration)
+values ('Руины',
+        'Исследование руин',
+        'Заброшеные руины недалеко от города. Чего-то редкого там не найдешь, но наберешься опыта для более сложных приключений и, если повезет, пару монет.', 1, 1);
 
-
-
-
-
-
-
-
-
-
+insert into fixed.activity_result_message(solo_activity_id, result_message) values (1, 'Ты побродил по руинам пару часов, было очень скучно.%nТвоя награда:%n');
+insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward) values (1, 2, 2, null);

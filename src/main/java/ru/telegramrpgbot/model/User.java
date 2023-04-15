@@ -37,7 +37,13 @@ public class User {
     Long currentMana = 100L;
     @Builder.Default
     Long maxMana = 100L;
-    Timestamp lastAction = null;
+    @Builder.Default
+    Timestamp activityEnds = null;
+    @Builder.Default
+    @OneToOne
+    @JoinColumn(name = "activity_id")
+    SoloActivity activityId = null;
+    @Builder.Default
     Timestamp staminaRestor = null;
     @Builder.Default
     @Column(columnDefinition = "Text")

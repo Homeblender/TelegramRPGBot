@@ -31,7 +31,9 @@ public class UpdateReceiver {
                 Message message = update.getMessage();
                 Long chatId = message.getFrom().getId();
                 User user = userRepository.getUserByChatId(chatId)
-                        .orElseGet(() -> userRepository.save(User.builder().chatId(chatId).name(update.getMessage().getChat().getFirstName()).build()));
+                        .orElseGet(() -> userRepository.save(User.builder().
+                                chatId(chatId).
+                                name(update.getMessage().getChat().getFirstName()).build()));
 
                 Handler handler = getHandlerByState(user.getCurrentUserState()) == null?  getHandlerByCommand(Command.valueOf(message.getText().substring(1))): getHandlerByState(user.getCurrentUserState());
                 return handler.handle(user, message.getText());

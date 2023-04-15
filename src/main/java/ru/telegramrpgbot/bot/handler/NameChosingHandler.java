@@ -3,17 +3,19 @@ package ru.telegramrpgbot.bot.handler;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.telegramrpgbot.enums.BotState;
 import ru.telegramrpgbot.enums.Command;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.UserRepository;
-import static ru.telegramrpgbot.util.TelegramUtil.createMessageTemplate;
-import static ru.telegramrpgbot.util.TelegramUtil.createInlineKeyboardButton;
 
 import java.io.Serializable;
 import java.util.List;
+
+import static ru.telegramrpgbot.util.TelegramUtil.*;
+
 @Component
 public class NameChosingHandler implements Handler {
     //Храним поддерживаемые CallBackQuery в виде констант
@@ -44,8 +46,10 @@ public class NameChosingHandler implements Handler {
         user.setCurrentUserState(BotState.NONE);
         userRepository.save(user);
         var reply = createMessageTemplate(user);
-        reply.setText(String.format("Теперь тебя зовут: %s", user.getName()));
-
+        reply.setText(String.format("Теперь тебя зовут: *%s*", user.getName()));
+        //Добавил клавиатуру
+        var keyboard = createMessageTemplate(user);
+        reply.setReplyMarkup(createBaseReplyKeyboard());
         return List.of(reply);
     }
 
