@@ -51,7 +51,9 @@ public class User {
     @OneToOne
     @JoinColumn(name = "partner_chat_id")
     User partner = null;
-    Long classId = null;
+    @ManyToOne
+    @JoinColumn(name = "class_id")
+    Class classId = null;
     @Builder.Default
     Long gold = 0L;
     @Builder.Default
