@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.telegramrpgbot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.BotState;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "usr", schema = "public")
@@ -18,7 +19,8 @@ import java.sql.Timestamp;
 public class User {
     @Id
     Long chatId;
-    String name;
+    @Builder.Default
+    String name = null;
     @Builder.Default
     Long level = 1L;
     @Builder.Default
@@ -58,4 +60,7 @@ public class User {
     Long gold = 0L;
     @Builder.Default
     Long offlinePoints = 0L;
+
+    @OneToMany(mappedBy = "userId")
+    List<InventoryCell> inventoryCells;
 }

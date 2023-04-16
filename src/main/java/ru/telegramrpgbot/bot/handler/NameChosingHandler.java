@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.telegramrpgbot.enums.BotState;
-import ru.telegramrpgbot.enums.Command;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.UserRepository;
 
@@ -53,13 +53,13 @@ public class NameChosingHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> checkName(User user, String message) {
-        user.setName(message);
         var reply = createMessageTemplate(user);
-
         if (userRepository.getUsersByName(message).orElse(null) != null){
+
             reply.setText("Это имя уже занято, выбери другое.");
-            return null;
+            return List.of(reply);
         }
+        user.setName(message);
         // При проверке имени мы превентивно сохраняем пользователю новое имя в базе
         userRepository.save(user);
 

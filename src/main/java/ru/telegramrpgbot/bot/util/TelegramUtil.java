@@ -35,7 +35,7 @@ public class TelegramUtil {
 
     public static ReplyKeyboard createBaseReplyKeyboard(){
 
-        var buttons = new KeyboardButton[] { new KeyboardButton("/ME"), new KeyboardButton("\u2754Activity")};
+        var buttons = new KeyboardButton[] { new KeyboardButton("\uD83D\uDC64 Hero"), new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Adventures")};
         KeyboardRow row = new KeyboardRow(2);
         row.add(0,buttons[0]);
         row.add(1,buttons[1]);

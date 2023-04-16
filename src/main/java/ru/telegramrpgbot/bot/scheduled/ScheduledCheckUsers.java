@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.telegramrpgbot.bot.Bot;
-import ru.telegramrpgbot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.model.SoloActivityReward;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.SoloActivityRepository;
@@ -66,12 +66,9 @@ public class ScheduledCheckUsers {
 
                 userGoldChanges(user, reward.getGoldReward());
                 userExpChanged(user, reward.getExpReward());
-                userStaminaChanges(user,-user.getActivityId().getRequiredStamina());
                 user.setUserState(BotState.NONE);
                 user.setActivityEnds(null);
                 user.setActivityId(null);
-                var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
-                user.setStaminaRestor(new Timestamp(System.currentTimeMillis()+delay));
                 userRepository.save(user);
 
                 soloActivityEnded.setText(reply);

@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.telegramrpgbot.enums.BotState;
-import ru.telegramrpgbot.enums.Command;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.Command;
+import ru.telegramrpgbot.bot.util.UserChangesUtil;
 import ru.telegramrpgbot.model.SoloActivity;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.SoloActivityRepository;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
+import static ru.telegramrpgbot.bot.util.UserChangesUtil.userStaminaChanges;
 
 @Component
 public class SoloActivityHandler implements Handler {
@@ -72,6 +74,9 @@ public class SoloActivityHandler implements Handler {
         user.setUserState(BotState.SOLO_ACTIVITY);
         var delay = TimeUnit.MILLISECONDS.convert(activity.getActivityDuration(), TimeUnit.MINUTES);
         user.setActivityEnds(new Timestamp(System.currentTimeMillis() + delay));
+        userStaminaChanges(user, -activity.getRequiredStamina());
+        delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
+        user.setStaminaRestor(new Timestamp(System.currentTimeMillis()+delay));
         userRepository.save(user);
 
         var reply = createMessageTemplate(user);
@@ -90,7 +95,7 @@ public class SoloActivityHandler implements Handler {
 
         for (SoloActivity item : availableActivities) {
             inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(item.getName(), item.getName()));
-            replyText.append(String.format("*%s*:\n%s", item.getName(), item.getDescription()));
+            replyText.append(String.format("\n*%s* (%d мин.):\n\n%s", item.getName(),item.getActivityDuration(), item.getDescription()));
         }
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setText(replyText.toString());
@@ -106,7 +111,7 @@ public class SoloActivityHandler implements Handler {
 
     @Override
     public Command operatedCommand() {
-        return Command.Activity;
+        return Command.ADVENTURES;
     }
 
     @Override

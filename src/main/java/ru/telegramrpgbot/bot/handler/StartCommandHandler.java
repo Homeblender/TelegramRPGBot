@@ -3,8 +3,8 @@ package ru.telegramrpgbot.bot.handler;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.telegramrpgbot.enums.BotState;
-import ru.telegramrpgbot.enums.Command;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.repository.UserRepository;
 import ru.telegramrpgbot.model.User;
 

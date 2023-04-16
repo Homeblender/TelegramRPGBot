@@ -1,20 +1,18 @@
 package ru.telegramrpgbot.bot.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.glassfish.grizzly.http.util.TimeStamp;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import ru.telegramrpgbot.enums.BotState;
-import ru.telegramrpgbot.enums.Command;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.User;
 
 import java.io.Serializable;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createBaseReplyKeyboard;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Slf4j
@@ -24,11 +22,16 @@ public class ReturnUserDataHandler implements Handler {
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
         var reply = createMessageTemplate(user);
+        reply.setReplyMarkup(createBaseReplyKeyboard());
 
         var time = user.getStaminaRestor() == null ? 0 : user.getStaminaRestor().getTime() - System.currentTimeMillis();
-        Long seconds = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
-        Long minutes = seconds/60;
-        seconds = seconds%60;
+        long secondsTmp = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
+        long minutes = secondsTmp/60;
+        secondsTmp = secondsTmp%60;
+        String seconds = Long.toString(secondsTmp);
+        if (seconds.length()==1)
+            seconds = "0"+seconds;
+
 
 
         reply.setText(String.format("%s\n" +
@@ -67,7 +70,7 @@ public class ReturnUserDataHandler implements Handler {
 
     @Override
     public Command operatedCommand() {
-        return Command.ME;
+        return Command.HERO;
     }
 
     @Override

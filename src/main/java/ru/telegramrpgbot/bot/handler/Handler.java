@@ -1,7 +1,7 @@
 package ru.telegramrpgbot.bot.handler;
 
-import ru.telegramrpgbot.enums.BotState;
-import ru.telegramrpgbot.enums.Command;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.User;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 

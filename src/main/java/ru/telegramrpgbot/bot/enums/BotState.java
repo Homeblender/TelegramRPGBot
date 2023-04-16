@@ -1,4 +1,4 @@
-package ru.telegramrpgbot.enums;
+package ru.telegramrpgbot.bot.enums;
 
 public enum BotState {
     START,
