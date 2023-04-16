@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static ru.telegramrpgbot.bot.util.UserChangesUtil.*;
+import static ru.telegramrpgbot.bot.util.IngameUtil.*;
 
 @Component
 @Slf4j

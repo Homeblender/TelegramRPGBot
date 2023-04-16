@@ -18,8 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.telegramrpgbot.bot.util.IngameUtil.countPrice;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
-import static ru.telegramrpgbot.bot.util.UserChangesUtil.userGoldChanges;
+import static ru.telegramrpgbot.bot.util.IngameUtil.userGoldChanges;
 
 @Component
 @Slf4j
@@ -55,7 +56,7 @@ public class InventoryHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sellItem(User user, String message) {
-        List<String> messageList = Arrays.stream(message.split(" ")).toList();
+        List<String> messageList = Arrays.stream(message.split("_")).toList();
 
         var reply = createMessageTemplate(user);
         reply.setReplyMarkup(createBaseReplyKeyboard());
@@ -63,8 +64,8 @@ public class InventoryHandler implements Handler {
         InventoryCell cell;
         IngameItem item;
 
-        if(messageList.size()<2){
-            reply.setText(sellTemplate());
+        if(messageList.size()<2&& messageList.get(1).length()<1){
+            reply.setText("Не указан id предмета");
             return List.of();
         }
         try {
@@ -134,11 +135,9 @@ public class InventoryHandler implements Handler {
                         inventoryCell.getItem().getSharpness()
                 ));
                 if (inventoryCell.getItem().getBaseItem().getBuyPrice() != null) {
-                    replyMessage.append(String.format("Цена при продаже - %d\uD83D\uDCB0 (id = %d)%n", inventoryCell.getItem().getBaseItem().getBuyPrice() / 3, inventoryCell.getInventoryCellId()));
+                    replyMessage.append(sellTemplate(inventoryCell));
                 }
-
             }
-            replyMessage.append(sellTemplate());
         } else replyMessage.append("У тебя нет предметов которые ты можешь экипировать.");
 
 
@@ -172,10 +171,9 @@ public class InventoryHandler implements Handler {
                         inventoryCell.getItem().getItemsInStack()
                 ));
                 if (inventoryCell.getItem().getBaseItem().getBuyPrice() != null) {
-                    replyMessage.append(String.format("Цена при продаже - %d\uD83D\uDCB0 (id = %d)%n", inventoryCell.getItem().getBaseItem().getBuyPrice() / 3, inventoryCell.getInventoryCellId()));
+                    replyMessage.append(sellTemplate(inventoryCell));
                 }
             }
-            replyMessage.append(sellTemplate());
         } else replyMessage.append("У вас нет используемых предметов.");
 
 
@@ -210,10 +208,9 @@ public class InventoryHandler implements Handler {
                         inventoryCell.getItem().getItemsInStack()
                 ));
                 if (inventoryCell.getItem().getBaseItem().getBuyPrice() != null) {
-                    replyMessage.append(String.format("Цена при продаже - %d\uD83D\uDCB0 (id = %d)%n", inventoryCell.getItem().getBaseItem().getBuyPrice() / 3, inventoryCell.getInventoryCellId()));
+                    replyMessage.append(sellTemplate(inventoryCell));
                 }
             }
-            replyMessage.append(sellTemplate());
         } else replyMessage.append("У вас нет материалов.");
 
 
@@ -231,8 +228,8 @@ public class InventoryHandler implements Handler {
 
     }
 
-    private String sellTemplate() {
-        return String.format("%n/sell {id} {колличество} - продать предмет ");
+    private String sellTemplate(InventoryCell inventoryCell) {
+        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n", countPrice(inventoryCell.getItem()),inventoryCell.getInventoryCellId());
     }
 
 

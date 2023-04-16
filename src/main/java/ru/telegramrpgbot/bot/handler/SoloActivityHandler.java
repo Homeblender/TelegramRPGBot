@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
-import static ru.telegramrpgbot.bot.util.UserChangesUtil.userStaminaChanges;
+import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
 
 @Component
 public class SoloActivityHandler implements Handler {

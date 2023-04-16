@@ -50,7 +50,7 @@ public class UpdateReceiver {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
                 } catch (Exception ignored) {}
                 try {
-                    handler = getHandlerByCommand(Command.valueOf(messageText.substring(1).split(" ")[0]));
+                    handler = getHandlerByCommand(Command.valueOf(messageText.substring(1).split("_")[0]));
                 } catch (Exception ignored) {}
 
             }

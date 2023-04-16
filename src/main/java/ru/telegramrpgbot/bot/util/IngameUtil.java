@@ -10,16 +10,16 @@ import ru.telegramrpgbot.repository.InventoryCellRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 @Component
-public class UserChangesUtil {
-    //TODO спросить у ярика как лучше сделать
+public class IngameUtil {
+    //TODO узнать как лучше сделать
     private static UserRepository userRepository;
     private static IngameItemRepository ingameItemRepository;
     private static InventoryCellRepository inventoryCellRepository;
 
-    public UserChangesUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, InventoryCellRepository inventoryCellRepository) {
-        UserChangesUtil.userRepository = userRepository;
-        UserChangesUtil.ingameItemRepository = ingameItemRepository;
-        UserChangesUtil.inventoryCellRepository = inventoryCellRepository;
+    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, InventoryCellRepository inventoryCellRepository) {
+        IngameUtil.userRepository = userRepository;
+        IngameUtil.ingameItemRepository = ingameItemRepository;
+        IngameUtil.inventoryCellRepository = inventoryCellRepository;
     }
 
     public static Long userHealthChanges(User user, Long healthChanged) {
@@ -85,5 +85,9 @@ public class UserChangesUtil {
     public static void userDied(User user) {
         user.setCurrentStamina(0L);
         userRepository.save(user);
+    }
+
+    public static long countPrice(IngameItem ingameItem){
+        return ingameItem.getBaseItem().getBuyPrice()/3;
     }
 }

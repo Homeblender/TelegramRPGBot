@@ -156,12 +156,24 @@ insert into fixed.base_item
     VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,1,null, 15);
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
+    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,8,25, 15);
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Палка', 'Обычная деревянная палка для создания предметов.', null, null,8,25, 15);
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price)
+    VALUES ('Палка', 'Обычная деревянная палка для убийства людей.', 1, null,2,null, 25);
+
 insert into public.ingame_item(item_id, items_in_stack, sharpness)
     VALUES (1,null,0);
 insert into public.ingame_item(item_id, items_in_stack, sharpness)
-    VALUES (2,1,null);
+    VALUES (2,1,0);
+insert into public.ingame_item(item_id, items_in_stack, sharpness)
+    VALUES (3,1,null);
+insert into public.ingame_item(item_id, items_in_stack, sharpness)
+    VALUES (4,null,0);
+
 insert into public.inventory_cell(item_id, user_id, is_equipped)
-    VALUES(1,1436473525,false);
+    VALUES(3,1436473525,false);
 insert into public.inventory_cell(item_id, user_id, is_equipped)
-    VALUES(2,1436473525,false);
+    VALUES(4,1436473525,false);
