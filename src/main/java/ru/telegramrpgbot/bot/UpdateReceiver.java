@@ -1,6 +1,7 @@
 package ru.telegramrpgbot.bot;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.security.Escape;
 import org.springframework.stereotype.Component;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
@@ -44,13 +45,13 @@ public class UpdateReceiver {
                 try {
                     String t = messageText.split(" ")[1];
                     handler = getHandlerByCommand(Command.valueOf(t));
-                } catch (IndexOutOfBoundsException ignored) {}
+                } catch (Exception ignored) {}
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
-                } catch (IllegalArgumentException ignored) {}
+                } catch (Exception ignored) {}
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1).split(" ")[0]));
-                } catch (IllegalArgumentException ignored) {}
+                } catch (Exception ignored) {}
 
             }
             return handler==null?List.of(): handler.handle(user, message.getText());
