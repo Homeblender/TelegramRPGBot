@@ -6,9 +6,9 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.User;
+import ru.telegramrpgbot.repository.InventoryCellRepository;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +18,12 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 @Slf4j
 @Component
 public class ReturnUserDataHandler implements Handler {
+
+    private final InventoryCellRepository inventoryCellRepository;
+
+    public ReturnUserDataHandler(InventoryCellRepository inventoryCellRepository) {
+        this.inventoryCellRepository = inventoryCellRepository;
+    }
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
@@ -33,7 +39,8 @@ public class ReturnUserDataHandler implements Handler {
             seconds = "0"+seconds;
 
 
-
+        //long temp = inventoryCellRepository.findAllByUser(user).size();
+        long temp = inventoryCellRepository.findAllByUser(user).size();
         reply.setText(String.format("%s\n" +
                         "level: %s\n" +
                         "passive points: %s\n" +
@@ -44,7 +51,8 @@ public class ReturnUserDataHandler implements Handler {
                         "Partner: %s\n" +
                         //"class: %s\n" +
                         "gold: %s\n" +
-                        "offline points: %s\n",
+                        "offline points: %s\n" +
+                        "\n Инвентарь (x%d) - /Inventory",
                 user.getName(),
                 user.getLevel(),
                 user.getPassivePoints(),
@@ -59,22 +67,24 @@ public class ReturnUserDataHandler implements Handler {
                 user.getPartner() != null ? user.getPartner() : "",
                 //user.getClassId().getName(),
                 user.getGold(),
-                user.getOfflinePoints()));
+                user.getOfflinePoints(),
+                temp
+                ));
         return List.of(reply);
     }
 
     @Override
-    public BotState operatedBotState() {
-        return null;
+    public List<BotState> operatedBotState() {
+        return List.of();
     }
 
     @Override
-    public Command operatedCommand() {
-        return Command.HERO;
+    public List<Command> operatedCommand() {
+        return List.of(Command.HERO);
     }
 
     @Override
     public List<String> operatedCallBackQuery() {
-        return Collections.emptyList();
+        return List.of();
     }
 }

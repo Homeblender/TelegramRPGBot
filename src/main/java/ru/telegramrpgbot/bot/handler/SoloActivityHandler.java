@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
-import ru.telegramrpgbot.bot.util.UserChangesUtil;
 import ru.telegramrpgbot.model.SoloActivity;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.SoloActivityRepository;
@@ -19,8 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton;
-import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 import static ru.telegramrpgbot.bot.util.UserChangesUtil.userStaminaChanges;
 
 @Component
@@ -50,11 +48,7 @@ public class SoloActivityHandler implements Handler {
         return showActivities(user);
     }
 
-    private List<PartialBotApiMethod<? extends Serializable>> busyReply(User user) {
-        var reply = createMessageTemplate(user);
-        reply.setText("Сейчас ты занят другим.");
-        return List.of(reply);
-    }
+
 
     private List<PartialBotApiMethod<? extends Serializable>> noStaminaReply(User user) {
         var reply = createMessageTemplate(user);
@@ -105,13 +99,13 @@ public class SoloActivityHandler implements Handler {
 
 
     @Override
-    public BotState operatedBotState() {
-        return null;
+    public List<BotState> operatedBotState() {
+        return List.of();
     }
 
     @Override
-    public Command operatedCommand() {
-        return Command.ADVENTURES;
+    public List<Command> operatedCommand() {
+        return List.of(Command.ADVENTURES);
     }
 
     @Override

@@ -44,15 +44,16 @@ public class UpdateReceiver {
                 try {
                     String t = messageText.split(" ")[1];
                     handler = getHandlerByCommand(Command.valueOf(t));
-                } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
-                    try{
-                        handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
-                    }catch (IllegalArgumentException ill){
-                        return List.of();
-                    }
-                }
+                } catch (IndexOutOfBoundsException ignored) {}
+                try {
+                    handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
+                } catch (IllegalArgumentException ignored) {}
+                try {
+                    handler = getHandlerByCommand(Command.valueOf(messageText.substring(1).split("_")[0]));
+                } catch (IllegalArgumentException ignored) {}
+
             }
-            return handler.handle(user, message.getText());
+            return handler==null?List.of(): handler.handle(user, message.getText());
 
         } else if (update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
@@ -68,7 +69,8 @@ public class UpdateReceiver {
     private Handler getHandlerByState(BotState state) {
         return handlers.stream()
                 .filter(h -> h.operatedBotState() != null)
-                .filter(h -> h.operatedBotState().equals(state))
+                .filter(h -> h.operatedBotState().stream()
+                        .anyMatch(state::equals))
                 .findAny()
                 .orElse(null);
     }
@@ -76,7 +78,8 @@ public class UpdateReceiver {
     private Handler getHandlerByCommand(Command command) {
         return handlers.stream()
                 .filter(h -> h.operatedCommand() != null)
-                .filter(h -> h.operatedCommand().equals(command))
+                .filter(h -> h.operatedCommand().stream()
+                        .anyMatch(command::equals))
                 .findAny()
                 .orElse(null);
     }

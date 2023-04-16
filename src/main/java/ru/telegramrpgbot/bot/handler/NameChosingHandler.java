@@ -97,13 +97,13 @@ public class NameChosingHandler implements Handler {
     }
 
     @Override
-    public BotState operatedBotState() {
-        return BotState.WAITING_FOR_NAME;
+    public List<BotState> operatedBotState() {
+        return List.of(BotState.WAITING_FOR_NAME);
     }
 
     @Override
-    public Command operatedCommand() {
-        return null;
+    public List<Command> operatedCommand() {
+        return List.of();
     }
 
     @Override

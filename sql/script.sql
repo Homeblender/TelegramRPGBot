@@ -83,20 +83,21 @@ CREATE TABLE public.applied_skill (
 	skill_level bigint
 );
 
-CREATE TABLE fixed.item_types (
-	id bigint PRIMARY KEY,
-	type text
-);
-
 CREATE TABLE fixed.base_item (
-	id bigint PRIMARY KEY,
+	id serial PRIMARY KEY,
 	name text,
 	description text,
 	damage bigint,
 	armor bigint,
-	type_id bigint references fixed.item_types(id),
-	buy_price bigint,
-	sell_price bigint
+	type bigint,
+	max_in_stack bigint,
+	buy_price bigint
+);
+CREATE TABLE fixed.base_item_craft (
+    id serial PRIMARY KEY,
+	crafted_base_item_id bigint references fixed.base_item(id),
+	material_base_item_id bigint references fixed.base_item(id),
+	countOfMaterial bigint
 );
 
 CREATE TABLE fixed.solo_activity_reward (
@@ -111,6 +112,7 @@ CREATE TABLE fixed.solo_activity_reward (
 CREATE TABLE public.ingame_item (
 	id serial PRIMARY KEY,
 	item_id bigint references fixed.base_item(id),
+	items_in_stack bigint,
 	sharpness bigint
 );
 
@@ -149,3 +151,10 @@ values ('Руины',
         'Заброшеные руины недалеко от города. Чего-то редкого там не найдешь, но наберешься опыта для более сложных приключений и, если повезет, пару монет.',1, 1, 1);
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward,result_message) values (1, 2, 3, null,'Ты побродил по руинам пару часов, было очень скучно.');
+insert into fixed.base_item
+    (name, description, damage, armor, type_id, max_in_stack, buy_price)
+    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,1,null, 15);
+insert into public.ingame_item(item_id, items_in_stack, sharpness)
+    VALUES (1,null,0);
+insert into public.inventory_cell(item_id, user_id, is_equipped)
+    VALUES(1,1436473525,false);

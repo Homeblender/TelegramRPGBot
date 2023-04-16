@@ -19,6 +19,7 @@ public class IngameItem {
     Long id;
     @ManyToOne
     @JoinColumn(name = "item_id")
-    BaseItem itemId;
+    BaseItem baseItem;
     Long sharpness;
+    Long itemsInStack;
 }

@@ -58,9 +58,9 @@ public class UserChangesUtil {
         return user.getGold();
     }
     public static void userGetItem(User user, BaseItem baseItem) {
-        IngameItem newItem = IngameItem.builder().itemId(baseItem).build();
+        IngameItem newItem = IngameItem.builder().baseItem(baseItem).build();
         ingameItemRepository.save(newItem);
-        InventoryCell inventoryCell = InventoryCell.builder().itemId(newItem).userId(user).build();
+        InventoryCell inventoryCell = InventoryCell.builder().item(newItem).user(user).build();
         inventoryCellRepository.save(inventoryCell);
     }
     public static void userDied(User user){

@@ -1,0 +1,13 @@
+package ru.telegramrpgbot.bot.enums;
+
+public enum ItemType {
+    EQUIPMENT_ONE_HANDED_WEAPON,
+    EQUIPMENT_TWO_HANDED_WEAPON,
+    EQUIPMENT_SHIELD,
+    EQUIPMENT_BODY_ARMOR,
+    EQUIPMENT_LEG_ARMOR,
+    EQUIPMENT_HELMET,
+    EQUIPMENT_BOOTS,
+    CONSUMABLE,
+    MATERIAL
+}

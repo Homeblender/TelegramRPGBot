@@ -38,17 +38,17 @@ public class StartCommandHandler implements Handler{
     }
 
     @Override
-    public BotState operatedBotState() {
-        return BotState.START;
+    public List<BotState> operatedBotState() {
+        return List.of(BotState.START);
     }
 
     @Override
-    public Command operatedCommand() {
-        return null;
+    public List<Command> operatedCommand() {
+        return List.of();
     }
 
     @Override
     public List<String> operatedCallBackQuery() {
-        return Collections.emptyList();
+        return List.of();
     }
 }

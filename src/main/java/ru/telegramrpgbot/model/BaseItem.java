@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.telegramrpgbot.bot.enums.ItemType;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "base_item", schema = "fixed")
@@ -23,11 +25,12 @@ public class BaseItem {
     String description;
     Long damage;
     Long armor;
-    @ManyToOne
     @JoinColumn(name = "type_id")
-    ItemType typeId;
-    @JoinColumn(name = "buy_price")
+    ItemType type_id;
     Long buyPrice;
-    @JoinColumn(name = "sell_price")
-    Long sellPrice;
+    Long maxInStack;
+
+    @OneToMany(mappedBy = "materialBaseItemId")
+    Collection<BaseItemCraft> baseItemsToCraft;
+
 }

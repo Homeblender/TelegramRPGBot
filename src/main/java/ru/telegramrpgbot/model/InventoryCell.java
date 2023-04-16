@@ -24,10 +24,10 @@ public class InventoryCell implements Serializable {
     @JoinColumn(name = "item_id")
     @Unique
     //@Column(insertable = false, updatable = false, name = "item_id")
-    IngameItem itemId;
+    IngameItem item;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User userId;
+    User user;
     @Builder.Default
     @Column(nullable = false)
     boolean isEquipped = false;

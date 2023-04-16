@@ -61,6 +61,4 @@ public class User {
     @Builder.Default
     Long offlinePoints = 0L;
 
-    @OneToMany(mappedBy = "userId")
-    List<InventoryCell> inventoryCells;
 }

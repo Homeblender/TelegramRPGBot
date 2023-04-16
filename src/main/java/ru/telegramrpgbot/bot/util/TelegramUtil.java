@@ -1,5 +1,6 @@
 package ru.telegramrpgbot.bot.util;
 
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -8,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.telegramrpgbot.model.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,15 +37,28 @@ public class TelegramUtil {
 
     public static ReplyKeyboard createBaseReplyKeyboard(){
 
-        var buttons = new KeyboardButton[] { new KeyboardButton("\uD83D\uDC64 Hero"), new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Adventures")};
+        var buttons = new KeyboardButton[] {
+                new KeyboardButton("\uD83D\uDC64 Hero"),
+                new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Adventures"),
+                new KeyboardButton("\uD83C\uDF06 City")};
+
+        return createKeyboard(buttons);
+    }
+
+    public static ReplyKeyboardMarkup createKeyboard(KeyboardButton[] buttons) {
         KeyboardRow row = new KeyboardRow(2);
-        row.add(0,buttons[0]);
-        row.add(1,buttons[1]);
+        row.addAll(Arrays.asList(buttons));
         List<KeyboardRow> rows = new ArrayList<>();
         rows.add(row);
 
         var newReplyKeyboard = new ReplyKeyboardMarkup(rows);
         newReplyKeyboard.setResizeKeyboard(true);
         return newReplyKeyboard;
+    }
+
+    public static List<PartialBotApiMethod<? extends Serializable>> busyReply(User user) {
+        var reply = createMessageTemplate(user);
+        reply.setText("Сейчас ты занят другим.");
+        return List.of(reply);
     }
 }
