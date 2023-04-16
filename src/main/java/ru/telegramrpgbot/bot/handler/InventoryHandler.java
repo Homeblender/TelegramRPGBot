@@ -68,7 +68,8 @@ public class InventoryHandler implements Handler {
             return List.of();
         }
         try {
-            countItemsToSell = messageList.size() == 3 ? Long.parseLong(messageList.get(2)) : -1;
+            countItemsToSell = messageList.size() == 3 ? Long.parseLong(messageList.get(2)) : 1;
+            log.info(countItemsToSell +"");
         } catch (NumberFormatException exception) {
             reply.setText("Колличество предметов должно быть числом.");
             return List.of(reply);
@@ -113,7 +114,7 @@ public class InventoryHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder();
         var reply = createMessageTemplate(user);
 
-        var equipmentItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType_id().name().contains("EQUIPMENT")).toList();
+        var equipmentItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType().name().contains("EQUIPMENT")).toList();
         if (equipmentItems.size() > 0) {
             replyMessage.append("Предметы которые ты можешь экипировать ⚔️:\n\n");
             for (InventoryCell inventoryCell : equipmentItems) {
@@ -160,7 +161,7 @@ public class InventoryHandler implements Handler {
         var reply = createMessageTemplate(user);
 
 
-        var consumableItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType_id().name().contains("CONSUMABLE")).toList();
+        var consumableItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType().name().contains("CONSUMABLE")).toList();
         if (consumableItems.size() > 0) {
             replyMessage.append(String.format("%nИспользуемые предметы \uD83C\uDF77:%n%n"));
 
@@ -198,9 +199,9 @@ public class InventoryHandler implements Handler {
         var reply = createMessageTemplate(user);
 
 
-        var materialItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType_id().name().contains("CONSUMABLE")).toList();
+        var materialItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType().name().contains("MATERIAL")).toList();
         if (materialItems.size() > 0) {
-            replyMessage.append(String.format("%nМатериалы \uD83C\uDF77:%n%n"));
+            replyMessage.append(String.format("%nМатериалы \uD83E\uDEA8:%n%n"));
 
             for (InventoryCell inventoryCell : materialItems) {
                 replyMessage.append(String.format(

@@ -49,7 +49,7 @@ public class Bot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            log.error("govno");
+            log.error(e.getMessage());
         }
     }
 

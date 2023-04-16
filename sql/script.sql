@@ -152,9 +152,16 @@ values ('Руины',
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward,result_message) values (1, 2, 3, null,'Ты побродил по руинам пару часов, было очень скучно.');
 insert into fixed.base_item
-    (name, description, damage, armor, type_id, max_in_stack, buy_price)
+    (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,1,null, 15);
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price)
+    VALUES ('Палка', 'Обычная деревянная палка для создания предметов.', null, null,8,25, 15);
 insert into public.ingame_item(item_id, items_in_stack, sharpness)
     VALUES (1,null,0);
+insert into public.ingame_item(item_id, items_in_stack, sharpness)
+    VALUES (2,1,null);
 insert into public.inventory_cell(item_id, user_id, is_equipped)
     VALUES(1,1436473525,false);
+insert into public.inventory_cell(item_id, user_id, is_equipped)
+    VALUES(2,1436473525,false);

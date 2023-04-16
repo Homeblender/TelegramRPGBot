@@ -25,8 +25,7 @@ public class BaseItem {
     String description;
     Long damage;
     Long armor;
-    @JoinColumn(name = "type_id")
-    ItemType type_id;
+    ItemType type;
     Long buyPrice;
     Long maxInStack;
 
