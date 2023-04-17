@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.util.IngameUtil;
+import ru.telegramrpgbot.model.IngameItem;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.IngameItemRepository;
 
@@ -40,7 +41,8 @@ public class ReturnUserDataHandler implements Handler {
             seconds = "0"+seconds;
 
 
-        long temp = ingameItemRepository.findAllByUser(user).size();
+        long inventSize = ingameItemRepository.findAllByUser(user).size();
+        long equipmentSize = ingameItemRepository.findAllByUser(user).stream().filter(IngameItem::isEquipped).toArray().length;
         reply.setText(String.format("*%s* - *%s*%n" +
                         "\uD83D\uDCA0 Уровень: %s%n" +
                         "%s" +
@@ -51,7 +53,8 @@ public class ReturnUserDataHandler implements Handler {
                         "%n\uD83D\uDC8D Партнер: %s%n" +
                         "%n\uD83D\uDCB0 Золото: %s%n" +
                         "\uD83D\uDC8E Очки оффлайн ивентов: %s%n" +
-                        "%n \uD83D\uDCE6 Инвентарь (x%d) - /Inventory",
+                        "%n \uD83D\uDCE6 Инвентарь (x%d) - /inventory"+
+                        "%n \uD83D\uDC5C Экипировка (x%d) - /equipment",
                 user.getUserClass().getName(),
                 user.getName(),
                 user.getLevel(),
@@ -70,7 +73,8 @@ public class ReturnUserDataHandler implements Handler {
                 //user.getClassId().getName(),
                 user.getGold(),
                 user.getOfflinePoints(),
-                temp
+                inventSize,
+                equipmentSize
                 ));
         return List.of(reply);
     }

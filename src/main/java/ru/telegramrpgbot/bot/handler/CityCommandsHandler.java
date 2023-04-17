@@ -3,16 +3,13 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
-import ru.telegramrpgbot.bot.util.TelegramUtil;
 import ru.telegramrpgbot.model.User;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
@@ -21,12 +18,13 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 public class CityCommandsHandler implements Handler {
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
-        message = message.toUpperCase();
+
+        var message_real = Arrays.stream(Command.values()).filter(command -> command.getRussian().toUpperCase().equals(message.toUpperCase().split(" ")[1])).findFirst().get();
         if (user.getUserState() != BotState.NONE) {
             return busyReply(user);
-        } else if (message.contains(Command.CITY.name())) {
+        } else if (message_real.equals(Command.CITY)) {
             return cityEnterMessage(user);
-        }else if (message.contains(Command.BACK.name())) {
+        }else if (message_real.equals(Command.BACK)) {
             return backCityMessage(user);
         }
         return null;
@@ -41,9 +39,9 @@ public class CityCommandsHandler implements Handler {
 
     private List<PartialBotApiMethod<? extends Serializable>> cityEnterMessage(User user) {
         var buttons = new KeyboardButton[] {
-                new KeyboardButton("/Forge"),
-                new KeyboardButton("/Shop"),
-                new KeyboardButton("/Back")};
+                new KeyboardButton("⚒ Кузница"),
+                new KeyboardButton("\uD83D\uDED2 Магазин"),
+                new KeyboardButton("⬅️ Назад")};
 
         var reply = createMessageTemplate(user);
         reply.setText(String.format("Ты пришел в *город*." +

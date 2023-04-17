@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
 
@@ -48,14 +49,15 @@ public class UpdateReceiver {
             if (handler == null) {
                 try {
                     String t = messageText.split(" ")[1];
-                    handler = getHandlerByCommand(Command.valueOf(t));
-                } catch (Exception ignored) {}
+
+                    handler = getHandlerByCommand(Arrays.stream(Command.values()).filter(command -> command.getRussian().toUpperCase().equals(t)).findFirst().get());
+                } catch (Exception exception) { log.info(exception.getMessage());}
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
-                } catch (Exception ignored) {}
+                } catch (Exception exception) {log.info(exception.getMessage());}
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1).split("_")[0]));
-                } catch (Exception ignored) {}
+                } catch (Exception exception) {log.info(exception.getMessage());}
 
             }
             return handler==null?List.of(): handler.handle(user, message.getText());
