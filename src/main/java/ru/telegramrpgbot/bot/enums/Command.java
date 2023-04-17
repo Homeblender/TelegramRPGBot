@@ -9,5 +9,6 @@ public enum Command {
     SHOP,
     BACK,
     SELL,
-    INVENTORY
+    INVENTORY,
+    FIGHT
 }
