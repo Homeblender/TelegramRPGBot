@@ -20,13 +20,12 @@ public class Move {
     @ManyToOne
     @JoinColumn(name = "user_id")
     User userId;
-    @JoinColumn(name = "defence")
+    @JoinColumn(name = "defense")
     @Builder.Default
-    BodyPart defence = null;
+    BodyPart defense = null;
     @JoinColumn(name = "attack")
     @Builder.Default
     BodyPart attack = null;
-    @Column(name = "fight_state")
     @Builder.Default
     Long num = 0L;
 }

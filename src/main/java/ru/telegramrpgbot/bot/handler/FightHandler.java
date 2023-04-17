@@ -95,6 +95,8 @@ public class FightHandler implements Handler {
         User actor = fight.getUser1Id();
         actor.setUserState(BotState.WAITING_FOR_MOVE);
         opponent.setUserState(BotState.WAITING_FOR_MOVE);
+        userRepository.save(actor);
+        userRepository.save(opponent);
 
         var messageToActor1 = createMessageTemplate(actor);
         var messageToOpponent1 = createMessageTemplate(opponent);
@@ -124,15 +126,15 @@ public class FightHandler implements Handler {
         }
 
         if (move.getAttack() != null) {
-            move.setDefence(part);
+            move.setDefense(part);
             move.setAttack(null);
             move.setNum(move.getNum()+1);
             moveRepository.save(move);
             reply.setText("Теперь выберите часть тела для атаки");
         }
         else {
-            if (move.getDefence() == null) {
-                move.setDefence(part);
+            if (move.getDefense() == null) {
+                move.setDefense(part);
                 moveRepository.save(move);
                 reply.setText("Теперь выберите часть тела для атаки");
             }

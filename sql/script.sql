@@ -19,6 +19,8 @@ drop table if exists public.usr cascade;
 drop table if exists fixed.skill_bonus cascade;
 drop table if exists fixed.skill cascade;
 drop table if exists fixed.class cascade;
+drop table if exists public.fight cascade;
+drop table if exists public.move cascade;
 
 CREATE TABLE fixed.class (
     id serial PRIMARY KEY,
@@ -137,7 +139,21 @@ CREATE TABLE public.party (
 	current_state TEXT
 );
 
+CREATE TABLE public.fight (
+    id serial primary key,
+    user1_id bigint references public.usr(chat_id),
+	user2_id bigint references public.usr(chat_id),
+	fight_state TEXT
+);
 
+
+CREATE TABLE public.move (
+    id serial primary key,
+    user_id bigint references public.usr(chat_id),
+	defense int,
+	attack int,
+	num bigint
+);
 
 
 
@@ -165,11 +181,3 @@ insert into fixed.class(name, description, required_level, base_class)
 
 
 
-insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (1,null,1436473525,false,0);
-insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (2,1,1436473525,false,null);
-insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (3,1,1436473525,false,null);
-insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (4,null,1436473525,false,0);
