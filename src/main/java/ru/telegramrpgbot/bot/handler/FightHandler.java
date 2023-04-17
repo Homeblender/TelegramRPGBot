@@ -10,7 +10,6 @@ import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.Fight;
 import ru.telegramrpgbot.model.User;
-import ru.telegramrpgbot.repository.InventoryCellRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 import ru.telegramrpgbot.repository.FightRepository;
 
