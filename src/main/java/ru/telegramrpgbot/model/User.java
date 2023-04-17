@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.repository.ClassRepository;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

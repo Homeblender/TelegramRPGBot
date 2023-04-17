@@ -91,6 +91,7 @@ CREATE TABLE fixed.base_item (
 	armor bigint,
 	type bigint,
 	max_in_stack bigint,
+	is_for_sale boolean,
 	buy_price bigint
 );
 CREATE TABLE fixed.base_item_craft (
@@ -113,14 +114,9 @@ CREATE TABLE public.ingame_item (
 	id serial PRIMARY KEY,
 	item_id bigint references fixed.base_item(id),
 	items_in_stack bigint,
+	user_id bigint not null references public.usr(chat_id),
+	is_equipped boolean,
 	sharpness bigint
-);
-
-CREATE TABLE public.inventory_cell (
-    inventory_cell_id serial PRIMARY KEY,
-	item_id bigint unique references public.ingame_item(id),
-	user_id bigint references public.usr(chat_id),
-	is_equipped boolean
 );
 
 -- CREATE TABLE public.equipment (
@@ -164,16 +160,16 @@ insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Палка', 'Обычная деревянная палка для убийства людей.', 1, null,2,null, 25);
 
-insert into public.ingame_item(item_id, items_in_stack, sharpness)
-    VALUES (1,null,0);
-insert into public.ingame_item(item_id, items_in_stack, sharpness)
-    VALUES (2,1,0);
-insert into public.ingame_item(item_id, items_in_stack, sharpness)
-    VALUES (3,1,null);
-insert into public.ingame_item(item_id, items_in_stack, sharpness)
-    VALUES (4,null,0);
+insert into fixed.class(name, description, required_level, base_class)
+    VALUES ('Работяга', 'Пока ты обычный работяга без каких либо бонусов', 1, null);
 
-insert into public.inventory_cell(item_id, user_id, is_equipped)
-    VALUES(3,1436473525,false);
-insert into public.inventory_cell(item_id, user_id, is_equipped)
-    VALUES(4,1436473525,false);
+
+
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (1,null,1436473525,false,0);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (2,1,1436473525,false,null);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (3,1,1436473525,false,null);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (4,null,1436473525,false,0);

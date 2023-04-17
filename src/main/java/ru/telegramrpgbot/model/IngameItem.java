@@ -18,8 +18,16 @@ public class IngameItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+    @Builder.Default
+    @Column(nullable = false)
+    boolean isEquipped = false;
+    @ManyToOne
     @JoinColumn(name = "item_id")
     BaseItem baseItem;
-    Long sharpness;
-    Long itemsInStack;
+    @Builder.Default
+    Long sharpness = null;
+    @Builder.Default
+    Long itemsInStack = null;
 }

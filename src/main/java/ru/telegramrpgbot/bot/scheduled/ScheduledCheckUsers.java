@@ -45,20 +45,17 @@ public class ScheduledCheckUsers {
     }
 
     private void checkSoloActivityEnds(List<User> onSoloActivityUsers) {
-        for (User user :
-                onSoloActivityUsers) {
+        for (User user : onSoloActivityUsers) {
             if (user.getActivityEnds() != null && user.getActivityEnds().before(new Timestamp(System.currentTimeMillis()))) {
 
-                log.info(user.getActivityEnds() +" "+ user.getActivityId().getName());
-
-
+                log.info(user.getActivityEnds() + " " + user.getActivityId().getName());
 
 
                 List<SoloActivityReward> possibleRewards = soloActivityRewardRepository.findAllBySoloActivity(user.getActivityId());
                 var reward = possibleRewards.get(new Random().nextInt(possibleRewards.size()));
 
                 var soloActivityEnded = TelegramUtil.createMessageTemplate(user);
-                var reply = reward.getResultMessage() + String.format("%n%nТвоя награда:%n+%d зол. монет%n+%d очк. опыта", reward.getGoldReward(), reward.getExpReward());
+                var reply = reward.getResultMessage() + String.format("%n%nТвоя награда:%n+%d зол. монет%n+%d очк. опыта", new Random().nextLong(reward.getGoldReward() / 2, reward.getGoldReward() * 2), new Random().nextLong(reward.getExpReward() / 2, reward.getExpReward() * 2));
                 if (reward.getItemReward() != null) {
                     reply += String.format("%n+%s", reward.getItemReward().getName());
                     userGetItem(user, reward.getItemReward());
@@ -87,13 +84,10 @@ public class ScheduledCheckUsers {
 
     private void restorAskUsers(List<User> afkUsers) {
 
-        for (User user :
-                afkUsers) {
-            if (!user.getCurrentHealth().equals(user.getMaxHealth()))
-                userHealthChanges(user, 1L);
+        for (User user : afkUsers) {
+            if (!user.getCurrentHealth().equals(user.getMaxHealth())) userHealthChanges(user, 1L);
 
-            if (!user.getCurrentMana().equals(user.getMaxMana()))
-                userManaChanges(user, 1L);
+            if (!user.getCurrentMana().equals(user.getMaxMana())) userManaChanges(user, 1L);
 
             if (!user.getCurrentStamina().equals(user.getMaxStamina())) {
                 if (user.getStaminaRestor().before(new Timestamp(System.currentTimeMillis()))) {
@@ -102,10 +96,9 @@ public class ScheduledCheckUsers {
                         var staminaRestoredMessage = TelegramUtil.createMessageTemplate(user);
                         staminaRestoredMessage.setText("*Ваша выносливность полностью остановлена!*");
                         executeWithExceptionCheck(staminaRestoredMessage);
-                    }
-                    else{
+                    } else {
                         var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
-                        user.setStaminaRestor(new Timestamp(System.currentTimeMillis()+delay));
+                        user.setStaminaRestor(new Timestamp(System.currentTimeMillis() + delay));
                         userRepository.save(user);
                     }
                 }

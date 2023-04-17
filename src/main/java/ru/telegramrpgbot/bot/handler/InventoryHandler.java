@@ -7,32 +7,28 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.IngameItem;
-import ru.telegramrpgbot.model.InventoryCell;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.IngameItemRepository;
-import ru.telegramrpgbot.repository.InventoryCellRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.telegramrpgbot.bot.util.IngameUtil.countPrice;
+import static ru.telegramrpgbot.bot.util.IngameUtil.*;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
-import static ru.telegramrpgbot.bot.util.IngameUtil.userGoldChanges;
 
 @Component
 @Slf4j
 public class InventoryHandler implements Handler {
 
-    private final InventoryCellRepository inventoryCellRepository;
     private final IngameItemRepository ingameItemRepository;
     private final List<String> CALLBACK_LIST = new ArrayList<>();
 
 
-    public InventoryHandler(InventoryCellRepository inventoryCellRepository, IngameItemRepository ingameItemRepository) {
-        this.inventoryCellRepository = inventoryCellRepository;
+    public InventoryHandler(IngameItemRepository ingameItemRepository) {
         this.ingameItemRepository = ingameItemRepository;
         CALLBACK_LIST.add("EQUIPMENT");
         CALLBACK_LIST.add("CONSUMABLE");
@@ -61,10 +57,10 @@ public class InventoryHandler implements Handler {
         var reply = createMessageTemplate(user);
         reply.setReplyMarkup(createBaseReplyKeyboard());
         long countItemsToSell;
-        InventoryCell cell;
+
         IngameItem item;
 
-        if(messageList.size()<2&& messageList.get(1).length()<1){
+        if(messageList.size()<2 || messageList.get(1).length()<1){
             reply.setText("Не указан id предмета");
             return List.of();
         }
@@ -77,30 +73,23 @@ public class InventoryHandler implements Handler {
         }
 
         try {
-            cell = inventoryCellRepository.findAllByInventoryCellId(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
         } catch (NumberFormatException exception) {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
         }
-        try {
-            item = cell.getItem();
-        }catch (NullPointerException exception){
-            reply.setText("У вас нет таких предметов.");
-            return List.of(reply);
-        }
 
+        long cost = IngameUtil.countPrice(item,countItemsToSell);
 
-        long cost = item.getBaseItem().getMaxInStack() == null ? item.getBaseItem().getBuyPrice() / 3 : item.getBaseItem().getBuyPrice() / 3 * countItemsToSell;
-
-        if (cell.getItem().getItemsInStack() != null && cell.getItem().getItemsInStack() < countItemsToSell) {
+        if (item.getItemsInStack() != null && item.getItemsInStack() > countItemsToSell) {
             item.setItemsInStack(item.getItemsInStack() - countItemsToSell);
-            inventoryCellRepository.save(cell);
             ingameItemRepository.save(item);
-        } else if (cell.getItem().getItemsInStack() != null && cell.getItem().getItemsInStack() == countItemsToSell) {
-            inventoryCellRepository.delete(cell);
+        } else if (item.getItemsInStack() != null && item.getItemsInStack() < countItemsToSell) {
+            reply.setText("У вас не достаточно таких предметов в одной ячейке.");
+            return List.of(reply);
+        } else if (item.getItemsInStack() != null && item.getItemsInStack() == countItemsToSell) {
             ingameItemRepository.delete(item);
-        } else if (cell.getItem().getItemsInStack() == null) {
-            inventoryCellRepository.delete(cell);
+        } else if (item.getItemsInStack() == null) {
             ingameItemRepository.delete(item);
         }
 
@@ -111,31 +100,26 @@ public class InventoryHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> showEquipmentInventory(User user) {
-        var inventoryCells = inventoryCellRepository.findAllByUser(user);
+        var items = ingameItemRepository.findAllByUser(user);
         StringBuilder replyMessage = new StringBuilder();
         var reply = createMessageTemplate(user);
 
-        var equipmentItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType().name().contains("EQUIPMENT")).toList();
+        var equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT")).toList();
         if (equipmentItems.size() > 0) {
             replyMessage.append("Предметы которые ты можешь экипировать ⚔️:\n\n");
-            for (InventoryCell inventoryCell : equipmentItems) {
-                double damage = inventoryCell.getItem().getBaseItem().getDamage() == null ?
-                        0 :
-                        ((double) inventoryCell.getItem().getSharpness() / 10 + 1) * inventoryCell.getItem().getBaseItem().getDamage();
-
-                double armor = inventoryCell.getItem().getBaseItem().getArmor() == null ?
-                        0 :
-                        ((double) inventoryCell.getItem().getSharpness() / 10 + 1) * inventoryCell.getItem().getBaseItem().getArmor();
+            for (IngameItem ingameItem : equipmentItems) {
+                double damage = countItemDamage(ingameItem);
+                double armor = countItemArmor(ingameItem);
 
                 replyMessage.append(String.format(
                         "+%d\uD83D\uDDE1 +%d\uD83C\uDFBD *%s* (+%d)%n",
                         Math.round(damage),
                         Math.round(armor),
-                        inventoryCell.getItem().getBaseItem().getName(),
-                        inventoryCell.getItem().getSharpness()
+                        ingameItem.getBaseItem().getName(),
+                        ingameItem.getSharpness()
                 ));
-                if (inventoryCell.getItem().getBaseItem().getBuyPrice() != null) {
-                    replyMessage.append(sellTemplate(inventoryCell));
+                if (ingameItem.getBaseItem().getBuyPrice() != null) {
+                    replyMessage.append(sellTemplate(ingameItem));
                 }
             }
         } else replyMessage.append("У тебя нет предметов которые ты можешь экипировать.");
@@ -155,23 +139,23 @@ public class InventoryHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> showConsumableInventory(User user) {
-        var inventoryCells = inventoryCellRepository.findAllByUser(user);
+        var ingameItems = ingameItemRepository.findAllByUser(user);
         StringBuilder replyMessage = new StringBuilder();
         var reply = createMessageTemplate(user);
 
 
-        var consumableItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType().name().contains("CONSUMABLE")).toList();
+        var consumableItems = ingameItems.stream().filter(c -> c.getBaseItem().getType().name().contains("CONSUMABLE")).toList();
         if (consumableItems.size() > 0) {
             replyMessage.append(String.format("%nИспользуемые предметы \uD83C\uDF77:%n%n"));
 
-            for (InventoryCell inventoryCell : consumableItems) {
+            for (IngameItem ingameItem : consumableItems) {
                 replyMessage.append(String.format(
                         "*%s* x%d%n",
-                        inventoryCell.getItem().getBaseItem().getName(),
-                        inventoryCell.getItem().getItemsInStack()
+                        ingameItem.getBaseItem().getName(),
+                        ingameItem.getItemsInStack()
                 ));
-                if (inventoryCell.getItem().getBaseItem().getBuyPrice() != null) {
-                    replyMessage.append(sellTemplate(inventoryCell));
+                if (ingameItem.getBaseItem().getBuyPrice() != null) {
+                    replyMessage.append(sellTemplate(ingameItem));
                 }
             }
         } else replyMessage.append("У вас нет используемых предметов.");
@@ -192,23 +176,23 @@ public class InventoryHandler implements Handler {
     private List<PartialBotApiMethod<? extends Serializable>> showMaterialInventory(User user) {
 
 
-        var inventoryCells = inventoryCellRepository.findAllByUser(user);
+        var ingameItems = ingameItemRepository.findAllByUser(user);
         StringBuilder replyMessage = new StringBuilder();
         var reply = createMessageTemplate(user);
 
 
-        var materialItems = inventoryCells.stream().filter(c -> c.getItem().getBaseItem().getType().name().contains("MATERIAL")).toList();
+        var materialItems = ingameItems.stream().filter(c -> c.getBaseItem().getType().name().contains("MATERIAL")).toList();
         if (materialItems.size() > 0) {
             replyMessage.append(String.format("%nМатериалы \uD83E\uDEA8:%n%n"));
 
-            for (InventoryCell inventoryCell : materialItems) {
+            for (IngameItem ingameItem : materialItems) {
                 replyMessage.append(String.format(
                         "*%s* x%d%n",
-                        inventoryCell.getItem().getBaseItem().getName(),
-                        inventoryCell.getItem().getItemsInStack()
+                        ingameItem.getBaseItem().getName(),
+                        ingameItem.getItemsInStack()
                 ));
-                if (inventoryCell.getItem().getBaseItem().getBuyPrice() != null) {
-                    replyMessage.append(sellTemplate(inventoryCell));
+                if (ingameItem.getBaseItem().getBuyPrice() != null) {
+                    replyMessage.append(sellTemplate(ingameItem));
                 }
             }
         } else replyMessage.append("У вас нет материалов.");
@@ -228,8 +212,8 @@ public class InventoryHandler implements Handler {
 
     }
 
-    private String sellTemplate(InventoryCell inventoryCell) {
-        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n", countPrice(inventoryCell.getItem()),inventoryCell.getInventoryCellId());
+    private String sellTemplate(IngameItem ingameItem) {
+        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n", countPrice(ingameItem,1),ingameItem.getId());
     }
 
 
