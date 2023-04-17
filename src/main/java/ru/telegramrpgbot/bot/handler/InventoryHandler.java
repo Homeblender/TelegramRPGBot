@@ -52,9 +52,14 @@ public class InventoryHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sellItem(User user, String message) {
+        var reply = createMessageTemplate(user);
+
+        if (user.getUserState() != BotState.NONE){
+            reply.setText("Вы сейчас заняты!");
+            return List.of(reply);
+        }
         List<String> messageList = Arrays.stream(message.split("_")).toList();
 
-        var reply = createMessageTemplate(user);
         reply.setReplyMarkup(createBaseReplyKeyboard());
         long countItemsToSell;
 
