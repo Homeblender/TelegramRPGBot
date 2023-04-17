@@ -69,8 +69,10 @@ public class SoloActivityHandler implements Handler {
         var delay = TimeUnit.MILLISECONDS.convert(activity.getActivityDuration(), TimeUnit.MINUTES);
         user.setActivityEnds(new Timestamp(System.currentTimeMillis() + delay));
         userStaminaChanges(user, -activity.getRequiredStamina());
-        delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
-        user.setStaminaRestor(new Timestamp(System.currentTimeMillis()+delay));
+        if (user.getStaminaRestor() == null) {
+            delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
+            user.setStaminaRestor(new Timestamp(System.currentTimeMillis()+delay));
+        }
         userRepository.save(user);
 
         var reply = createMessageTemplate(user);

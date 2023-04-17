@@ -1,25 +1,26 @@
 package ru.telegramrpgbot.bot.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.telegramrpgbot.bot.Bot;
 import ru.telegramrpgbot.model.BaseItem;
 import ru.telegramrpgbot.model.IngameItem;
-import ru.telegramrpgbot.model.InventoryCell;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.IngameItemRepository;
-import ru.telegramrpgbot.repository.InventoryCellRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 @Component
+@Slf4j
 public class IngameUtil {
-    //TODO узнать как лучше сделать
     private static UserRepository userRepository;
     private static IngameItemRepository ingameItemRepository;
-    private static InventoryCellRepository inventoryCellRepository;
+    private static Bot bot;
 
-    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, InventoryCellRepository inventoryCellRepository) {
+    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot) {
         IngameUtil.userRepository = userRepository;
         IngameUtil.ingameItemRepository = ingameItemRepository;
-        IngameUtil.inventoryCellRepository = inventoryCellRepository;
+        IngameUtil.bot = bot;
     }
 
     public static Long userHealthChanges(User user, Long healthChanged) {
@@ -57,27 +58,51 @@ public class IngameUtil {
     public static void userExpChanged(User user, Long expChanged) {
         user.setExp(user.getExp() + expChanged);
         userRepository.save(user);
+        levelUp(user);
+    }
+
+    public static void levelUp(User user) {
+        if (user.getExp() > countExpToLevel(user.getLevel()+1)){
+            user.setExp(user.getExp()- countExpToLevel(user.getLevel()+1));
+
+            var levelUpMessage = TelegramUtil.createMessageTemplate(user);
+            levelUpMessage.setText("Ты достиг нового уровня и получил одно очко пассивных умений /passives");
+            try {
+                bot.execute(levelUpMessage);
+            } catch (TelegramApiException e) {
+                log.info(e.getMessage());
+            }
+            user.setLevel(user.getLevel()+1);
+            user.setPassivePoints(user.getPassivePoints()+1);
+            userRepository.save(user);
+            levelUp(user);
+        }
+
     }
 
     public static void userGetItem(User user, BaseItem baseItem) {
-        var inventoryCells = inventoryCellRepository.findAllByUser(user);
-        inventoryCells = inventoryCells.stream()
-                .filter(cell ->
-                        cell.getItem().getBaseItem().getMaxInStack() != null &&
-                        cell.getItem().getBaseItem() == baseItem &&
-                        cell.getItem().getItemsInStack() < cell.getItem().getBaseItem().getMaxInStack())
+        var ingameItems = ingameItemRepository.findAllByUser(user);
+        ingameItems = ingameItems.stream()
+                .filter(item ->
+                        item.getBaseItem() == baseItem &&
+                        item.getBaseItem().getMaxInStack() != null &&
+                        item.getItemsInStack() < item.getBaseItem().getMaxInStack())
                 .toList();
 
-        InventoryCell inventoryCell = inventoryCells.stream().findFirst().orElse(null);
-        if (inventoryCell == null) {
-            IngameItem newItem = IngameItem.builder().baseItem(baseItem).build();
+        IngameItem oldIngameItem = ingameItems.stream().findFirst().orElse(null);
+
+        boolean isEquipment = baseItem.getType().name().contains("EQUIPMENT");
+
+        if (oldIngameItem == null) {
+            IngameItem newItem = IngameItem.builder()
+                    .baseItem(baseItem)
+                    .user(user)
+                    .itemsInStack(isEquipment?null:1L)
+                    .sharpness(isEquipment? 0L: null).build();
             ingameItemRepository.save(newItem);
-            InventoryCell newInventoryCell = InventoryCell.builder().item(newItem).user(user).build();
-            inventoryCellRepository.save(newInventoryCell);
         } else {
-            inventoryCell.getItem().setItemsInStack(inventoryCell.getItem().getItemsInStack() + 1);
-            ingameItemRepository.save(inventoryCell.getItem());
-            inventoryCellRepository.save(inventoryCell);
+            oldIngameItem.setItemsInStack(oldIngameItem.getItemsInStack() + 1);
+            ingameItemRepository.save(oldIngameItem);
         }
 
     }
@@ -87,7 +112,25 @@ public class IngameUtil {
         userRepository.save(user);
     }
 
-    public static long countPrice(IngameItem ingameItem){
-        return ingameItem.getBaseItem().getBuyPrice()/3;
+    public static long countExpToLevel(long level) {
+        long base_exp = 20;
+        double constant = 1.4;
+
+        return (long) (base_exp*(Math.pow(level,constant)) - base_exp*level);
+
+    }
+    public static long countItemDamage(IngameItem ingameItem) {
+        return ingameItem.getBaseItem().getDamage() == null ?
+                0 :
+                (long) (((double) ingameItem.getSharpness() / 10 + 1) * ingameItem.getBaseItem().getDamage());
+    }
+    public static long countItemArmor(IngameItem ingameItem) {
+        return ingameItem.getBaseItem().getArmor() == null ?
+                0 :
+                (long) (((double) ingameItem.getSharpness() / 10 + 1) * ingameItem.getBaseItem().getArmor());
+    }
+
+    public static long countPrice(IngameItem item, long countItemsToSell){
+        return item.getBaseItem().getMaxInStack() == null ? item.getBaseItem().getBuyPrice() / 3 : item.getBaseItem().getBuyPrice() / 3 * countItemsToSell;
     }
 }

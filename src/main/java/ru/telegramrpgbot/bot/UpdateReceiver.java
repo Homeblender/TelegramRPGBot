@@ -1,12 +1,12 @@
 package ru.telegramrpgbot.bot;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.security.Escape;
 import org.springframework.stereotype.Component;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.handler.Handler;
 import ru.telegramrpgbot.model.User;
+import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -22,10 +22,12 @@ import java.util.Collections;
 public class UpdateReceiver {
     private final List<Handler> handlers;
     private final UserRepository userRepository;
+    private final ClassRepository classRepository;
 
-    public UpdateReceiver(List<Handler> handlers, UserRepository userRepository) {
+    public UpdateReceiver(List<Handler> handlers, UserRepository userRepository, ClassRepository classRepository) {
         this.handlers = handlers;
         this.userRepository = userRepository;
+        this.classRepository = classRepository;
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> handle(Update update) {
@@ -34,10 +36,12 @@ public class UpdateReceiver {
             String messageText = update.getMessage().getText().toUpperCase();
 
             Long chatId = message.getFrom().getId();
-            User user = userRepository.getUserByChatId(chatId)
-                    .orElseGet(() -> userRepository.save(User.builder().
-                            chatId(chatId).
-                            name(update.getMessage().getChat().getFirstName()).build()));
+            User user = userRepository.getUserByChatId(chatId).orElseGet(() ->
+                    userRepository.save(User.builder()
+                            .chatId(chatId)
+                            .name(update.getMessage().getChat().getFirstName())
+                                    .userClass(classRepository.findById(1L).orElseThrow())
+                            .build()));
 
 
             Handler handler = getHandlerByState(user.getUserState());

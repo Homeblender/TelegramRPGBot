@@ -8,6 +8,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 
 @Component
 @Slf4j
@@ -43,6 +44,10 @@ public class Bot extends TelegramLongPollingBot {
                     executeWithExceptionCheck((SendMessage) response);
                 }
             });
+        }
+
+        for (int i = 1; i<15; i++){
+            log.info(i + " - " + IngameUtil.countExpToLevel(i));
         }
     }
     private void executeWithExceptionCheck(SendMessage sendMessage) {
