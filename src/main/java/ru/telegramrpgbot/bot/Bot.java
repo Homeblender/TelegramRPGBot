@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.telegramrpgbot.bot.util.IngameUtil;
 
 @Component
 @Slf4j
@@ -29,7 +29,8 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private final UpdateReceiver updateReceiver;
-    public Bot(UpdateReceiver updateReceiver){
+
+    public Bot(UpdateReceiver updateReceiver) {
         this.updateReceiver = updateReceiver;
     }
 
@@ -45,11 +46,14 @@ public class Bot extends TelegramLongPollingBot {
                 }
             });
         }
-
-        for (int i = 1; i<15; i++){
-            log.info(i + " - " + IngameUtil.countExpToLevel(i));
+        if (update.hasCallbackQuery()) {
+            AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+            answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
+            answerCallbackQuery.setText("");
+            execute(answerCallbackQuery);
         }
     }
+
     private void executeWithExceptionCheck(SendMessage sendMessage) {
         try {
             execute(sendMessage);

@@ -38,9 +38,9 @@ public class TelegramUtil {
     public static ReplyKeyboard createBaseReplyKeyboard(){
 
         var buttons = new KeyboardButton[] {
-                new KeyboardButton("\uD83D\uDC64 Hero"),
-                new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Adventures"),
-                new KeyboardButton("\uD83C\uDF06 City")};
+                new KeyboardButton("\uD83D\uDC64 Персонаж"),
+                new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Исследования"),
+                new KeyboardButton("\uD83C\uDF06 Город")};
 
         return createKeyboard(buttons);
     }

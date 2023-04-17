@@ -71,7 +71,6 @@ public class InventoryHandler implements Handler {
         }
         try {
             countItemsToSell = messageList.size() == 3 ? Long.parseLong(messageList.get(2)) : 1;
-            log.info(countItemsToSell +"");
         } catch (NumberFormatException exception) {
             reply.setText("Колличество предметов должно быть числом.");
             return List.of(reply);
@@ -83,7 +82,10 @@ public class InventoryHandler implements Handler {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
         }
-
+        if (item.isEquipped()){
+            reply.setText("Нельзя продать экипированный предмет!");
+            return List.of(reply);
+        }
         long cost = IngameUtil.countPrice(item,countItemsToSell);
 
         if (item.getItemsInStack() != null && item.getItemsInStack() > countItemsToSell) {
@@ -109,20 +111,21 @@ public class InventoryHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder();
         var reply = createMessageTemplate(user);
 
-        var equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT")).toList();
+        var equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT") && !c.isEquipped()).toList();
         if (equipmentItems.size() > 0) {
-            replyMessage.append("Предметы которые ты можешь экипировать ⚔️:\n\n");
+            replyMessage.append("Экипировка ⚔️:\n\n");
             for (IngameItem ingameItem : equipmentItems) {
                 double damage = countItemDamage(ingameItem);
                 double armor = countItemArmor(ingameItem);
 
                 replyMessage.append(String.format(
-                        "+%d\uD83D\uDDE1 +%d\uD83C\uDFBD *%s* (+%d)%n",
+                        "+%d\uD83D\uDDE1 +%d\uD83D\uDEE1 *%s* (+%d)%n",
                         Math.round(damage),
                         Math.round(armor),
                         ingameItem.getBaseItem().getName(),
                         ingameItem.getSharpness()
                 ));
+                replyMessage.append(equipTemplate(ingameItem));
                 if (ingameItem.getBaseItem().getBuyPrice() != null) {
                     replyMessage.append(sellTemplate(ingameItem));
                 }
@@ -142,6 +145,8 @@ public class InventoryHandler implements Handler {
 
 
     }
+
+
 
     private List<PartialBotApiMethod<? extends Serializable>> showConsumableInventory(User user) {
         var ingameItems = ingameItemRepository.findAllByUser(user);
@@ -218,7 +223,10 @@ public class InventoryHandler implements Handler {
     }
 
     private String sellTemplate(IngameItem ingameItem) {
-        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n", countPrice(ingameItem,1),ingameItem.getId());
+        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n%n", countPrice(ingameItem,1),ingameItem.getId());
+    }
+    private String equipTemplate(IngameItem ingameItem) {
+        return String.format("Экипировать - /equip\\_%d%n", ingameItem.getId());
     }
 
 
