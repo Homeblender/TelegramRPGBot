@@ -4,29 +4,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import ru.telegramrpgbot.bot.enums.BodyPart;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "fight", schema = "public")
+@Table(name = "move", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Fight {
+public class Move {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne
-    @JoinColumn(name = "user1_id")
-    User user1Id;
-    @ManyToOne
-    @JoinColumn(name = "user2_id")
+    @JoinColumn(name = "user_id")
+    User userId;
+    @JoinColumn(name = "defence")
     @Builder.Default
-    User user2Id = null;
+    BodyPart defence = null;
+    @JoinColumn(name = "attack")
+    @Builder.Default
+    BodyPart attack = null;
     @Column(name = "fight_state")
-    String fightState;
-
-
-
+    @Builder.Default
+    Long num = 0L;
 }
