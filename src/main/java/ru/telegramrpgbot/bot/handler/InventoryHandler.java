@@ -146,9 +146,7 @@ public class InventoryHandler implements Handler {
 
     }
 
-    private String equipTemplate(IngameItem ingameItem) {
-        return String.format("Экипировать - /equip\\_%d%n%n", ingameItem.getId());
-    }
+
 
     private List<PartialBotApiMethod<? extends Serializable>> showConsumableInventory(User user) {
         var ingameItems = ingameItemRepository.findAllByUser(user);
@@ -225,7 +223,10 @@ public class InventoryHandler implements Handler {
     }
 
     private String sellTemplate(IngameItem ingameItem) {
-        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n", countPrice(ingameItem,1),ingameItem.getId());
+        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n%n", countPrice(ingameItem,1),ingameItem.getId());
+    }
+    private String equipTemplate(IngameItem ingameItem) {
+        return String.format("Экипировать - /equip\\_%d%n", ingameItem.getId());
     }
 
 
