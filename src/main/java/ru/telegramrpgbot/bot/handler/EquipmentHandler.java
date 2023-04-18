@@ -3,7 +3,6 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.glassfish.grizzly.utils.Pair;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,9 +15,12 @@ import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.IngameItemRepository;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import static ru.telegramrpgbot.bot.util.IngameUtil.*;
+import static ru.telegramrpgbot.bot.util.IngameUtil.countItemArmor;
+import static ru.telegramrpgbot.bot.util.IngameUtil.countItemDamage;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createBaseReplyKeyboard;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
@@ -32,8 +34,8 @@ public class EquipmentHandler implements Handler {
     public EquipmentHandler(IngameItemRepository ingameItemRepository) {
         this.ingameItemRepository = ingameItemRepository;
         this.dictionary.add(new Pair<>(ItemType.EQUIPMENT_HELMET, String.format("%nШлем:%n")));
-        this.dictionary.add(new Pair<>(ItemType.EQUIPMENT_BODY_ARMOR, String.format("%nНагрудный доспех:%n")));
-        this.dictionary.add(new Pair<>(ItemType.EQUIPMENT_LEG_ARMOR, String.format("%nДоспех для ног:%n")));
+        this.dictionary.add(new Pair<>(ItemType.EQUIPMENT_BODY_ARMOR, String.format("%nНагрудник:%n")));
+        this.dictionary.add(new Pair<>(ItemType.EQUIPMENT_LEG_ARMOR, String.format("%nПоножи:%n")));
         this.dictionary.add(new Pair<>(ItemType.EQUIPMENT_BOOTS, String.format("%nБотинки:%n")));
 
     }
@@ -120,20 +122,13 @@ public class EquipmentHandler implements Handler {
         weapon_equipment.addAll(shield_equipped);
 
         if ((item.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON
-                || item.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD) && weapon_equipment.size() == 2) {
-            reply.setText("Предмет этого типа уже экипирован.");
-            return List.of(reply);
-        }else if ((item.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON
-                ||item.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD) && !two_handed_equipped.isEmpty()) {
+                || item.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD) && (weapon_equipment.size() == 2||!two_handed_equipped.isEmpty())) {
             reply.setText("Предмет этого типа уже экипирован.");
             return List.of(reply);
         }else if (item.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON && !weapon_equipment.isEmpty()) {
             reply.setText("Предмет этого типа уже экипирован.");
             return List.of(reply);
         } else if (item.getBaseItem().getType() != ItemType.EQUIPMENT_ONE_HANDED_WEAPON && !sameEquipmentItems.isEmpty()) {
-            reply.setText("Предмет этого типа уже экипирован.");
-            return List.of(reply);
-        } else if (!sameEquipmentItems.isEmpty()) {
             reply.setText("Предмет этого типа уже экипирован.");
             return List.of(reply);
         }

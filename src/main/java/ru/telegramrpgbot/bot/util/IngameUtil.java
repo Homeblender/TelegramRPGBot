@@ -130,13 +130,13 @@ public class IngameUtil {
         if(ingameItem.getBaseItem().getDamage() == null){
             return 0;
         }
-        float addDamage = ingameItem.getBaseItem().getDamage() > 10? (float)ingameItem.getBaseItem().getDamage() /10:1;
+        float addDamage = ingameItem.getBaseItem().getDamage() > 5? (float)ingameItem.getBaseItem().getDamage() /10: (float) 0.5;
 
         return (long) (addDamage * ingameItem.getSharpness() + ingameItem.getBaseItem().getDamage());
     }
     public  static long countDamage(User user) {
         IngameItem item = ingameItemRepository.findAllByUser(user).stream()
-                .filter(h -> h.isEquipped())
+                .filter(IngameItem::isEquipped)
                 .filter(h -> h.getBaseItem().getDamage() != null)
                 .findFirst()
                 .orElse(null);
@@ -146,7 +146,7 @@ public class IngameUtil {
         if(ingameItem.getBaseItem().getArmor() == null){
             return 0;
         }
-        float addArmor = ingameItem.getBaseItem().getArmor() > 10? (float)ingameItem.getBaseItem().getArmor() /10:1;
+        float addArmor = ingameItem.getBaseItem().getArmor() > 5? (float)ingameItem.getBaseItem().getArmor() /10: (float) 0.5;
 
         return (long) (addArmor * ingameItem.getSharpness() + ingameItem.getBaseItem().getArmor());
     }
@@ -168,7 +168,7 @@ public class IngameUtil {
 
 
     public static List<Class> getAllAvailableClasses(IngameItem item){
-        List<Class> result = new ArrayList<Class>();
+        List<Class> result = new ArrayList<>();
         recGetAllAvailableClasses(item.getBaseItem().getClassRequired(), result);
         return result;
     }

@@ -1,18 +1,20 @@
 package ru.telegramrpgbot.bot.enums;
 
 public enum Command {
-    HERO ("Персонаж"),
-    ADVENTURES ("Исследования"),
-    CHANGE_NAME(null),
-    CITY("Город"),
-    FORGE("Кузница"),
-    SHOP("Магазин"),
-    BACK("Назад"),
+    HERO ("\uD83D\uDC64"),
+    ADVENTURES ("\uD83C\uDFC3\uD83C\uDFFC\u200D♂️"),
+    CITY("\uD83C\uDF06"),
+    FORGE("⚒"),
+    SHOP("\uD83D\uDED2"),
+    BACK("⬅️"),
+    WEAPON_AND_SHIELDS("\uD83D\uDDE1"),
+    ARMOR("\uD83C\uDFBD"),
     SELL(null),
     INVENTORY(null),
     EQUIP(null),
     UNEQUIP(null),
     SHARP(null),
+    BUY(null),
     FIGHT(null),
     ACCEPT(null),
     EQUIPMENT(null);

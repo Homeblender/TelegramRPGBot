@@ -2,7 +2,6 @@ package ru.telegramrpgbot.bot.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -19,7 +18,8 @@ import java.util.*;
 
 import static ru.telegramrpgbot.bot.util.IngameUtil.countItemArmor;
 import static ru.telegramrpgbot.bot.util.IngameUtil.countItemDamage;
-import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
 @Slf4j
@@ -64,9 +64,9 @@ public class SharpeningHandler implements Handler {
         }
         if (isSuccessSharped(item)) {
             item.setSharpness(item.getSharpness() + 1);
-            reply.setText("Заточка *успешна*.\uD83D\uDCC8");
+            reply.setText("Заточка *успешна*. ✅");
         } else {
-            reply.setText("Заточка *провалилась*.\uD83D\uDCC9");
+            reply.setText("Заточка *провалилась*.❌");
             item.setSharpness(item.getSharpness() - 1);
         }
         ingameItemRepository.save(item);
@@ -142,8 +142,8 @@ public class SharpeningHandler implements Handler {
         if (!item.isEquipped()) {
             return ("Можно заточить только экипированный предмет.");
         }
-        if (item.getSharpness() > 15) {
-            return ("Предмет максимально заточен!.");
+        if (item.getSharpness() == 15) {
+            return ("Предмет заточен максимально.");
         } else return null;
 
     }
@@ -157,12 +157,8 @@ public class SharpeningHandler implements Handler {
     }
 
     private boolean isSuccessSharped(IngameItem item) {
-        var chance = sharpeningSuccess(item.getSharpness());
-
-        if (random.nextInt(1, 101) <= chance) {
-            return true;
-        }
-        return false;
+        var chance = sharpeningSuccess(item.getSharpness()+1);
+        return random.nextInt(1, 101) <= chance;
     }
 
     @Override
