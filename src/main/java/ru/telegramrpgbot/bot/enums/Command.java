@@ -13,7 +13,8 @@ public enum Command {
     EQUIP(null),
     UNEQUIP(null),
     EQUIPMENT(null),
-    FIGHT(null);
+    FIGHT(null),
+    ACCEPT(null);
     private final String russian;
     public String getRussian() {
 

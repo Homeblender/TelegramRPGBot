@@ -36,15 +36,17 @@ public class FightHandler implements Handler {
     }
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User actor, String message) {
-        /*if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
+        if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
             if (message.equalsIgnoreCase("/cancel")) {
                 return cancel(actor);
             }
             else {
                 return waiting(actor);
             }
-        }*/
+        }
+        log.info(message);
         if(actor.getUserState() == BotState.WAITING_FOR_MOVE) {
+            log.info(actor.getName());
             return move(actor, message);
         }
         if (message.equalsIgnoreCase("/accept")) {
@@ -79,7 +81,7 @@ public class FightHandler implements Handler {
 
 
         messageToUser.setText("Ожидаем оппонента");
-        messageToOpponent.setText(String.format("Вам бросил вызов %s\nПринять вызов можно коммандой '/accept'", opponent.getName()));
+        messageToOpponent.setText(String.format("Вам бросил вызов %s\nПринять вызов можно коммандой '/ACCEPT'", actor.getName()));
 
         return List.of(messageToUser, messageToOpponent);
     }
@@ -87,9 +89,21 @@ public class FightHandler implements Handler {
         user.setUserState(BotState.NONE);
         userRepository.save(user);
 
+
         Fight fight = moveRepository.getMoveByUserId(user).get().getFightId();
-        moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null));
-        moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null));
+        User actor = fight.getUser1Id();
+        User opponent = fight.getUser2Id();
+
+        Move actorMove = moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null);
+        Move opponentMove = moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null);
+
+        actor.setUserState(BotState.NONE);
+        opponent.setUserState(BotState.NONE);
+        userRepository.save(actor);
+        userRepository.save(opponent);
+
+        moveRepository.delete(actorMove);
+        moveRepository.delete(opponentMove);
         fightRepository.delete(fight);
 
         var reply = createMessageTemplate(user);
@@ -102,10 +116,11 @@ public class FightHandler implements Handler {
         return List.of(reply);
     }
     private List<PartialBotApiMethod<? extends Serializable>> accept(User opponent) {
-
+        log.info("accept");
         Fight fight = fightRepository.getFightByUser2Id(opponent).orElse(null);
         User actor = fight.getUser1Id();
-        moveRepository.save(Move.builder().userId(actor).fightId(fight).build());
+        Move move = moveRepository.save(Move.builder().userId(actor).fightId(fight).build());
+        log.info(move.getFightId().toString());
         moveRepository.save(Move.builder().userId(opponent).fightId(fight).build());
         actor.setUserState(BotState.WAITING_FOR_MOVE);
         opponent.setUserState(BotState.WAITING_FOR_MOVE);
@@ -119,15 +134,17 @@ public class FightHandler implements Handler {
         String message1 = "Вызов принят!";
         String message2 = "Выберите, что будете защищать\n(Голова, грудь, ноги)";
         messageToActor1.setText(message1);
-        messageToActor2.setText(message1);
-        messageToActor1.setText(message2);
         messageToActor2.setText(message2);
+        messageToOpponent1.setText(message1);
+        messageToOpponent2.setText(message2);
         return List.of(messageToActor1, messageToActor2, messageToOpponent1, messageToOpponent2);
     }
     private List<PartialBotApiMethod<? extends Serializable>> move(User user, String message) {
         var reply = createMessageTemplate(user);
 
         Move move = moveRepository.getMoveByUserId(user).orElse(null);
+        log.info("юзер мува " + move.getUserId().getName());
+        log.info("юзер в хендлере "+user.getName());
         log.info("move");
         BodyPart part= Arrays.stream(BodyPart.values())
                 .filter(h -> h.getTitle().equalsIgnoreCase(message))
@@ -146,9 +163,11 @@ public class FightHandler implements Handler {
             move.setMoveState(MoveState.DEFENSE_CHOSEN);
             moveRepository.save(move);
             reply.setText("Теперь выберите часть тела для атаки");
+            return List.of(reply);
 
         }
         if (move.getMoveState() == MoveState.DEFENSE_CHOSEN) {
+            log.info("def_chos");
             move.setAttack(part);
             move.setMoveState(MoveState.MOVE_MADE);
             moveRepository.save(move);
@@ -248,7 +267,7 @@ public class FightHandler implements Handler {
 
     @Override
     public List<Command> operatedCommand() {
-        return List.of(Command.FIGHT);
+        return List.of(Command.FIGHT, Command.ACCEPT);
     }
 
     @Override
