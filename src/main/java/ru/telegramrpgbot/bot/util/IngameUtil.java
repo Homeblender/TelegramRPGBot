@@ -10,6 +10,8 @@ import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.IngameItemRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
+import java.util.List;
+
 @Component
 @Slf4j
 public class IngameUtil {
@@ -124,10 +126,29 @@ public class IngameUtil {
                 0 :
                 (long) (((double) ingameItem.getSharpness() / 10 + 1) * ingameItem.getBaseItem().getDamage());
     }
+    public  static long countDamage(User user) {
+        IngameItem item = ingameItemRepository.findAllByUser(user).stream()
+                .filter(h -> h.isEquipped())
+                .filter(h -> h.getBaseItem().getDamage() != null)
+                .findFirst()
+                .orElse(null);
+        return countItemDamage(item);
+    }
     public static long countItemArmor(IngameItem ingameItem) {
         return ingameItem.getBaseItem().getArmor() == null ?
                 0 :
                 (long) (((double) ingameItem.getSharpness() / 10 + 1) * ingameItem.getBaseItem().getArmor());
+    }
+
+    public static long countArmor(User user) {
+        List<IngameItem> items = ingameItemRepository.findAllByUser(user);
+        long sum = 0L;
+        for (IngameItem item : items) {
+            if (item.isEquipped()) {
+                sum+=countItemArmor(item);
+            }
+        }
+        return sum;
     }
 
     public static long countPrice(IngameItem item, long countItemsToSell){

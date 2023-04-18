@@ -150,8 +150,11 @@ CREATE TABLE public.fight (
 CREATE TABLE public.move (
     id serial primary key,
     user_id bigint references public.usr(chat_id),
+    fight_id bigint references public.fight(id),
 	defense int,
 	attack int,
+	move_state int,
+	hp bigint,
 	num bigint
 );
 
@@ -163,34 +166,21 @@ values ('Руины',
         'Заброшеные руины недалеко от города. Чего-то редкого там не найдешь, но наберешься опыта для более сложных приключений и, если повезет, пару монет.',1, 1, 1);
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward,result_message) values (1, 2, 3, null,'Ты побродил по руинам пару часов, было очень скучно.');
-
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,0,null, 15);
-
+    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,1,null, 15);
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Деревянный щит', 'Тренировочный щит, победить кого с ним настоящая удача.', null, 2, 2, null, 15);
-
-insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,7,25, 15);
-
+    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,8,25, 15);
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Палка', 'Обычная деревянная палка для создания предметов.', null, null,8,25, 15);
-
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('ПалкаБольшая', 'Обычная деревянная палка для убийства людей.', 1, null,1,null, 25);
+    VALUES ('Палка', 'Обычная деревянная палка для убийства людей.', 1, null,2,null, 25);
 
 insert into fixed.class(name, description, required_level, base_class)
     VALUES ('Работяга', 'Пока ты обычный работяга без каких либо бонусов', 1, null);
-
-
-insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Кожаный шлем', '.', null, 2,5,null, 15);
 
 
 
