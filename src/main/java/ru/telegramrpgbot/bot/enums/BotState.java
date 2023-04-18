@@ -4,6 +4,8 @@ public enum BotState {
     START(null),
     WAITING_FOR_NAME(null),
     NONE("Отдых \uD83D\uDCA4"),
+    WAITING_FOR_MOVE(null),
+    WAITING_FOR_OPPONENT(null),
     SOLO_ACTIVITY("ACTIVITY");
     private final String title;
     public String getTitle() {

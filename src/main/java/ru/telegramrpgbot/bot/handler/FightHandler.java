@@ -36,14 +36,14 @@ public class FightHandler implements Handler {
     }
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User actor, String message) {
-        /*if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
+        if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
             if (message.equalsIgnoreCase("/cancel")) {
                 return cancel(actor);
             }
             else {
                 return waiting(actor);
             }
-        }*/
+        }
         if(actor.getUserState() == BotState.WAITING_FOR_MOVE) {
             return move(actor, message);
         }
