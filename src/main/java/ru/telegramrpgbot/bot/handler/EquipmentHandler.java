@@ -3,12 +3,14 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.glassfish.grizzly.utils.Pair;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.enums.ItemType;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.IngameItem;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.IngameItemRepository;
@@ -16,8 +18,7 @@ import ru.telegramrpgbot.repository.IngameItemRepository;
 import java.io.Serializable;
 import java.util.*;
 
-import static ru.telegramrpgbot.bot.util.IngameUtil.countItemArmor;
-import static ru.telegramrpgbot.bot.util.IngameUtil.countItemDamage;
+import static ru.telegramrpgbot.bot.util.IngameUtil.*;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createBaseReplyKeyboard;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
@@ -84,6 +85,7 @@ public class EquipmentHandler implements Handler {
             reply.setText("Вы сейчас заняты.");
             return List.of(reply);
         }
+
         List<String> messageList = Arrays.stream(message.split("_")).toList();
         if (messageList.size() < 2 || messageList.get(1).length() < 1) {
             reply.setText("Не указан id предмета.");
@@ -103,6 +105,10 @@ public class EquipmentHandler implements Handler {
             reply.setText("Нельзя экипировать предмет этого типа.");
             return List.of(reply);
         }
+        if (!IngameUtil.getAllAvailableClasses(item).contains(user.getUserClass())) {
+            reply.setText("Ваш класс не подходит для экипировки этого предмета.");
+            return List.of(reply);
+        }
         List<IngameItem> sameEquipmentItems = ingameItemRepository.findAllByUser(user).stream().filter(c -> c.getBaseItem().getType() == item.getBaseItem().getType() && c.isEquipped()).toList();
         List<IngameItem> equipped = ingameItemRepository.findAllByUser(user).stream().filter(IngameItem::isEquipped).toList();
 
@@ -113,11 +119,6 @@ public class EquipmentHandler implements Handler {
 
         weapon_equipment.addAll(shield_equipped);
 
-        log.info(weapon_equipment.size()+"");
-        log.info(two_handed_equipped.size()+"");
-        log.info(sameEquipmentItems.size()+"");
-        log.info(equipped.size()+"");
-        log.info(item.getBaseItem().getType().name()+"");
         if ((item.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON
                 || item.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD) && weapon_equipment.size() == 2) {
             reply.setText("Предмет этого типа уже экипирован.");
@@ -138,7 +139,7 @@ public class EquipmentHandler implements Handler {
         }
         item.setEquipped(true);
         ingameItemRepository.save(item);
-        reply.setText(String.format("Вы экипировали *%s*.", item.getBaseItem().getName()));
+        reply.setText(String.format("Вы экипировали *%s*.%n%n%s", item.getBaseItem().getName(),item.getBaseItem().getDescription()));
         return List.of(reply);
     }
 
@@ -148,7 +149,8 @@ public class EquipmentHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder(String.format("Ваша экипировка \uD83D\uDC5C:%n%nРуки:%n"));
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
         List<IngameItem> equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT") && c.isEquipped()).toList();
-
+        List<IngameItem> sharpeningStones = ingameItemRepository.findAllByBaseItem_Type(ItemType.CONSUMABLE_SHARPENING_STONE);
+        log.info(sharpeningStones.size()+"");
         List<IngameItem> weapon_equipment = new java.util.ArrayList<>(equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
         List<IngameItem> shield_equipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();
         List<IngameItem> two_handed_equipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON).toList();
@@ -158,12 +160,16 @@ public class EquipmentHandler implements Handler {
 
         for (IngameItem item : weapon_equipment) {
             replyMessage.append(createItemStats(item));
+            if (!sharpeningStones.isEmpty())
+                replyMessage.append(sharpeningTemplate(item));
         }
         for (Pair item :
                 dictionary) {
             replyMessage.append(item.getSecond());
             try {
                 replyMessage.append(createItemStats(equipmentItems.stream().filter(c -> c.getBaseItem().getType() == item.getFirst()).findFirst().orElseThrow()));
+                if (!sharpeningStones.isEmpty())
+                    replyMessage.append(sharpeningTemplate(equipmentItems.stream().filter(c -> c.getBaseItem().getType() == item.getFirst()).findFirst().orElseThrow()));
             } catch (Exception ignored) {
             }
         }
@@ -172,7 +178,9 @@ public class EquipmentHandler implements Handler {
         reply.setText(replyMessage.toString());
         return List.of(reply);
     }
-
+    private String sharpeningTemplate(IngameItem ingameItem) {
+        return String.format("Заточить \uD83D\uDD28 - /sharp\\_%d%n", ingameItem.getId());
+    }
     private String createItemStats(IngameItem ingameItem) {
         double damage = countItemDamage(ingameItem);
         double armor = countItemArmor(ingameItem);

@@ -5,11 +5,14 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.telegramrpgbot.bot.Bot;
 import ru.telegramrpgbot.model.BaseItem;
+import ru.telegramrpgbot.model.Class;
 import ru.telegramrpgbot.model.IngameItem;
 import ru.telegramrpgbot.model.User;
+import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.IngameItemRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -17,11 +20,13 @@ import java.util.List;
 public class IngameUtil {
     private static UserRepository userRepository;
     private static IngameItemRepository ingameItemRepository;
+    private static ClassRepository classRepository;
     private static Bot bot;
 
-    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot) {
+    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository) {
         IngameUtil.userRepository = userRepository;
         IngameUtil.ingameItemRepository = ingameItemRepository;
+        IngameUtil.classRepository = classRepository;
         IngameUtil.bot = bot;
     }
 
@@ -122,9 +127,12 @@ public class IngameUtil {
 
     }
     public static long countItemDamage(IngameItem ingameItem) {
-        return ingameItem.getBaseItem().getDamage() == null ?
-                0 :
-                (long) (((double) ingameItem.getSharpness() / 10 + 1) * ingameItem.getBaseItem().getDamage());
+        if(ingameItem.getBaseItem().getDamage() == null){
+            return 0;
+        }
+        float addDamage = ingameItem.getBaseItem().getDamage() > 10? (float)ingameItem.getBaseItem().getDamage() /10:1;
+
+        return (long) (addDamage * ingameItem.getSharpness() + ingameItem.getBaseItem().getDamage());
     }
     public  static long countDamage(User user) {
         IngameItem item = ingameItemRepository.findAllByUser(user).stream()
@@ -135,9 +143,12 @@ public class IngameUtil {
         return countItemDamage(item);
     }
     public static long countItemArmor(IngameItem ingameItem) {
-        return ingameItem.getBaseItem().getArmor() == null ?
-                0 :
-                (long) (((double) ingameItem.getSharpness() / 10 + 1) * ingameItem.getBaseItem().getArmor());
+        if(ingameItem.getBaseItem().getArmor() == null){
+            return 0;
+        }
+        float addArmor = ingameItem.getBaseItem().getArmor() > 10? (float)ingameItem.getBaseItem().getArmor() /10:1;
+
+        return (long) (addArmor * ingameItem.getSharpness() + ingameItem.getBaseItem().getArmor());
     }
 
     public static long countArmor(User user) {
@@ -153,5 +164,20 @@ public class IngameUtil {
 
     public static long countPrice(IngameItem item, long countItemsToSell){
         return item.getBaseItem().getMaxInStack() == null ? item.getBaseItem().getBuyPrice() / 3 : item.getBaseItem().getBuyPrice() / 3 * countItemsToSell;
+    }
+
+
+    public static List<Class> getAllAvailableClasses(IngameItem item){
+        List<Class> result = new ArrayList<Class>();
+        recGetAllAvailableClasses(item.getBaseItem().getClassRequired(), result);
+        return result;
+    }
+    private static void recGetAllAvailableClasses(Class baseClass, List<Class> result){
+        var classes = classRepository.findAllByBaseClass(baseClass);
+        result.add(baseClass);
+        for (Class item :
+                classes) {
+            recGetAllAvailableClasses(item, result);
+        }
     }
 }

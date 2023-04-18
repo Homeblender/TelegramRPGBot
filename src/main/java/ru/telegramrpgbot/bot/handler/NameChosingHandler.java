@@ -55,8 +55,11 @@ public class NameChosingHandler implements Handler {
     private List<PartialBotApiMethod<? extends Serializable>> checkName(User user, String message) {
         var reply = createMessageTemplate(user);
         if (userRepository.getUsersByName(message).orElse(null) != null){
-
             reply.setText("Это имя уже занято, выбери другое.");
+            return List.of(reply);
+        }
+        if (!message.matches("[a-zA-Zа-яА-Я]+")){
+            reply.setText("Введите имя одним словом и только из букв.");
             return List.of(reply);
         }
         user.setName(message);

@@ -12,9 +12,10 @@ public enum Command {
     INVENTORY(null),
     EQUIP(null),
     UNEQUIP(null),
-    EQUIPMENT(null),
+    SHARP(null),
     FIGHT(null),
-    ACCEPT(null);
+    ACCEPT(null),
+    EQUIPMENT(null);
     private final String russian;
     public String getRussian() {
 

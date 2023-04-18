@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import ru.telegramrpgbot.bot.enums.ItemType;
 
 import javax.persistence.*;
-import javax.swing.text.StyledEditorKit;
 import java.util.Collection;
 
 @Entity
@@ -30,8 +29,8 @@ public class BaseItem {
     Long buyPrice;
     Long maxInStack;
     Boolean isForSale;
-
-    @OneToMany(mappedBy = "materialBaseItemId")
-    Collection<BaseItemCraft> baseItemsToCraft;
+    @JoinColumn(name = "class_required_id")
+    @ManyToOne
+    Class classRequired;
 
 }
