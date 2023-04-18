@@ -54,7 +54,7 @@ public class InventoryHandler implements Handler {
     private List<PartialBotApiMethod<? extends Serializable>> sellItem(User user, String message) {
         var reply = createMessageTemplate(user);
 
-        if (user.getUserState() != BotState.NONE){
+        if (user.getUserState() != BotState.NONE) {
             reply.setText("Вы сейчас заняты!");
             return List.of(reply);
         }
@@ -65,7 +65,7 @@ public class InventoryHandler implements Handler {
 
         IngameItem item;
 
-        if(messageList.size()<2 || messageList.get(1).length()<1){
+        if (messageList.size() < 2 || messageList.get(1).length() < 1) {
             reply.setText("Не указан id предмета");
             return List.of();
         }
@@ -82,11 +82,11 @@ public class InventoryHandler implements Handler {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
         }
-        if (item.isEquipped()){
+        if (item.isEquipped()) {
             reply.setText("Нельзя продать экипированный предмет!");
             return List.of(reply);
         }
-        long cost = IngameUtil.countPrice(item,countItemsToSell);
+        long cost = IngameUtil.countPrice(item, countItemsToSell);
 
         if (item.getItemsInStack() != null && item.getItemsInStack() > countItemsToSell) {
             item.setItemsInStack(item.getItemsInStack() - countItemsToSell);
@@ -125,7 +125,9 @@ public class InventoryHandler implements Handler {
                         ingameItem.getBaseItem().getName(),
                         ingameItem.getSharpness()
                 ));
-                replyMessage.append(equipTemplate(ingameItem));
+                if (IngameUtil.getAllAvailableClasses(ingameItem).contains(user.getUserClass())) {
+                    replyMessage.append(equipTemplate(ingameItem));
+                }else replyMessage.append(String.format("Минимальный требуемый класс - _%s_%n",ingameItem.getBaseItem().getClassRequired().getName()));
                 if (ingameItem.getBaseItem().getBuyPrice() != null) {
                     replyMessage.append(sellTemplate(ingameItem));
                 }
@@ -145,7 +147,6 @@ public class InventoryHandler implements Handler {
 
 
     }
-
 
 
     private List<PartialBotApiMethod<? extends Serializable>> showConsumableInventory(User user) {
@@ -223,8 +224,9 @@ public class InventoryHandler implements Handler {
     }
 
     private String sellTemplate(IngameItem ingameItem) {
-        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n%n", countPrice(ingameItem,1),ingameItem.getId());
+        return String.format("Продать x1 за %d\uD83D\uDCB0 - /sell\\_%d%n%n", countPrice(ingameItem, 1), ingameItem.getId());
     }
+
     private String equipTemplate(IngameItem ingameItem) {
         return String.format("Экипировать - /equip\\_%d%n", ingameItem.getId());
     }

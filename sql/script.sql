@@ -92,6 +92,7 @@ CREATE TABLE fixed.base_item (
 	type bigint,
 	max_in_stack bigint,
 	is_for_sale boolean,
+	class_required_id bigint references fixed.class(id) default (1),
 	buy_price bigint
 );
 CREATE TABLE fixed.base_item_craft (
@@ -148,9 +149,19 @@ values ('Руины',
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward,result_message) values (1, 2, 3, null,'Ты побродил по руинам пару часов, было очень скучно.');
 
+insert into fixed.class(name, description, required_level, base_class)
+    VALUES ('Работяга', 'Обычный работяга без каких либо бонусов.', 1, null);
+insert into fixed.class(name, description, required_level, base_class)
+    VALUES ('Воин', 'Воин, который может хорошо обращаться с холодным оружием', 1, 1);
+
+
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,0,null, 15);
+
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price, class_required_id)
+    VALUES ('Старый железный меч', 'Старый железный меч, немного острый.', 2, null,0,null, 15,2);
 
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
@@ -168,13 +179,12 @@ insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('ПалкаБольшая', 'Обычная деревянная палка для убийства людей.', 1, null,1,null, 25);
 
-insert into fixed.class(name, description, required_level, base_class)
-    VALUES ('Работяга', 'Пока ты обычный работяга без каких либо бонусов', 1, null);
-
-
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Кожаный шлем', '.', null, 2,5,null, 15);
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price)
+    VALUES ('Точильный камень', 'С его помощью можно заточить оружие или доспехи.', null, null,9,25, 50);
 
 
 
@@ -190,3 +200,9 @@ insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sh
     VALUES (5,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (6,null,1436473525,false,0);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (7,null,1436473525,false,0);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (7,null,1436473525,false,0);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (8,20,1436473525,false,null);

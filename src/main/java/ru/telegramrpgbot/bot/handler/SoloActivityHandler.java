@@ -89,9 +89,9 @@ public class SoloActivityHandler implements Handler {
         List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = new ArrayList<>();
         StringBuilder replyText = new StringBuilder("Выбери понравившееся приключение из доступных тебе:\n");
 
-        for (SoloActivity item : availableActivities) {
-            inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(item.getName(), item.getName()));
-            replyText.append(String.format("\n*%s* (%d мин.):\n\n%s", item.getName(),item.getActivityDuration(), item.getDescription()));
+        for (SoloActivity soloActivity : availableActivities) {
+            inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(soloActivity.getName(), soloActivity.getName()));
+            replyText.append(String.format("\n*%s* (%d мин.):\n\n%s", soloActivity.getName(), soloActivity.getActivityDuration(), soloActivity.getDescription()));
         }
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setText(replyText.toString());

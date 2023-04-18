@@ -51,13 +51,13 @@ public class UpdateReceiver {
                     String t = messageText.split(" ")[1];
 
                     handler = getHandlerByCommand(Arrays.stream(Command.values()).filter(command -> command.getRussian().toUpperCase().equals(t)).findFirst().get());
-                } catch (Exception exception) { log.info(exception.getMessage());}
+                } catch (Exception ignored) { }
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
-                } catch (Exception exception) {log.info(exception.getMessage());}
+                } catch (Exception ignored) {}
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1).split("_")[0]));
-                } catch (Exception exception) {log.info(exception.getMessage());}
+                } catch (Exception ignored) {}
 
             }
             return handler==null?List.of(): handler.handle(user, message.getText());
@@ -67,10 +67,15 @@ public class UpdateReceiver {
             Long chatId = callbackQuery.getFrom().getId();
             User user = userRepository.getUserByChatId(chatId)
                     .orElseGet(() -> userRepository.save(User.builder().chatId(chatId).name(update.getMessage().getChat().getFirstName()).build()));
-
-            return getHandlerByCallBackQuery(callbackQuery.getData()).handle(user, callbackQuery.getData());
+            Handler handler = getHandlerByCallBackQuery(callbackQuery.getData());
+            if (handler == null){
+                try {
+                    handler = getHandlerByCallBackQuery(callbackQuery.getData().toUpperCase().split("_")[1]);
+                }catch (Exception ignored){}
+            }
+            return handler==null?List.of(): handler.handle(user, callbackQuery.getData());
         }
-        return Collections.emptyList();
+        return List.of();
     }
 
     private Handler getHandlerByState(BotState state) {
