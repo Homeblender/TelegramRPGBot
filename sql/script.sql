@@ -19,6 +19,8 @@ drop table if exists public.usr cascade;
 drop table if exists fixed.skill_bonus cascade;
 drop table if exists fixed.skill cascade;
 drop table if exists fixed.class cascade;
+drop table if exists public.fight cascade;
+drop table if exists public.move cascade;
 
 CREATE TABLE fixed.class (
     id serial PRIMARY KEY,
@@ -138,7 +140,24 @@ CREATE TABLE public.party (
 	current_state TEXT
 );
 
+CREATE TABLE public.fight (
+    id serial primary key,
+    user1_id bigint references public.usr(chat_id),
+	user2_id bigint references public.usr(chat_id),
+	fight_state TEXT
+);
 
+
+CREATE TABLE public.move (
+    id serial primary key,
+    user_id bigint references public.usr(chat_id),
+    fight_id bigint references public.fight(id),
+	defense int,
+	attack int,
+	move_state int,
+	hp bigint,
+	num bigint
+);
 
 
 
@@ -157,27 +176,20 @@ insert into fixed.class(name, description, required_level, base_class)
 
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,0,null, 15);
-
+    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,1,null, 15);
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price, class_required_id)
     VALUES ('Старый железный меч', 'Старый железный меч, немного острый.', 2, null,0,null, 15,2);
 
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Деревянный щит', 'Тренировочный щит, победить кого с ним настоящая удача.', null, 2, 2, null, 15);
-
-insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,7,25, 15);
-
+    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,8,25, 15);
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
     VALUES ('Палка', 'Обычная деревянная палка для создания предметов.', null, null,8,25, 15);
-
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('ПалкаБольшая', 'Обычная деревянная палка для убийства людей.', 1, null,1,null, 25);
+    VALUES ('Палка', 'Обычная деревянная палка для убийства людей.', 1, null,2,null, 25);
 
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price)

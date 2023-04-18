@@ -134,6 +134,14 @@ public class IngameUtil {
 
         return (long) (addDamage * ingameItem.getSharpness() + ingameItem.getBaseItem().getDamage());
     }
+    public  static long countDamage(User user) {
+        IngameItem item = ingameItemRepository.findAllByUser(user).stream()
+                .filter(h -> h.isEquipped())
+                .filter(h -> h.getBaseItem().getDamage() != null)
+                .findFirst()
+                .orElse(null);
+        return countItemDamage(item);
+    }
     public static long countItemArmor(IngameItem ingameItem) {
         if(ingameItem.getBaseItem().getArmor() == null){
             return 0;
@@ -141,6 +149,17 @@ public class IngameUtil {
         float addArmor = ingameItem.getBaseItem().getArmor() > 10? (float)ingameItem.getBaseItem().getArmor() /10:1;
 
         return (long) (addArmor * ingameItem.getSharpness() + ingameItem.getBaseItem().getArmor());
+    }
+
+    public static long countArmor(User user) {
+        List<IngameItem> items = ingameItemRepository.findAllByUser(user);
+        long sum = 0L;
+        for (IngameItem item : items) {
+            if (item.isEquipped()) {
+                sum+=countItemArmor(item);
+            }
+        }
+        return sum;
     }
 
     public static long countPrice(IngameItem item, long countItemsToSell){
