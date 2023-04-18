@@ -40,7 +40,7 @@ public class UpdateReceiver {
             User user = userRepository.getUserByChatId(chatId).orElseGet(() ->
                     userRepository.save(User.builder()
                             .chatId(chatId)
-                            .name(update.getMessage().getChat().getFirstName())
+                            .name(update.getMessage().getChat().getFirstName()+"TEMP0")
                                     .userClass(classRepository.findById(1L).orElseThrow())
                             .build()));
 
