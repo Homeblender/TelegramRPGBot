@@ -66,7 +66,7 @@ public class UpdateReceiver {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             Long chatId = callbackQuery.getFrom().getId();
             User user = userRepository.getUserByChatId(chatId)
-                    .orElseGet(() -> userRepository.save(User.builder().chatId(chatId).name(update.getMessage().getChat().getFirstName()).build()));
+                    .orElseGet(() -> userRepository.save(User.builder().chatId(chatId).name(update.getMessage().getChat().getFirstName()+"TEMP0").build()));
             Handler handler = getHandlerByCallBackQuery(callbackQuery.getData());
             if (handler == null){
                 try {

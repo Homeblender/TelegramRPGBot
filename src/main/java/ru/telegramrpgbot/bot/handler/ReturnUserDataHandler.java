@@ -34,11 +34,16 @@ public class ReturnUserDataHandler implements Handler {
 
         var time = user.getStaminaRestor() == null ? 0 : user.getStaminaRestor().getTime() - System.currentTimeMillis();
         long secondsTmp = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
-        long minutes = secondsTmp/60;
-        secondsTmp = secondsTmp%60;
+        long minutes = secondsTmp / 60;
+        secondsTmp = secondsTmp % 60;
         String seconds = Long.toString(secondsTmp);
-        if (seconds.length()==1)
-            seconds = "0"+seconds;
+        if (seconds.length() == 1)
+            seconds = "0" + seconds;
+
+        String state = user.getUserState().getTitle();
+        if (state != null && state.equals("ACTIVITY")) {
+            state = user.getActivityId().getStateName();
+        }
 
 
         long inventSize = ingameItemRepository.findAllByUser(user).size();
@@ -49,33 +54,35 @@ public class ReturnUserDataHandler implements Handler {
                         "%n\uD83C\uDF1F Опыт: (%s/%s)%n" +
                         "♥️ Здоровье : %s/%s%n" +
                         "⚡️ Выносливость: %s/%s %s%n" +
-                        "\uD83D\uDD39 Мана: %s/%s%n" +
+                        "\uD83D\uDD39 Мана: %s/%s%n%n" +
+                        "\uD83C\uDFC3\uD83C\uDFFC\u200D♂️ Занятие: %s%n" +
                         "%n\uD83D\uDC8D Партнер: %s%n" +
                         "%n\uD83D\uDCB0 Золото: %s%n" +
                         "\uD83D\uDC8E Очки оффлайн ивентов: %s%n" +
-                        "%n \uD83D\uDCE6 Инвентарь (x%d) - /inventory"+
+                        "%n \uD83D\uDCE6 Инвентарь (x%d) - /inventory" +
                         "%n \uD83D\uDC5C Экипировка (x%d) - /equipment",
                 user.getUserClass().getName(),
                 user.getName(),
                 user.getLevel(),
-                user.getPassivePoints() >0? "\n\uD83C\uDD99Очков пассивных умений: *"+user.getPassivePoints()+"* (/passives)\n" +
+                user.getPassivePoints() > 0 ? "\n\uD83C\uDD99Очков пассивных умений: *" + user.getPassivePoints() + "* (/passives)\n" +
                         "" : "",
                 user.getExp(),
-                IngameUtil.countExpToLevel(user.getLevel()+1),
+                IngameUtil.countExpToLevel(user.getLevel() + 1),
                 user.getCurrentHealth(),
                 user.getMaxHealth(),
                 user.getCurrentStamina(),
                 user.getMaxStamina(),
-                user.getCurrentStamina() < user.getMaxStamina() ? "time: " + minutes +":"+seconds : "",
+                user.getCurrentStamina() < user.getMaxStamina() ? "time: " + minutes + ":" + seconds : "",
                 user.getCurrentMana(),
                 user.getMaxMana(),
+                state,
                 user.getPartner() != null ? user.getPartner() : "вы одиноки \uD83D\uDE22",
                 //user.getClassId().getName(),
                 user.getGold(),
                 user.getOfflinePoints(),
                 inventSize,
                 equipmentSize
-                ));
+        ));
         return List.of(reply);
     }
 

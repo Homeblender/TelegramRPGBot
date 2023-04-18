@@ -54,7 +54,7 @@ public class SharpeningHandler implements Handler {
         IngameItem sharpeningStones = ingameItemRepository.findAllByBaseItem_Type(ItemType.CONSUMABLE_SHARPENING_STONE).stream().findAny().orElse(null);
 
         if (sharpeningStones == null) {
-            reply.setText("У вас не достаточно точильных камней.");
+            reply.setText("У вас нет _точильных камней_.");
             return List.of(reply);
         } else if (sharpeningStones.getItemsInStack() > 1) {
             sharpeningStones.setItemsInStack(sharpeningStones.getItemsInStack() - 1);
@@ -64,9 +64,9 @@ public class SharpeningHandler implements Handler {
         }
         if (isSuccessSharped(item)) {
             item.setSharpness(item.getSharpness() + 1);
-            reply.setText("Заточка *успешна*!");
+            reply.setText("Заточка *успешна*.\uD83D\uDCC8");
         } else {
-            reply.setText("Заточка *провалилась*.");
+            reply.setText("Заточка *провалилась*.\uD83D\uDCC9");
             item.setSharpness(item.getSharpness() - 1);
         }
         ingameItemRepository.save(item);
@@ -75,7 +75,6 @@ public class SharpeningHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> showSharpeningMessage(User user, String message) {
-
         return List.of(createSharpeningMessage(user, message));
     }
 
@@ -95,7 +94,7 @@ public class SharpeningHandler implements Handler {
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
         List<IngameItem> sharpeningStones = items.stream().filter(c -> c.getBaseItem().getType().name().contains("SHARPENING")).toList();
         if (sharpeningStones.isEmpty()) {
-            reply.setText("У вас нет _Точильных камней_.");
+            reply.setText("У вас нет _точильных камней_.");
             return reply;
         }
         long sharpeningStonesCount = 0;
@@ -153,7 +152,7 @@ public class SharpeningHandler implements Handler {
         if (sharpness <= 5) {
             return 100;
         } else {
-            return Math.round((1 / (float) sharpness) * 100 * 5);
+            return Math.round((1 / (float) sharpness) * 100 * 4);
         }
     }
 
