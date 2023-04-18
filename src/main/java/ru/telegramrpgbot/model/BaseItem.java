@@ -32,7 +32,5 @@ public class BaseItem {
     @JoinColumn(name = "class_required_id")
     @ManyToOne
     Class classRequired;
-    @OneToMany(mappedBy = "materialBaseItemId")
-    Collection<BaseItemCraft> baseItemsToCraft;
 
 }
