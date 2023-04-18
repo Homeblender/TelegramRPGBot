@@ -2,21 +2,20 @@ package ru.telegramrpgbot.bot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.handler.Handler;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.UserRepository;
-import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Collections;
 
 @Component
 @Slf4j
@@ -48,9 +47,8 @@ public class UpdateReceiver {
             Handler handler = getHandlerByState(user.getUserState());
             if (handler == null) {
                 try {
-                    String t = messageText.split(" ")[1];
-
-                    handler = getHandlerByCommand(Arrays.stream(Command.values()).filter(command -> command.getRussian().toUpperCase().equals(t)).findFirst().get());
+                    String t = messageText.split(" ")[0];
+                    handler = getHandlerByCommand(Arrays.stream(Command.values()).filter(command -> command.getRussian().toUpperCase().equals(t)).findFirst().orElseThrow());
                 } catch (Exception ignored) { }
                 try {
                     handler = getHandlerByCommand(Command.valueOf(messageText.substring(1)));
@@ -99,7 +97,7 @@ public class UpdateReceiver {
     private Handler getHandlerByCallBackQuery(String query) {
         return handlers.stream()
                 .filter(h -> h.operatedCallBackQuery().stream()
-                        .anyMatch(query::startsWith))
+                        .anyMatch(query::equals))
                 .findAny()
                 .orElse(null);
     }

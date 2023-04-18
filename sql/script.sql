@@ -175,46 +175,45 @@ insert into fixed.class(name, description, required_level, base_class)
 
 
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,1,null, 15);
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null,0,null, 15,true);
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price, class_required_id)
-    VALUES ('Старый железный меч', 'Старый железный меч, немного острый.', 2, null,0,null, 15,2);
-
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+    VALUES ('Старый железный меч', 'Старый железный меч, немного острый.', 2, null,0,null, 15,true,2);
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,8,25, 15);
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Деревянный щит', 'Тренировочный щит, победить кого с ним настоящая удача.', null, 2,2,null, 15,true);
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Палка', 'Обычная деревянная палка для создания предметов.', null, null,8,25, 15);
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Камень', 'Обычный камень чтобы что то сделать', null, null,8,25, 15,true);
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Палка', 'Обычная деревянная палка для убийства людей.', 1, null,2,null, 25);
-
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Палка', 'Обычная деревянная палка для создания предметов.', null, null,8,25, 15,true);
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Кожаный шлем', '.', null, 2,5,null, 15);
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Посох', 'Обычная деревянная палка для убийства людей.', 1, null,1,null, 25,true);
 insert into fixed.base_item
-    (name, description, damage, armor, type, max_in_stack, buy_price)
-    VALUES ('Точильный камень', 'С его помощью можно заточить оружие или доспехи.', null, null,9,25, 50);
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Кожаный шлем', '.', null, 2,5,null, 15,true);
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Точильный камень', 'С его помощью можно заточить оружие или доспехи.', null, null,9,25, 50,true);
 
 
 
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (1,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (2,1,1436473525,false,0);
+    VALUES (2,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (3,1,1436473525,false,null);
+    VALUES (3,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (4,1,1436473525,false,null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (5,null,1436473525,false,0);
+    VALUES (5,1,1436473525,false,null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (6,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (7,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (7,null,1436473525,false,0);
-insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (8,20,1436473525,false,null);
+    VALUES (8,25,1436473525,false,null);
