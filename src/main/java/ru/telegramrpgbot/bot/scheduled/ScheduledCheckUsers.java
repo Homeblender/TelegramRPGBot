@@ -78,7 +78,7 @@ public class ScheduledCheckUsers {
         try {
             bot.execute(sendMessage);
         } catch (TelegramApiException e) {
-            log.error("govno");
+            log.error(e.getMessage());
         }
     }
 
@@ -94,13 +94,15 @@ public class ScheduledCheckUsers {
                     userStaminaChanges(user, 1L);
                     if (user.getCurrentStamina().equals(user.getMaxStamina())) {
                         var staminaRestoredMessage = TelegramUtil.createMessageTemplate(user);
+                        user.setStaminaRestor(null);
                         staminaRestoredMessage.setText("*Ваша выносливность полностью остановлена!*");
                         executeWithExceptionCheck(staminaRestoredMessage);
                     } else {
                         var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
                         user.setStaminaRestor(new Timestamp(System.currentTimeMillis() + delay));
-                        userRepository.save(user);
                     }
+                    userRepository.save(user);
+
                 }
             }
         }

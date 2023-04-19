@@ -172,6 +172,12 @@ public class IngameUtil {
         recGetAllAvailableClasses(item.getBaseItem().getClassRequired(), result);
         return result;
     }
+
+    public static List<Class> getAllAvailableClasses(User user){
+        return classRepository.findAllByBaseClass(user.getUserClass()).stream().filter(w-> w.getRequiredLevel()<=user.getLevel()).toList();
+    }
+
+
     private static void recGetAllAvailableClasses(Class baseClass, List<Class> result){
         var classes = classRepository.findAllByBaseClass(baseClass);
         result.add(baseClass);

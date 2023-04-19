@@ -19,11 +19,11 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Slf4j
 @Component
-public class ReturnUserDataHandler implements Handler {
+public class UserDataHandler implements Handler {
 
     private final IngameItemRepository ingameItemRepository;
 
-    public ReturnUserDataHandler(IngameItemRepository ingameItemRepository) {
+    public UserDataHandler(IngameItemRepository ingameItemRepository) {
         this.ingameItemRepository = ingameItemRepository;
     }
 
@@ -51,6 +51,7 @@ public class ReturnUserDataHandler implements Handler {
         reply.setText(String.format("*%s* - *%s*%n" +
                         "\uD83D\uDCA0 Уровень: %s%n" +
                         "%s" +
+                        "%s" +
                         "%n\uD83C\uDF1F Опыт: (%s/%s)%n" +
                         "♥️ Здоровье : %s/%s%n" +
                         "⚡️ Выносливость: %s/%s %s%n" +
@@ -64,6 +65,8 @@ public class ReturnUserDataHandler implements Handler {
                 user.getUserClass().getName(),
                 user.getName(),
                 user.getLevel(),
+                IngameUtil.getAllAvailableClasses(user).size() > 0 ? "\n\uD83C\uDD95 Доступно улучшение *класса* - /classes \n" +
+                        "" : "",
                 user.getPassivePoints() > 0 ? "\n\uD83C\uDD99Очков пассивных умений: *" + user.getPassivePoints() + "* (/passives)\n" +
                         "" : "",
                 user.getExp(),
