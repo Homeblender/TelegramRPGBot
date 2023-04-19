@@ -77,7 +77,6 @@ public class ReturnUserDataHandler implements Handler {
                 user.getMaxMana(),
                 state,
                 user.getPartner() != null ? user.getPartner() : "вы одиноки \uD83D\uDE22",
-                //user.getClassId().getName(),
                 user.getGold(),
                 user.getOfflinePoints(),
                 inventSize,

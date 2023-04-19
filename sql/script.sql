@@ -210,7 +210,7 @@ insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sh
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (4,1,1436473525,false,null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (5,1,1436473525,false,null);
+    VALUES (5,1,1436473525,false,null );
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (6,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)

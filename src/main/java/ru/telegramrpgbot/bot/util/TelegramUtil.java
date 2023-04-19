@@ -18,8 +18,6 @@ public class TelegramUtil {
     public static SendMessage createMessageTemplate(User user) {
         return createMessageTemplate(String.valueOf(user.getChatId()));
     }
-
-    // Создаем шаблон SendMessage с включенным Markdown
     public static SendMessage createMessageTemplate(String chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
@@ -27,7 +25,6 @@ public class TelegramUtil {
         return sendMessage;
     }
 
-    // Создаем кнопку
     public static InlineKeyboardButton createInlineKeyboardButton(String text, String command) {
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
         inlineKeyboardButton.setText(text);

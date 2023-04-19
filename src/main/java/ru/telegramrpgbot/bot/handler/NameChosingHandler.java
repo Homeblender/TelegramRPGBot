@@ -30,7 +30,6 @@ public class NameChosingHandler implements Handler {
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
-        // Проверяем тип полученного события
         if (message.equalsIgnoreCase(NAME_ACCEPT) || message.equalsIgnoreCase(NAME_CHANGE_CANCEL)) {
             return accept(user);
         } else if (message.equalsIgnoreCase(NAME_CHANGE)) {
@@ -41,13 +40,10 @@ public class NameChosingHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> accept(User user) {
-        // Если пользователь принял имя - меняем статус и сохраняем
         user.setUserState(BotState.NONE);
         userRepository.save(user);
         var reply = createMessageTemplate(user);
         reply.setText(String.format("Теперь тебя зовут: *%s*", user.getName()));
-        //Добавил клавиатуру
-        var keyboard = createMessageTemplate(user);
         reply.setReplyMarkup(createBaseReplyKeyboard());
         return List.of(reply);
     }

@@ -57,7 +57,6 @@ public class ShopHandler implements Handler {
     }
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
-        log.info(message.toUpperCase());
         Command messageCommand = null;
         try {
             messageCommand = Arrays.stream(Command.values()).filter(command -> command.getRussian().toUpperCase().equals(message.toUpperCase().split(" ")[0])).findFirst().orElseThrow();
@@ -105,7 +104,6 @@ public class ShopHandler implements Handler {
             reply.setText("Нет такого предмета.");
             return List.of(reply);
         }
-        log.info(item.getName());
         if (user.getGold()<item.getBuyPrice()){
             reply.setText("Недостаточно денег.");
             return List.of(reply);
@@ -134,7 +132,6 @@ public class ShopHandler implements Handler {
 
         for (Class userClass = user.getUserClass(); userClass != null; userClass = userClass.getBaseClass()) {
             availableClasses.add(userClass);
-            log.info(userClass.getId() + "");
         }
         for (Class baseClass :
                 availableClasses) {
