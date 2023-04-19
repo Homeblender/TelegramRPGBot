@@ -156,6 +156,7 @@ CREATE TABLE public.move (
 	attack int,
 	move_state int,
 	hp bigint,
+	end_time timestamp,
 	num bigint
 );
 

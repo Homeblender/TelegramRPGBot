@@ -12,4 +12,5 @@ import java.util.Optional;
 @Repository
 public interface MoveRepository extends JpaRepository<Move, Long> {
     Optional<Move> getMoveByUserId(User user);
+    List<Move> findAll();
 }

@@ -4,6 +4,7 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
@@ -20,8 +21,10 @@ import ru.telegramrpgbot.repository.FightRepository;
 import ru.telegramrpgbot.repository.MoveRepository;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
@@ -31,6 +34,7 @@ public class FightHandler implements Handler {
     private final UserRepository userRepository;
     private final FightRepository fightRepository;
     private final MoveRepository moveRepository;
+    private final long waitingTime = TimeUnit.MILLISECONDS.convert(1L, TimeUnit.MINUTES);
 
     public FightHandler(UserRepository userRepository, FightRepository fightRepository, MoveRepository moveRepository) {
         this.userRepository = userRepository;
@@ -43,7 +47,7 @@ public class FightHandler implements Handler {
         log.info(actor.getUserState().name());
         if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT || actor.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
             if (message.equalsIgnoreCase(Command.CANCEL.name()) && actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
-                return cancel(actor);
+                return IngameUtil.cancel(actor);
             }
             else {
                 return waiting(actor);
@@ -99,8 +103,8 @@ public class FightHandler implements Handler {
             moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null));
         }
 
-        moveRepository.save(Move.builder().userId(actor).fightId(fight).build());
-        moveRepository.save(Move.builder().userId(opponent).fightId(fight).build());
+        moveRepository.save(Move.builder().userId(actor).fightId(fight).endTime(new Timestamp(System.currentTimeMillis() + waitingTime)).build());
+        moveRepository.save(Move.builder().userId(opponent).fightId(fight).endTime(new Timestamp(System.currentTimeMillis() + waitingTime)).build());
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
@@ -120,29 +124,6 @@ public class FightHandler implements Handler {
         log.info(messageToUser.getText());
         log.info(messageToOpponent.getText());
         return List.of(messageToUser, messageToOpponent);
-    }
-    private List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
-        Fight fight = moveRepository.getMoveByUserId(user).orElse(null).getFightId();
-        User actor = fight.getUser1Id();
-        User opponent = fight.getUser2Id();
-
-        Move actorMove = moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null);
-        Move opponentMove = moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null);
-
-        actor.setUserState(BotState.NONE);
-        opponent.setUserState(BotState.NONE);
-        userRepository.save(actor);
-        userRepository.save(opponent);
-
-        moveRepository.delete(actorMove);
-        moveRepository.delete(opponentMove);
-        fightRepository.delete(fight);
-
-        var messageToActor = createMessageTemplate(actor);
-        var messageToOpponent = createMessageTemplate(opponent);
-        messageToActor.setText("Вызов отменен");
-        messageToOpponent.setText("Вызов отменен");
-        return List.of(messageToActor, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> waiting(User user) {
         var reply = createMessageTemplate(user);
@@ -170,6 +151,8 @@ public class FightHandler implements Handler {
         opponent.setUserState(BotState.WAITING_FOR_MOVE);
         userRepository.save(actor);
         userRepository.save(opponent);
+
+        
 
         var buttons = new KeyboardButton[]{
                 new KeyboardButton(BodyPart.HEAD.getTitle()),
@@ -286,8 +269,8 @@ public class FightHandler implements Handler {
                     actorMove.getAttack().getTitle(),
                     opponentMove.getDefense().getTitle());
             String message = "%sHP: %s\nСледующий ход №%s\nВыберете, что защищать";
-            messageForActor.setText(String.format(message, actorHitMessage, actorMove.getHp(), actorMove.getNum()));
-            messageForOpponent.setText(String.format(message, opponentHitMessage, opponentMove.getHp(), opponentMove.getNum()));
+            messageForActor.setText(String.format(message, actorHitMessage, actorMove.getHp(), actorMove.getNum() + 1));
+            messageForOpponent.setText(String.format(message, opponentHitMessage, opponentMove.getHp(), opponentMove.getNum() + 1));
 
             actor.setUserState(BotState.WAITING_FOR_MOVE);
             opponent.setUserState(BotState.WAITING_FOR_MOVE);
@@ -302,6 +285,8 @@ public class FightHandler implements Handler {
             opponentMove.setAttack(null);
             actorMove.setNum(actorMove.getNum() + 1);
             opponentMove.setNum(opponentMove.getNum() + 1);
+            actorMove.setEndTime(new Timestamp(System.currentTimeMillis() + waitingTime));
+            opponentMove.setEndTime(new Timestamp(System.currentTimeMillis() + waitingTime));
             moveRepository.save(actorMove);
             moveRepository.save(opponentMove);
 
