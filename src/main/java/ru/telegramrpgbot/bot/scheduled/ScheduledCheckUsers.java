@@ -28,6 +28,7 @@ public class ScheduledCheckUsers {
     private final UserRepository userRepository;
     private final SoloActivityRewardRepository soloActivityRewardRepository;
     private final Bot bot;
+    private final Random rnd = new Random();
 
     public ScheduledCheckUsers(UserRepository userRepository, SoloActivityRepository soloActivityRepository, SoloActivityRewardRepository soloActivityRewardRepository, Bot bot) {
         this.userRepository = userRepository;
@@ -55,14 +56,17 @@ public class ScheduledCheckUsers {
                 var reward = possibleRewards.get(new Random().nextInt(possibleRewards.size()));
 
                 var soloActivityEnded = TelegramUtil.createMessageTemplate(user);
-                var reply = reward.getResultMessage() + String.format("%n%nТвоя награда:%n+%d зол. монет%n+%d очк. опыта", new Random().nextLong(reward.getGoldReward() / 2, reward.getGoldReward() * 2), new Random().nextLong(reward.getExpReward() / 2, reward.getExpReward() * 2));
+                var gold = rnd.nextLong(reward.getGoldReward() / 2, reward.getGoldReward() * 2);
+                var exp =  rnd.nextLong(reward.getExpReward() / 2, reward.getExpReward() * 2);
+
+                var reply = reward.getResultMessage() + String.format("%n%nНаграда:%n+%d зол. монет%n+%d очк. опыта",gold, exp );
                 if (reward.getItemReward() != null) {
                     reply += String.format("%n+%s", reward.getItemReward().getName());
                     userGetItem(user, reward.getItemReward());
                 }
 
-                userGoldChanges(user, reward.getGoldReward());
-                userExpChanged(user, reward.getExpReward());
+                userGoldChanges(user, gold);
+                userExpChanged(user, exp);
                 user.setUserState(BotState.NONE);
                 user.setActivityEnds(null);
                 user.setActivityId(null);
