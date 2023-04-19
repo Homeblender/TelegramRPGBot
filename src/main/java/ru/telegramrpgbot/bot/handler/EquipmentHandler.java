@@ -144,7 +144,7 @@ public class EquipmentHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder(String.format("Ваша экипировка \uD83D\uDC5C:%n%nРуки:%n"));
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
         List<IngameItem> equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT") && c.isEquipped()).toList();
-        List<IngameItem> sharpeningStones = ingameItemRepository.findAllByBaseItem_Type(ItemType.CONSUMABLE_SHARPENING_STONE);
+        List<IngameItem> sharpeningStones = ingameItemRepository.findAllByUserAndBaseItem_Type(user, ItemType.CONSUMABLE_SHARPENING_STONE);
         log.info(sharpeningStones.size()+"");
         List<IngameItem> weapon_equipment = new java.util.ArrayList<>(equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
         List<IngameItem> shield_equipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();

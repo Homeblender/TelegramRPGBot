@@ -51,7 +51,7 @@ public class SharpeningHandler implements Handler {
         } else {
             item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
         }
-        IngameItem sharpeningStones = ingameItemRepository.findAllByBaseItem_Type(ItemType.CONSUMABLE_SHARPENING_STONE).stream().findAny().orElse(null);
+        IngameItem sharpeningStones = ingameItemRepository.findAllByUserAndBaseItem_Type(user, ItemType.CONSUMABLE_SHARPENING_STONE).stream().findAny().orElse(null);
 
         if (sharpeningStones == null) {
             reply.setText("У вас нет _точильных камней_.");
@@ -59,19 +59,21 @@ public class SharpeningHandler implements Handler {
         } else if (sharpeningStones.getItemsInStack() > 1) {
             sharpeningStones.setItemsInStack(sharpeningStones.getItemsInStack() - 1);
             ingameItemRepository.save(sharpeningStones);
+            log.info(sharpeningStones.getItemsInStack()+"");
         } else if (sharpeningStones.getItemsInStack() == 1) {
             ingameItemRepository.delete(sharpeningStones);
         }
         if (isSuccessSharped(item)) {
             item.setSharpness(item.getSharpness() + 1);
-            reply.setText("Заточка *успешна*. ✅");
+            reply.setText("Заточка *успешна*. ✅ \n\n");
         } else {
-            reply.setText("Заточка *провалилась*.❌");
+            reply.setText("Заточка *провалилась*.❌ \n\n");
             item.setSharpness(item.getSharpness() - 1);
         }
         ingameItemRepository.save(item);
-
-        return List.of(reply, createSharpeningMessage(user, "/sharp_" + item.getId()));
+        SendMessage sendMessage = createSharpeningMessage(user, "/sharp_" + item.getId());
+        sendMessage.setText(reply.getText() + sendMessage.getText());
+        return List.of(sendMessage);
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> showSharpeningMessage(User user, String message) {
@@ -112,7 +114,7 @@ public class SharpeningHandler implements Handler {
                 item.getSharpness()));
 
         replyMessage.append(String.format("Точильных камней - x%d%n", sharpeningStonesCount));
-        replyMessage.append("\nШанс успешной заточки - %").append(sharpeningSuccess(item.getSharpness())).append("\n");
+        replyMessage.append("\nШанс успешной заточки - %").append(sharpeningSuccess(item.getSharpness()+1)).append("\n");
         if (sharpeningSuccess(item.getSharpness()) != 100) {
             replyMessage.append("\nПри неудаче уровень заточки предмета упадет.");
         }

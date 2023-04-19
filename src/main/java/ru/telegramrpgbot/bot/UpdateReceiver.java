@@ -80,8 +80,11 @@ public class UpdateReceiver {
                     handler = getHandlerByCallBackQuery(callbackQuery.getData().toUpperCase().split("_")[1]);
                 } catch (Exception ignored) {
                 }
+                try {
+                    handler = getHandlerByCallBackQuery(callbackQuery.getData().toUpperCase().split("_")[0]);
+                } catch (Exception ignored) {
+                }
             }
-            assert handler != null;
             SendMessage t = (SendMessage) handler.handle(user, callbackQuery.getData()).stream().findFirst().orElseThrow();
             EditMessageText new_message = new EditMessageText();
             new_message.setChatId(callbackQuery.getMessage().getChatId());
