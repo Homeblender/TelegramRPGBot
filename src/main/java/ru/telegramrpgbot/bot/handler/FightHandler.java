@@ -4,6 +4,9 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.enums.BodyPart;
@@ -36,20 +39,22 @@ public class FightHandler implements Handler {
     }
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User actor, String message) {
-        if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
-            if (message.equalsIgnoreCase("/cancel")) {
+        log.info(message);
+        log.info(actor.getUserState().name());
+        if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT || actor.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
+            if (message.equalsIgnoreCase(Command.CANCEL.name()) && actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
                 return cancel(actor);
             }
             else {
                 return waiting(actor);
             }
         }
-        log.info(message);
+
         if(actor.getUserState() == BotState.WAITING_FOR_MOVE) {
             log.info(actor.getName());
             return move(actor, message);
         }
-        if (message.equalsIgnoreCase("/accept")) {
+        if (message.equalsIgnoreCase(Command.ACCEPT.name())) {
             return accept(actor);
         }
         return startFight(actor, message);
@@ -71,26 +76,50 @@ public class FightHandler implements Handler {
             messageToUser.setText("Нет такого игрока");
             return List.of(messageToUser);
         }
+        if (messageMass[1].equalsIgnoreCase(actor.getName())){
+
+            messageToUser.setText("Нельзя вызвать себя");
+            return List.of(messageToUser);
+        }
         User opponent = userRepository.getUsersByName(messageMass[1]).orElse(null);
         var messageToOpponent = createMessageTemplate(opponent);
 
         actor.setUserState(BotState.WAITING_FOR_OPPONENT);
         userRepository.save(actor);
 
-        fightRepository.save(Fight.builder().user1Id(actor).user2Id(opponent).build());
+        Fight fight = fightRepository.save(Fight.builder().user1Id(actor).user2Id(opponent).build());
+        Move actorMove = moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null);
+        Move opponentMove = moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null);
+        if (actorMove != null) {
+            moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null));
+        }
+        if (opponentMove != null) {
+            moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null));
+        }
 
+        moveRepository.save(Move.builder().userId(actor).fightId(fight).build());
+        moveRepository.save(Move.builder().userId(opponent).fightId(fight).build());
 
-        messageToUser.setText("Ожидаем оппонента");
-        messageToOpponent.setText(String.format("Вам бросил вызов %s\nПринять вызов можно коммандой '/ACCEPT'", actor.getName()));
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
+                createInlineKeyboardButton(Command.CANCEL.getRussian(), Command.CANCEL.name()));
+        inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
+        messageToUser.setReplyMarkup(inlineKeyboardMarkup);
+        messageToUser.setText("Ожидаем оппонента.");
+
+        InlineKeyboardMarkup inlineKeyboardMarkupOpponent = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> inlineKeyboardButtonsRowOneOpponent = List.of(
+                createInlineKeyboardButton(Command.ACCEPT.getRussian(), Command.ACCEPT.name()),
+                createInlineKeyboardButton(Command.CANCEL.getRussian(), Command.CANCEL.name()));
+        inlineKeyboardMarkupOpponent.setKeyboard(List.of(inlineKeyboardButtonsRowOneOpponent));
+
+        messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
+        messageToOpponent.setText(String.format("Вам бросил вызов %s", actor.getName()));
 
         return List.of(messageToUser, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
-        user.setUserState(BotState.NONE);
-        userRepository.save(user);
-
-
-        Fight fight = moveRepository.getMoveByUserId(user).get().getFightId();
+        Fight fight = moveRepository.getMoveByUserId(user).orElse(null).getFightId();
         User actor = fight.getUser1Id();
         User opponent = fight.getUser2Id();
 
@@ -106,26 +135,43 @@ public class FightHandler implements Handler {
         moveRepository.delete(opponentMove);
         fightRepository.delete(fight);
 
-        var reply = createMessageTemplate(user);
-        reply.setText("Вызов отменен");
-        return List.of(reply);
+        var messageToActor = createMessageTemplate(actor);
+        var messageToOpponent = createMessageTemplate(opponent);
+        messageToActor.setText("Вызов отменен");
+        messageToOpponent.setText("Вызов отменен");
+        return List.of(messageToActor, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> waiting(User user) {
         var reply = createMessageTemplate(user);
-        reply.setText("Ожидаем оппонента.\nВы можете отменить вызов командой '/cancel'");
+        if (user.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
+            reply.setText("Ожидаем оппонента");
+            return List.of(reply);
+        }
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
+                createInlineKeyboardButton(Command.CANCEL.getRussian(), Command.CANCEL.name()));
+        inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
+        reply.setReplyMarkup(inlineKeyboardMarkup);
+        reply.setText("Ожидаем оппонента.");
         return List.of(reply);
     }
     private List<PartialBotApiMethod<? extends Serializable>> accept(User opponent) {
         log.info("accept");
         Fight fight = fightRepository.getFightByUser2Id(opponent).orElse(null);
         User actor = fight.getUser1Id();
-        Move move = moveRepository.save(Move.builder().userId(actor).fightId(fight).build());
-        log.info(move.getFightId().toString());
-        moveRepository.save(Move.builder().userId(opponent).fightId(fight).build());
+
+
         actor.setUserState(BotState.WAITING_FOR_MOVE);
         opponent.setUserState(BotState.WAITING_FOR_MOVE);
         userRepository.save(actor);
         userRepository.save(opponent);
+
+        var buttons = new KeyboardButton[]{
+                new KeyboardButton(BodyPart.HEAD.getTitle()),
+                new KeyboardButton(BodyPart.CHEST.getTitle()),
+                new KeyboardButton(BodyPart.LEGS.getTitle())};
+
 
         var messageToActor1 = createMessageTemplate(actor);
         var messageToOpponent1 = createMessageTemplate(opponent);
@@ -134,8 +180,10 @@ public class FightHandler implements Handler {
         String message1 = "Вызов принят!";
         String message2 = "Выберите, что будете защищать\n(Голова, грудь, ноги)";
         messageToActor1.setText(message1);
+        messageToActor2.setReplyMarkup(createKeyboard(buttons));
         messageToActor2.setText(message2);
         messageToOpponent1.setText(message1);
+        messageToOpponent2.setReplyMarkup(createKeyboard(buttons));
         messageToOpponent2.setText(message2);
         return List.of(messageToActor1, messageToActor2, messageToOpponent1, messageToOpponent2);
     }
@@ -206,7 +254,7 @@ public class FightHandler implements Handler {
             if (opponentMove.getHp() < 0) {
                 return ending(actor, opponent);
             }
-            if (actorMove.getNum() > 9) {
+            if (actorMove.getNum() > 14) {
                 actor.setUserState(BotState.NONE);
                 opponent.setUserState(BotState.NONE);
                 userRepository.save(actor);
@@ -219,27 +267,23 @@ public class FightHandler implements Handler {
                 messageForOpponent.setText(message);
                 return List.of(messageForActor, messageForOpponent);
             }
-
-            String actorHitMessage = "";
-            String opponentHitMessage = "";
-            if (opponentMove.getDefense() == actorMove.getAttack()) {
-                actorHitMessage = "Вашу атаку отбили\n";
-                opponentHitMessage = "Вы отбили атаку\n";
-            }
-            else {
-                actorHitMessage = "Вашу атаку не отбили\n";
-                opponentHitMessage = "Вы не отбили атаку\n";
-            }
-            if (actorMove.getDefense() == opponentMove.getAttack()) {
-                actorHitMessage += "Вы отбили атаку\n";
-                opponentHitMessage = "Вашу атаку отбили\n" + opponentHitMessage;
-            }
-            else {
-                actorHitMessage += "Вы не отбили атаку\n";
-                opponentHitMessage = "Вашу атаку не отбили\n" + opponentHitMessage;
-            }
-            messageForActor.setText(String.format("%sHP: %s\nСледующий ход\nВыберете, что защищать", actorHitMessage, actorMove.getHp()));
-            messageForOpponent.setText(String.format("%sHP: %s\nСледующий ход\nВыберете, что защищать", opponentHitMessage, opponentMove.getHp()));
+            String hitMessage = "Вы били: %s\n" +
+                    "Соперник защищал: %s\n\n" +
+                    "Соперник бил: %s\n" +
+                    "Вы защищали: %s\n\n";
+            String actorHitMessage = String.format(hitMessage,
+                    actorMove.getAttack().getTitle(),
+                    opponentMove.getDefense().getTitle(),
+                    opponentMove.getAttack().getTitle(),
+                    actorMove.getDefense().getTitle());
+            String opponentHitMessage = String.format(hitMessage,
+                    opponentMove.getAttack().getTitle(),
+                    actorMove.getDefense().getTitle(),
+                    actorMove.getAttack().getTitle(),
+                    opponentMove.getDefense().getTitle());
+            String message = "%sHP: %s\nСледующий ход №%s\nВыберете, что защищать";
+            messageForActor.setText(String.format(message, actorHitMessage, actorMove.getHp(), actorMove.getNum()));
+            messageForOpponent.setText(String.format(message, opponentHitMessage, opponentMove.getHp(), opponentMove.getNum()));
 
             actor.setUserState(BotState.WAITING_FOR_MOVE);
             opponent.setUserState(BotState.WAITING_FOR_MOVE);
@@ -260,8 +304,8 @@ public class FightHandler implements Handler {
             return List.of(messageForActor, messageForOpponent);
         } else {
             var reply = createMessageTemplate(user);
-            reply.setText("Ожидаем оппонента.\nВы можете отменить вызов командой '/cancel'");
-            user.setUserState(BotState.WAITING_FOR_OPPONENT);
+            reply.setText("Ожидаем оппонента");
+            user.setUserState(BotState.WAITING_FOR_OPPONENT_MOVE);
             userRepository.save(user);
             return List.of(reply);
         }
@@ -293,11 +337,11 @@ public class FightHandler implements Handler {
 
     @Override
     public List<Command> operatedCommand() {
-        return List.of(Command.FIGHT, Command.ACCEPT);
+        return List.of(Command.FIGHT);
     }
 
     @Override
     public List<String> operatedCallBackQuery() {
-        return List.of();
+        return List.of(Command.ACCEPT.name(), Command.CANCEL.name());
     }
 }

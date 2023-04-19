@@ -135,12 +135,14 @@ public class IngameUtil {
         return (long) (addDamage * ingameItem.getSharpness() + ingameItem.getBaseItem().getDamage());
     }
     public  static long countDamage(User user) {
-        IngameItem item = ingameItemRepository.findAllByUser(user).stream()
-                .filter(IngameItem::isEquipped)
-                .filter(h -> h.getBaseItem().getDamage() != null)
-                .findFirst()
-                .orElse(null);
-        return countItemDamage(item);
+        List<IngameItem> items = ingameItemRepository.findAllByUser(user);
+        long sum = 0L;
+        for (IngameItem item : items) {
+            if (item.isEquipped()) {
+                sum+=countItemDamage(item);
+            }
+        }
+        return sum;
     }
     public static long countItemArmor(IngameItem ingameItem) {
         if(ingameItem.getBaseItem().getArmor() == null){
