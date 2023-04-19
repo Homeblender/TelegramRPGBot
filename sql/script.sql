@@ -206,7 +206,7 @@ insert into fixed.base_item
 
 
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-    VALUES (1,null,1436473525,false,0);
+    VALUES (1,null,651071979,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (2,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
