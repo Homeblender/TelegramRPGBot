@@ -18,8 +18,8 @@ public enum Command {
     FIGHT(null),
     CLASSES(null),
     EQUIPMENT(null),
-    ACCEPT(null),
-    CANCEL(null),
+    ACCEPT("Принять"),
+    CANCEL("Отменить"),
     CLASS(null);
     private final String russian;
     public String getRussian() {
