@@ -207,6 +207,11 @@ public class FightHandler implements Handler {
                 return ending(actor, opponent);
             }
             if (actorMove.getNum() > 9) {
+                actor.setUserState(BotState.NONE);
+                opponent.setUserState(BotState.NONE);
+                userRepository.save(actor);
+                userRepository.save(opponent);
+
                 moveRepository.delete(actorMove);
                 moveRepository.delete(opponentMove);
                 String message = "Ничья\nЗвкончилось количество ходов";
@@ -215,9 +220,26 @@ public class FightHandler implements Handler {
                 return List.of(messageForActor, messageForOpponent);
             }
 
-            String message = "Следующий ход\nВыберете, что защищать";
-            messageForActor.setText(message);
-            messageForOpponent.setText(message);
+            String actorHitMessage = "";
+            String opponentHitMessage = "";
+            if (opponentMove.getDefense() == actorMove.getAttack()) {
+                actorHitMessage = "Вашу атаку отбили\n";
+                opponentHitMessage = "Вы отбили атаку\n";
+            }
+            else {
+                actorHitMessage = "Вашу атаку не отбили\n";
+                opponentHitMessage = "Вы не отбили атаку\n";
+            }
+            if (actorMove.getDefense() == opponentMove.getAttack()) {
+                actorHitMessage += "Вы отбили атаку\n";
+                opponentHitMessage = "Вашу атаку отбили\n" + opponentHitMessage;
+            }
+            else {
+                actorHitMessage += "Вы не отбили атаку\n";
+                opponentHitMessage = "Вашу атаку не отбили\n" + opponentHitMessage;
+            }
+            messageForActor.setText(String.format("%sHP: %s\nСледующий ход\nВыберете, что защищать", actorHitMessage, actorMove.getHp()));
+            messageForOpponent.setText(String.format("%sHP: %s\nСледующий ход\nВыберете, что защищать", opponentHitMessage, opponentMove.getHp()));
 
             actor.setUserState(BotState.WAITING_FOR_MOVE);
             opponent.setUserState(BotState.WAITING_FOR_MOVE);
@@ -250,6 +272,10 @@ public class FightHandler implements Handler {
         Move winnerMove = moveRepository.getMoveByUserId(winner).orElse(null);
         winnerMove.getFightId().setFightState(String.format("Победил %s", winner.getName()));
 
+        winner.setUserState(BotState.NONE);
+        loser.setUserState(BotState.NONE);
+        userRepository.save(winner);
+        userRepository.save(loser);
         moveRepository.delete(winnerMove);
         moveRepository.delete(moveRepository.getMoveByUserId(loser).orElse(null));
 
