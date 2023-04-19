@@ -16,7 +16,8 @@ public enum Command {
     SHARP(null),
     BUY(null),
     FIGHT(null),
-    ACCEPT(null),
+    ACCEPT("Принять"),
+    CANCEL("Отменить"),
     EQUIPMENT(null);
     private final String russian;
     public String getRussian() {
