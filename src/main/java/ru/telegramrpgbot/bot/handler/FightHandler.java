@@ -60,6 +60,8 @@ public class FightHandler implements Handler {
         return startFight(actor, message);
     }
     private List<PartialBotApiMethod<? extends Serializable>> startFight(User actor, String message) {
+        log.info(actor.getName());
+        log.info(message);
         var messageToUser = createMessageTemplate(actor);
         String[] messageMass = message.split("_");
         if(messageMass.length<2){
@@ -115,7 +117,8 @@ public class FightHandler implements Handler {
 
         messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
         messageToOpponent.setText(String.format("Вам бросил вызов %s", actor.getName()));
-
+        log.info(messageToUser.getText());
+        log.info(messageToOpponent.getText());
         return List.of(messageToUser, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
@@ -154,6 +157,7 @@ public class FightHandler implements Handler {
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setReplyMarkup(inlineKeyboardMarkup);
         reply.setText("Ожидаем оппонента.");
+        log.info(reply.getText());
         return List.of(reply);
     }
     private List<PartialBotApiMethod<? extends Serializable>> accept(User opponent) {
