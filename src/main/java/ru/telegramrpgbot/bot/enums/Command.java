@@ -27,6 +27,7 @@ public enum Command {
     PROPOSE(null),
     ACCEPT_PROPOSE("Принять"),
     CANCEL_PROPOSE("Отменить"),
+    DIVORCE(null),
     CLASS(null);
     private final String russian;
     public String getRussian() {

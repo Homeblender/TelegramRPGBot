@@ -49,11 +49,20 @@ public class WeddingHandler implements Handler {
                 return waiting(actor);
             }
         }
+        log.info(message);
+        if (message.substring(1).equalsIgnoreCase(Command.DIVORCE.name())) {
+            return divorce(actor);
+        }
         return propose(actor, message);
     }
     private List<PartialBotApiMethod<? extends Serializable>> propose(User actor, String message) {
         var messageToUser = createMessageTemplate(actor);
         String[] messageMass = message.split("_");
+        if(actor.getPartner() != null) {
+            messageToUser.setText("У вас уже есть пара.\uD83D\uDC94\n" +
+                    "Если вы хотите сыграть свадьбу с кем-то еще, сначала разведитесь с нынешним партнером.");
+            return  List.of(messageToUser);
+        }
         if (messageMass.length < 2) {
             log.info("меньше 2");
             messageToUser.setText("Не указан ник игрока");
@@ -73,10 +82,12 @@ public class WeddingHandler implements Handler {
             return List.of(messageToUser);
         }
         User opponent = userRepository.getUsersByName(messageMass[1]).orElseThrow();
+
         if(opponent.getPartner() != null) {
             messageToUser.setText("У этого игрока уже есть пара.\uD83D\uDC94");
             return  List.of(messageToUser);
         }
+
         if(opponent.getUserState() != BotState.NONE) {
             messageToUser.setText("В данный момент этот игрок занят\nПопробуйте позже");
             return  List.of(messageToUser);
@@ -135,6 +146,25 @@ public class WeddingHandler implements Handler {
         return List.of(messageToActor, messageToOpponent);
 
     }
+    private List<PartialBotApiMethod<? extends Serializable>> divorce(User actor) {
+        if (actor.getPartner() == null) {
+            var messageToActor = createMessageTemplate(actor);
+            messageToActor.setText("У вас нет партнера, чтобы с ним развестись");
+            return List.of(messageToActor);
+        }
+        User opponent = actor.getPartner();
+        opponent.setPartner(null);
+        actor.setPartner(null);
+        userRepository.save(actor);
+        userRepository.save(opponent);
+        var messageToOpponent = createMessageTemplate(opponent);
+        messageToOpponent.setText(String.format("К сожалению _%s_ разорвал ваш брак.\nВы разведены...", actor.getName()));
+        var messageToActor = createMessageTemplate(actor);
+        messageToActor.setText(String.format("Вы больше не вместе с _%s_.\nВаш брак рассторгнут.", opponent.getName()));
+
+        return List.of(messageToActor, messageToOpponent);
+
+    }
     @Override
     public List<BotState> operatedBotState() {
         return List.of(BotState.WAITING_FOR_ANSWER);
@@ -142,7 +172,7 @@ public class WeddingHandler implements Handler {
 
     @Override
     public List<Command> operatedCommand() {
-        return List.of(Command.PROPOSE);
+        return List.of(Command.PROPOSE, Command.DIVORCE);
     }
 
     @Override
