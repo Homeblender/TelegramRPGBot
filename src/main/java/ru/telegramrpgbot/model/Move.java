@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.glassfish.grizzly.http.util.TimeStamp;
 import ru.telegramrpgbot.bot.enums.BodyPart;
 import ru.telegramrpgbot.bot.enums.MoveState;
-
+import java.sql.Timestamp;
 import javax.persistence.*;
 
 @Entity
@@ -36,6 +37,8 @@ public class Move {
     MoveState moveState = MoveState.NEW_MOVE;
     @Builder.Default
     Long hp = 100L;
+    @Column(name = "end_time")
+    Timestamp endTime;
     @Builder.Default
     Long num = 0L;
 }

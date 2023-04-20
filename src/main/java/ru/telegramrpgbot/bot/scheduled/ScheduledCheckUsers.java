@@ -7,11 +7,14 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.telegramrpgbot.bot.Bot;
 import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.SoloActivityReward;
 import ru.telegramrpgbot.model.User;
+import ru.telegramrpgbot.model.Move;
 import ru.telegramrpgbot.repository.SoloActivityRepository;
 import ru.telegramrpgbot.repository.SoloActivityRewardRepository;
 import ru.telegramrpgbot.repository.UserRepository;
+import ru.telegramrpgbot.repository.MoveRepository;
 import ru.telegramrpgbot.bot.util.TelegramUtil;
 
 import java.sql.Timestamp;
@@ -26,13 +29,15 @@ import static ru.telegramrpgbot.bot.util.IngameUtil.*;
 public class ScheduledCheckUsers {
 
     private final UserRepository userRepository;
+    private final MoveRepository moveRepository;
     private final SoloActivityRewardRepository soloActivityRewardRepository;
     private final Bot bot;
     private final Random rnd = new Random();
 
-    public ScheduledCheckUsers(UserRepository userRepository, SoloActivityRepository soloActivityRepository, SoloActivityRewardRepository soloActivityRewardRepository, Bot bot) {
+    public ScheduledCheckUsers(UserRepository userRepository, SoloActivityRepository soloActivityRepository, SoloActivityRewardRepository soloActivityRewardRepository, MoveRepository moveRepository, Bot bot) {
         this.userRepository = userRepository;
         this.soloActivityRewardRepository = soloActivityRewardRepository;
+        this.moveRepository = moveRepository;
         this.bot = bot;
     }
 
@@ -107,6 +112,23 @@ public class ScheduledCheckUsers {
                     }
                     userRepository.save(user);
 
+                }
+            }
+        }
+    }
+
+    @Scheduled(fixedDelay = 15000)
+    public void CheckMoves() throws InterruptedException {
+        List<Move> moves = moveRepository.findAll();
+        for (Move move : moves) {
+            if (move.getEndTime().before(new Timestamp(System.currentTimeMillis()))) {
+                var messagesToSend = IngameUtil.cancel(move.getUserId());
+                if (messagesToSend != null && !messagesToSend.isEmpty()) {
+                    messagesToSend.forEach(response -> {
+                        if (response instanceof SendMessage) {
+                            executeWithExceptionCheck((SendMessage) response);
+                        }
+                    });
                 }
             }
         }

@@ -1,19 +1,26 @@
 package ru.telegramrpgbot.bot.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.message.Message;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.telegramrpgbot.bot.Bot;
-import ru.telegramrpgbot.model.BaseItem;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.model.*;
 import ru.telegramrpgbot.model.Class;
-import ru.telegramrpgbot.model.IngameItem;
-import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.IngameItemRepository;
 import ru.telegramrpgbot.repository.UserRepository;
+import ru.telegramrpgbot.repository.MoveRepository;
+import ru.telegramrpgbot.repository.FightRepository;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
 @Slf4j
@@ -21,12 +28,16 @@ public class IngameUtil {
     private static UserRepository userRepository;
     private static IngameItemRepository ingameItemRepository;
     private static ClassRepository classRepository;
+    private static MoveRepository moveRepository;
+    private static FightRepository fightRepository;
     private static Bot bot;
 
-    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository) {
+    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository, MoveRepository moveRepository, FightRepository fightRepository) {
         IngameUtil.userRepository = userRepository;
         IngameUtil.ingameItemRepository = ingameItemRepository;
         IngameUtil.classRepository = classRepository;
+        IngameUtil.moveRepository = moveRepository;
+        IngameUtil.fightRepository = fightRepository;
         IngameUtil.bot = bot;
     }
 
@@ -187,5 +198,29 @@ public class IngameUtil {
                 classes) {
             recGetAllAvailableClasses(item, result);
         }
+    }
+
+    public  static List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
+        Fight fight = moveRepository.getMoveByUserId(user).orElse(null).getFightId();
+        User actor = fight.getUser1Id();
+        User opponent = fight.getUser2Id();
+
+        Move actorMove = moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null);
+        Move opponentMove = moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null);
+
+        actor.setUserState(BotState.NONE);
+        opponent.setUserState(BotState.NONE);
+        userRepository.save(actor);
+        userRepository.save(opponent);
+
+        moveRepository.delete(actorMove);
+        moveRepository.delete(opponentMove);
+        fightRepository.delete(fight);
+
+        var messageToActor = createMessageTemplate(actor);
+        var messageToOpponent = createMessageTemplate(opponent);
+        messageToActor.setText("Вызов отменен");
+        messageToOpponent.setText("Вызов отменен");
+        return List.of(messageToActor, messageToOpponent);
     }
 }
