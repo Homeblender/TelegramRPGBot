@@ -51,12 +51,12 @@ public class Bot extends TelegramLongPollingBot {
                 }
             });
         }
-//        if (update.hasCallbackQuery()) {
-//            AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
-//            answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
-//            answerCallbackQuery.setText("");
-//            execute(answerCallbackQuery);
-//        }
+        if (update.hasCallbackQuery()) {
+            AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+            answerCallbackQuery.setCallbackQueryId(update.getCallbackQuery().getId());
+            answerCallbackQuery.setText("");
+            execute(answerCallbackQuery);
+        }
     }
 
     private void executeWithExceptionCheck(SendMessage sendMessage) {

@@ -80,7 +80,7 @@ public class IngameUtil {
     }
 
     public static void levelUp(User user) {
-        if (user.getExp() > countExpToLevel(user.getLevel()+1)){
+        if (user.getExp() >= countExpToLevel(user.getLevel()+1)){
             user.setExp(user.getExp()- countExpToLevel(user.getLevel()+1));
 
             var levelUpMessage = TelegramUtil.createMessageTemplate(user);
