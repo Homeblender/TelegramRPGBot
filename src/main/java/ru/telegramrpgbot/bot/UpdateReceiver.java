@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.handler.Handler;
@@ -90,9 +91,11 @@ public class UpdateReceiver {
 //            log.info(allMessages.size()+"");
 //            log.info(((SendMessage)allMessages.get(0)).getChatId()+"  " + user.getChatId().toString());
 //            log.info(((SendMessage)allMessages.get(1)).getChatId()+"  " + user.getChatId().toString());
-            SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())).findFirst().orElseThrow();
-
-            var otherMessages = new ArrayList<>(allMessages.stream().filter(w -> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString())).toList());
+            SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())&&!(((SendMessage) w).getReplyMarkup() instanceof ReplyKeyboardMarkup)).findFirst().orElse(null);
+            if (messageToKeyboard ==null){
+                return allMessages;
+            }
+            var otherMessages = new ArrayList<>(allMessages.stream().filter(w -> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString()) ).toList());
             EditMessageText new_message = new EditMessageText();
             new_message.setChatId(messageToKeyboard.getChatId());
             new_message.setMessageId(callbackQuery.getMessage().getMessageId());
@@ -104,7 +107,6 @@ public class UpdateReceiver {
             if (!otherMessages.isEmpty()){
                 otherMessages.add(new_message);
                 return otherMessages;
-
             }
             return List.of(new_message);
         }

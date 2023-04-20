@@ -16,6 +16,7 @@ import ru.telegramrpgbot.repository.UserRepository;
 import ru.telegramrpgbot.repository.MoveRepository;
 import ru.telegramrpgbot.repository.FightRepository;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,9 +200,8 @@ public class IngameUtil {
             recGetAllAvailableClasses(item, result);
         }
     }
-
-    public  static List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
-        Fight fight = moveRepository.getMoveByUserId(user).orElse(null).getFightId();
+    public static List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
+        Fight fight = moveRepository.getMoveByUserId(user).orElseThrow().getFightId();
         User actor = fight.getUser1Id();
         User opponent = fight.getUser2Id();
 

@@ -115,7 +115,7 @@ public class SharpeningHandler implements Handler {
 
         replyMessage.append(String.format("Точильных камней - x%d%n", sharpeningStonesCount));
         replyMessage.append("\nШанс успешной заточки - %").append(sharpeningSuccess(item.getSharpness()+1)).append("\n");
-        if (sharpeningSuccess(item.getSharpness()) != 100) {
+        if (sharpeningSuccess(item.getSharpness() + 1) != 100) {
             replyMessage.append("\nПри неудаче уровень заточки предмета упадет.");
         }
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();

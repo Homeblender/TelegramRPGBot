@@ -49,7 +49,7 @@ public class CityCommandsHandler implements Handler {
         var buttons = new KeyboardButton[]{
                 new KeyboardButton("⚒ Кузница"),
                 new KeyboardButton("\uD83D\uDED2 Магазин"),
-                new KeyboardButton("⬅️ Назад")};
+                new KeyboardButton("\uD83C\uDF06 Назад")};
 
         var reply = createMessageTemplate(user);
         reply.setText(String.format(

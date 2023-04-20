@@ -60,6 +60,7 @@ public class UserDataHandler implements Handler {
                         "%n\uD83D\uDC8D Партнер: %s%n" +
                         "%n\uD83D\uDCB0 Золото: %s%n" +
                         "\uD83D\uDC8E Очки оффлайн ивентов: %s%n" +
+                        "%nУрон = %d \uD83D\uDDE1 Защита = %d \uD83D\uDEE1 %n" +
                         "%n \uD83D\uDCE6 Инвентарь (x%d) - /inventory" +
                         "%n \uD83D\uDC5C Экипировка (x%d) - /equipment",
                 user.getUserClass().getName(),
@@ -79,10 +80,12 @@ public class UserDataHandler implements Handler {
                 user.getCurrentMana(),
                 user.getMaxMana(),
                 state,
-                user.getPartner() != null ? user.getPartner() : "вы одиноки \uD83D\uDE22",
+                user.getPartner() != null ? "*"+user.getPartner().getName()+"*" : "вы одиноки \uD83D\uDE22",
                 user.getGold(),
                 user.getOfflinePoints(),
-                inventSize,
+                IngameUtil.countDamage(user),
+                IngameUtil.countArmor(user),
+                inventSize - equipmentSize,
                 equipmentSize
         ));
         return List.of(reply);
