@@ -66,7 +66,7 @@ public class UserDataHandler implements Handler {
                 user.getUserClass().getName(),
                 user.getName(),
                 user.getLevel(),
-                IngameUtil.getAllAvailableClasses(user).size() > 0 ? "\n\uD83C\uDD95 Доступно улучшение *класса* - /classes \n" +
+                IngameUtil.getAvailableClasses(user).size() > 0 ? "\n\uD83C\uDD95 Доступно улучшение *класса* - /classes \n" +
                         "" : "",
                 user.getPassivePoints() > 0 ? "\n\uD83C\uDD99Очков пассивных умений: *" + user.getPassivePoints() + "* (/passives)\n" +
                         "" : "",

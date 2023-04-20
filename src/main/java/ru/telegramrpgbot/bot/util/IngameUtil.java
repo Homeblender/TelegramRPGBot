@@ -8,11 +8,7 @@ import ru.telegramrpgbot.bot.Bot;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.model.*;
 import ru.telegramrpgbot.model.Class;
-import ru.telegramrpgbot.repository.ClassRepository;
-import ru.telegramrpgbot.repository.IngameItemRepository;
-import ru.telegramrpgbot.repository.UserRepository;
-import ru.telegramrpgbot.repository.MoveRepository;
-import ru.telegramrpgbot.repository.FightRepository;
+import ru.telegramrpgbot.repository.*;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -27,17 +23,19 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 public class IngameUtil {
     private static UserRepository userRepository;
     private static IngameItemRepository ingameItemRepository;
+    private static AppliedSkillRepository appliedSkillRepository;
     private static ClassRepository classRepository;
     private static MoveRepository moveRepository;
     private static FightRepository fightRepository;
     private static Bot bot;
 
-    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository, MoveRepository moveRepository, FightRepository fightRepository) {
+    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository, MoveRepository moveRepository, FightRepository fightRepository, AppliedSkillRepository appliedSkillRepository) {
         IngameUtil.userRepository = userRepository;
         IngameUtil.ingameItemRepository = ingameItemRepository;
         IngameUtil.classRepository = classRepository;
         IngameUtil.moveRepository = moveRepository;
         IngameUtil.fightRepository = fightRepository;
+        IngameUtil.appliedSkillRepository = appliedSkillRepository;
         IngameUtil.bot = bot;
     }
 
@@ -96,6 +94,10 @@ public class IngameUtil {
                 log.info(e.getMessage());
             }
             user.setLevel(user.getLevel() + 1);
+            user.setCurrentStamina(user.getMaxStamina());
+            user.setStaminaRestor(null);
+            user.setCurrentHealth(user.getMaxHealth());
+            user.setCurrentMana(user.getMaxMana());
             user.setPassivePoints(user.getPassivePoints() + 1);
             userRepository.save(user);
             levelUp(user);
@@ -163,11 +165,15 @@ public class IngameUtil {
 
     public static long countDamage(User user) {
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
+        var skills = appliedSkillRepository.findAllByUser(user);
         long sum = 0L;
         for (IngameItem item : items) {
             if (item.isEquipped()) {
                 sum += countItemDamage(item);
             }
+        }
+        for (AppliedSkill skill: skills){
+            sum += (skill.getSkill().getDamageBonus()*skill.getSkillLevel());
         }
         return sum;
     }
@@ -183,11 +189,15 @@ public class IngameUtil {
 
     public static long countArmor(User user) {
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
+        var skills = appliedSkillRepository.findAllByUser(user);
         long sum = 0L;
         for (IngameItem item : items) {
             if (item.isEquipped()) {
                 sum += countItemArmor(item);
             }
+        }
+        for (AppliedSkill skill: skills){
+            sum += (skill.getSkill().getArmorBonus()*skill.getSkillLevel());
         }
         return sum;
     }
@@ -197,13 +207,13 @@ public class IngameUtil {
     }
 
 
-    public static List<Class> getAllAvailableClasses(IngameItem item) {
+    public static List<Class> getAvailableClasses(IngameItem item) {
         List<Class> result = new ArrayList<>();
         recGetAllAvailableClasses(item.getBaseItem().getClassRequired(), result);
         return result;
     }
 
-    public static List<Class> getAllAvailableClasses(User user) {
+    public static List<Class> getAvailableClasses(User user) {
         return classRepository.findAllByBaseClass(user.getUserClass()).stream().filter(w -> w.getRequiredLevel() <= user.getLevel()).toList();
     }
 

@@ -1,5 +1,6 @@
 package ru.telegramrpgbot.bot.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -22,6 +23,7 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
 
 @Component
+@Slf4j
 public class SoloActivityHandler implements Handler {
     private final UserRepository userRepository;
     private final SoloActivityRepository soloActivityRepository;
@@ -83,15 +85,14 @@ public class SoloActivityHandler implements Handler {
 
     private List<PartialBotApiMethod<? extends Serializable>> showActivities(User user) {
         List<SoloActivity> availableActivities = allActivities.stream().filter(w -> w.getRequiredLevel() <= user.getLevel()).toList();
-
         var reply = createMessageTemplate(user);
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = new ArrayList<>();
         StringBuilder replyText = new StringBuilder("Выбери понравившееся приключение из доступных тебе:\n");
 
         for (SoloActivity soloActivity : availableActivities) {
-            inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(soloActivity.getName(), soloActivity.getName()));
-            replyText.append(String.format("\n*%s* (%d мин.):\n\n%s", soloActivity.getName(), soloActivity.getActivityDuration(), soloActivity.getDescription()));
+            inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(soloActivity.getName().split(" ")[0], soloActivity.getName()));
+            replyText.append(String.format("\n*%s* (%d мин.):\n\n%s%n", soloActivity.getName(), soloActivity.getActivityDuration(), soloActivity.getDescription()));
         }
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setText(replyText.toString());

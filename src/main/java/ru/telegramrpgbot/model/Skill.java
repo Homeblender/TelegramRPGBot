@@ -19,11 +19,12 @@ public class Skill {
     Long id;
     @Column(columnDefinition = "Text")
     String name;
-    @Column(columnDefinition = "Text")
-    String description;
     @ManyToOne
     @JoinColumn(name = "class_id")
     Class classId;
-    @JoinColumn(name = "passive_points_required")
-    Long passivePointsRequired;
+    Long damageBonus;
+    Long armorBonus;
+    Long healthBonus;
+    Long manaBonus;
+
 }

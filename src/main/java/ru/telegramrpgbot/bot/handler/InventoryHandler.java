@@ -172,7 +172,7 @@ public class InventoryHandler implements Handler {
                         ingameItem.getBaseItem().getName(),
                         ingameItem.getSharpness()
                 ));
-                if (IngameUtil.getAllAvailableClasses(ingameItem).contains(user.getUserClass())) {
+                if (IngameUtil.getAvailableClasses(ingameItem).contains(user.getUserClass())) {
                     replyMessage.append(equipTemplate(ingameItem));
                 }else replyMessage.append(String.format("Минимальный требуемый класс - _%s_%n",ingameItem.getBaseItem().getClassRequired().getName()));
                 if (ingameItem.getBaseItem().getBuyPrice() != null) {

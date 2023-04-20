@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.Class;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.ClassRepository;
@@ -13,7 +14,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.telegramrpgbot.bot.util.IngameUtil.getAllAvailableClasses;
+import static ru.telegramrpgbot.bot.util.IngameUtil.getAvailableClasses;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
@@ -36,7 +37,7 @@ public class ClassesHandler implements Handler {
 
     private List<PartialBotApiMethod<? extends Serializable>> classAccept(User user, String message) {
         var reply = createMessageTemplate(user);
-        var availableClasses = getAllAvailableClasses(user);
+        var availableClasses = IngameUtil.getAvailableClasses(user);
         List<String> messageList = Arrays.stream(message.split("_")).toList();
         if (messageList.size() < 2 || messageList.get(1).length() < 1) {
             reply.setText(createClassMessage(user.getUserClass()));
@@ -66,7 +67,7 @@ public class ClassesHandler implements Handler {
 
     private List<PartialBotApiMethod<? extends Serializable>> showClasses(User user, String message) {
         var reply = createMessageTemplate(user);
-        var availableClasses = getAllAvailableClasses(user);
+        var availableClasses = IngameUtil.getAvailableClasses(user);
         if (availableClasses.isEmpty()) {
             reply.setText("Нет доступных классов.");
             return List.of(reply);

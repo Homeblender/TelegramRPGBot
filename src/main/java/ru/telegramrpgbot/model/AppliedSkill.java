@@ -19,10 +19,10 @@ public class AppliedSkill {
     Long id;
     @ManyToOne
     @JoinColumn(name = "skill_id")
-    Skill skillId;
+    Skill skill;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User userId;
+    User user;
     @JoinColumn(name = "skill_level")
     Long skillLevel;
 }

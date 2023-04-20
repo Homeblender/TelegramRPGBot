@@ -107,7 +107,7 @@ public class EquipmentHandler implements Handler {
             reply.setText("Нельзя экипировать предмет этого типа.");
             return List.of(reply);
         }
-        if (!IngameUtil.getAllAvailableClasses(item).contains(user.getUserClass())) {
+        if (!IngameUtil.getAvailableClasses(item).contains(user.getUserClass())) {
             reply.setText("Ваш класс не подходит для экипировки этого предмета.");
             return List.of(reply);
         }
