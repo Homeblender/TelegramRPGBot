@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.handler.Handler;
@@ -18,6 +19,7 @@ import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,16 +87,27 @@ public class UpdateReceiver {
                 } catch (Exception ignored) {
                 }
             }
-            SendMessage t = (SendMessage) handler.handle(user, callbackQuery.getData()).stream().findFirst().orElseThrow();
+            List<PartialBotApiMethod<? extends Serializable>> allMessages = handler.handle(user, callbackQuery.getData()).stream().toList();
+//            log.info(allMessages.size()+"");
+//            log.info(((SendMessage)allMessages.get(0)).getChatId()+"  " + user.getChatId().toString());
+//            log.info(((SendMessage)allMessages.get(1)).getChatId()+"  " + user.getChatId().toString());
+            SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())&&!(((SendMessage) w).getReplyMarkup() instanceof ReplyKeyboardMarkup)).findFirst().orElse(null);
+            if (messageToKeyboard ==null){
+                return allMessages;
+            }
+            var otherMessages = new ArrayList<>(allMessages.stream().filter(w -> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString()) ).toList());
             EditMessageText new_message = new EditMessageText();
-            new_message.setChatId(callbackQuery.getMessage().getChatId());
+            new_message.setChatId(messageToKeyboard.getChatId());
             new_message.setMessageId(callbackQuery.getMessage().getMessageId());
-            new_message.setText(t.getText());
+            new_message.setText(messageToKeyboard.getText());
             new_message.enableMarkdown(true);
             try {
-                new_message.setReplyMarkup((InlineKeyboardMarkup) t.getReplyMarkup());
+                new_message.setReplyMarkup((InlineKeyboardMarkup) messageToKeyboard.getReplyMarkup());
             }catch (Exception ignored){ }
-
+            if (!otherMessages.isEmpty()){
+                otherMessages.add(new_message);
+                return otherMessages;
+            }
             return List.of(new_message);
         }
         return List.of();

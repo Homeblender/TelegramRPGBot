@@ -8,21 +8,22 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "applied_skill", schema = "public")
+@Table(name = "consumable_item_effect", schema = "fixed")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppliedSkill {
+public class ConsumableItemEffect {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @ManyToOne
-    @JoinColumn(name = "skill_id")
-    Skill skill;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    User user;
-    @JoinColumn(name = "skill_level")
-    Long skillLevel;
+    @OneToOne
+    @JoinColumn(name = "base_item_id")
+    BaseItem baseItem;
+    Long addLife;
+    Long addMana;
+    Long addStamina;
+
+
+
 }
