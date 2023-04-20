@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
@@ -39,10 +40,11 @@ public class WeddingHandler implements Handler {
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User actor, String message) {
+        if (message.equalsIgnoreCase(Command.CANCEL_PROPOSE.name())) {
+            return cancel(actor);
+        }
         if (actor.getUserState() == BotState.WAITING_FOR_ANSWER) {
-            if (message.equalsIgnoreCase(Command.CANCEL_PROPOSE.name())) {
-                return cancel(actor);
-            } else if (message.equalsIgnoreCase(Command.ACCEPT_PROPOSE.name())) {
+            if (message.equalsIgnoreCase(Command.ACCEPT_PROPOSE.name())) {
                 return accept(actor);
             }
             else {
@@ -61,6 +63,15 @@ public class WeddingHandler implements Handler {
         if(actor.getPartner() != null) {
             messageToUser.setText("У вас уже есть пара.\uD83D\uDC94\n" +
                     "Если вы хотите сыграть свадьбу с кем-то еще, сначала разведитесь с нынешним партнером.");
+            return  List.of(messageToUser);
+        }
+        User partner = userRepository.findAll().stream()
+                .filter(h -> h.getPartner() != null)
+                .filter(h -> Objects.equals(h.getPartner().getChatId(), actor.getChatId()))
+                .findFirst()
+                .orElse(null);
+        if(partner != null) {
+            messageToUser.setText(String.format("Вы уже сделали предложение %s.\uD83D\uDC94\n", partner.getName()));
             return  List.of(messageToUser);
         }
         if (messageMass.length < 2) {
@@ -118,12 +129,31 @@ public class WeddingHandler implements Handler {
         return List.of(messageToUser, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> cancel(User actor) {
+        log.info("отмена");
         User opponent = actor.getPartner();
+        if (opponent == null) {
+            opponent = userRepository.findAll().stream()
+                    .filter(h -> h.getPartner() != null)
+                    .filter(h -> Objects.equals(h.getPartner().getChatId(), actor.getChatId()))
+                    .findFirst()
+                    .orElse(null);
+            log.info("actor");
+        }
         actor.setPartner(null);
+        opponent.setPartner(null);
+        if (actor.getUserState() == BotState.WAITING_FOR_ANSWER) {
+            actor.setUserState(BotState.NONE);
+        }
+        if (opponent.getUserState() == BotState.WAITING_FOR_ANSWER) {
+            opponent.setUserState(BotState.NONE);
+        }
         userRepository.save(actor);
+        userRepository.save(opponent);
         var messageToOpponent = createMessageTemplate(opponent);
-        messageToOpponent.setText("К сожалению игрок ответил *нет*.\uD83D\uDC94");
-        return  List.of(messageToOpponent);
+        messageToOpponent.setText("К сожалению, игрок отменил предложение.\uD83D\uDC94");
+        var messageToActor = createMessageTemplate(actor);
+        messageToActor.setText("Вы отменили предложение.\uD83D\uDC94");
+        return  List.of(messageToOpponent, messageToActor);
 
     }
     private List<PartialBotApiMethod<? extends Serializable>> waiting(User actor) {
