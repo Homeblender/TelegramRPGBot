@@ -164,14 +164,12 @@ public class FightHandler implements Handler {
         var messageToOpponent1 = createMessageTemplate(opponent);
         var messageToActor2 = createMessageTemplate(actor);
         var messageToOpponent2 = createMessageTemplate(opponent);
-        String message1 = "Вызов принят!";
-        String message2 = "Выберите, что будете защищать\n(Голова, грудь, ноги)";
+        String message1 = "Вызов принят!\nВыберите, что будете защищать\n";
+
+        messageToActor1.setReplyMarkup(createKeyboard(buttons));
         messageToActor1.setText(message1);
-        messageToActor2.setReplyMarkup(createKeyboard(buttons));
-        messageToActor2.setText(message2);
+        messageToOpponent1.setReplyMarkup(createKeyboard(buttons));
         messageToOpponent1.setText(message1);
-        messageToOpponent2.setReplyMarkup(createKeyboard(buttons));
-        messageToOpponent2.setText(message2);
         return List.of(messageToActor1, messageToActor2, messageToOpponent1, messageToOpponent2);
     }
     private List<PartialBotApiMethod<? extends Serializable>> move(User user, String message) {
