@@ -20,6 +20,9 @@ public enum Command {
     EQUIPMENT(null),
     ACCEPT("Принять"),
     CANCEL("Отменить"),
+    PROPOSE(null),
+    ACCEPT_PROPOSE("Принять"),
+    CANCEL_PROPOSE("Отменить"),
     CLASS(null);
     private final String russian;
     public String getRussian() {

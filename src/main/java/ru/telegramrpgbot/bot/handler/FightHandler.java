@@ -89,6 +89,11 @@ public class FightHandler implements Handler {
         }
         User opponent = userRepository.getUsersByName(messageMass[1]).orElse(null);
         var messageToOpponent = createMessageTemplate(opponent);
+        if(opponent.getUserState() != BotState.NONE) {
+            messageToUser.setText("В данный момент этот игрок занят\nПопробуйте позже");
+            return  List.of(messageToUser);
+        }
+
 
         actor.setUserState(BotState.WAITING_FOR_OPPONENT);
         userRepository.save(actor);

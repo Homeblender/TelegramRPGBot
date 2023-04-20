@@ -5,6 +5,7 @@ public enum BotState {
     WAITING_FOR_NAME(null),
     NONE("Отдых \uD83D\uDCA4"),
     WAITING_FOR_MOVE(null),
+    WAITING_FOR_ANSWER(null),
     WAITING_FOR_OPPONENT(null),
     WAITING_FOR_OPPONENT_MOVE(null),
     SOLO_ACTIVITY("ACTIVITY");
