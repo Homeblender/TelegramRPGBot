@@ -85,16 +85,24 @@ public class UpdateReceiver {
                 } catch (Exception ignored) {
                 }
             }
-            SendMessage t = (SendMessage) handler.handle(user, callbackQuery.getData()).stream().findFirst().orElseThrow();
+            List<PartialBotApiMethod<? extends Serializable>> allMessages = handler.handle(user, callbackQuery.getData()).stream().filter(w-> w instanceof SendMessage).toList();
+
+            SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())).findFirst().orElseThrow();
+
+            var otherMessages = allMessages.stream().filter(w-> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString())).toList();
             EditMessageText new_message = new EditMessageText();
-            new_message.setChatId(callbackQuery.getMessage().getChatId());
+            new_message.setChatId(messageToKeyboard.getChatId());
             new_message.setMessageId(callbackQuery.getMessage().getMessageId());
-            new_message.setText(t.getText());
+            new_message.setText(messageToKeyboard.getText());
             new_message.enableMarkdown(true);
             try {
-                new_message.setReplyMarkup((InlineKeyboardMarkup) t.getReplyMarkup());
+                new_message.setReplyMarkup((InlineKeyboardMarkup) messageToKeyboard.getReplyMarkup());
             }catch (Exception ignored){ }
+            if (!otherMessages.isEmpty()){
+                otherMessages.add(new_message);
+                return otherMessages;
 
+            }
             return List.of(new_message);
         }
         return List.of();
