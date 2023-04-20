@@ -1,8 +1,6 @@
 package ru.telegramrpgbot.bot.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.message.Message;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -16,10 +14,11 @@ import ru.telegramrpgbot.repository.UserRepository;
 import ru.telegramrpgbot.repository.MoveRepository;
 import ru.telegramrpgbot.repository.FightRepository;
 
-import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
@@ -45,8 +44,8 @@ public class IngameUtil {
     public static Long userHealthChanges(User user, Long healthChanged) {
         user.setCurrentHealth(user.getCurrentHealth() + healthChanged);
         if (user.getCurrentHealth() > user.getMaxHealth()) user.setMaxHealth(user.getCurrentHealth());
-        else if (user.getCurrentHealth() < user.getMaxHealth()) {
-            user.setMaxHealth(0L);
+        else if (user.getCurrentHealth() < 0) {
+            user.setCurrentHealth(0L);
             userDied(user);
         }
         userRepository.save(user);
@@ -56,8 +55,8 @@ public class IngameUtil {
     public static void userManaChanges(User user, Long manaChanged) {
         user.setCurrentMana(user.getCurrentMana() + manaChanged);
         if (user.getCurrentMana() > user.getMaxMana()) user.setMaxMana(user.getCurrentMana());
-        else if (user.getCurrentMana() < user.getMaxMana()) {
-            user.setMaxMana(0L);
+        else if (user.getCurrentMana() < 0) {
+            user.setCurrentMana(0L);
             userDied(user);
         }
         userRepository.save(user);
@@ -65,7 +64,12 @@ public class IngameUtil {
 
     public static void userStaminaChanges(User user, Long staminaChanged) {
         user.setCurrentStamina(user.getCurrentStamina() + staminaChanged);
-        if (user.getCurrentStamina() > user.getMaxStamina()) user.setCurrentStamina(user.getCurrentStamina());
+        if (user.getCurrentStamina() > user.getMaxStamina()) {
+            user.setCurrentStamina(user.getMaxStamina());
+        }
+        if (user.getMaxStamina().equals(user.getCurrentStamina())) {
+            user.setStaminaRestor(null);
+        }
         userRepository.save(user);
     }
 
@@ -81,18 +85,18 @@ public class IngameUtil {
     }
 
     public static void levelUp(User user) {
-        if (user.getExp() >= countExpToLevel(user.getLevel()+1)){
-            user.setExp(user.getExp()- countExpToLevel(user.getLevel()+1));
+        if (user.getExp() >= countExpToLevel(user.getLevel() + 1)) {
+            user.setExp(user.getExp() - countExpToLevel(user.getLevel() + 1));
 
             var levelUpMessage = TelegramUtil.createMessageTemplate(user);
-            levelUpMessage.setText("Ты достиг нового уровня и получил одно очко пассивных умений /passives");
+            levelUpMessage.setText("Вы достигли нового уровня и получили одно очко пассивных умений /passives");
             try {
                 bot.execute(levelUpMessage);
             } catch (TelegramApiException e) {
                 log.info(e.getMessage());
             }
-            user.setLevel(user.getLevel()+1);
-            user.setPassivePoints(user.getPassivePoints()+1);
+            user.setLevel(user.getLevel() + 1);
+            user.setPassivePoints(user.getPassivePoints() + 1);
             userRepository.save(user);
             levelUp(user);
         }
@@ -104,8 +108,8 @@ public class IngameUtil {
         ingameItems = ingameItems.stream()
                 .filter(item ->
                         item.getBaseItem() == baseItem &&
-                        item.getBaseItem().getMaxInStack() != null &&
-                        item.getItemsInStack() < item.getBaseItem().getMaxInStack())
+                                item.getBaseItem().getMaxInStack() != null &&
+                                item.getItemsInStack() < item.getBaseItem().getMaxInStack())
                 .toList();
 
         IngameItem oldIngameItem = ingameItems.stream().findFirst().orElse(null);
@@ -116,8 +120,8 @@ public class IngameUtil {
             IngameItem newItem = IngameItem.builder()
                     .baseItem(baseItem)
                     .user(user)
-                    .itemsInStack(isEquipment?null:1L)
-                    .sharpness(isEquipment? 0L: null).build();
+                    .itemsInStack(isEquipment ? null : 1L)
+                    .sharpness(isEquipment ? 0L : null).build();
             ingameItemRepository.save(newItem);
         } else {
             oldIngameItem.setItemsInStack(oldIngameItem.getItemsInStack() + 1);
@@ -128,39 +132,51 @@ public class IngameUtil {
 
     public static void userDied(User user) {
         user.setCurrentStamina(0L);
+        var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
+        user.setStaminaRestor(new Timestamp(System.currentTimeMillis() + delay));
         userRepository.save(user);
+        var diedMessage = TelegramUtil.createMessageTemplate(user);
+        diedMessage.setText("Вы умерли.");
+        try {
+            bot.execute(diedMessage);
+        } catch (TelegramApiException e) {
+            log.info(e.getMessage());
+        }
     }
 
     public static long countExpToLevel(long level) {
         long base_exp = 20;
         double constant = 1.4;
 
-        return (long) (base_exp*(Math.pow(level,constant)) - base_exp*level);
+        return (long) (base_exp * (Math.pow(level, constant)) - base_exp * level);
 
     }
+
     public static long countItemDamage(IngameItem ingameItem) {
-        if(ingameItem.getBaseItem().getDamage() == null){
+        if (ingameItem.getBaseItem().getDamage() == null) {
             return 0;
         }
-        float addDamage = ingameItem.getBaseItem().getDamage() > 5? (float)ingameItem.getBaseItem().getDamage() /10: (float) 0.5;
+        float addDamage = ingameItem.getBaseItem().getDamage() > 5 ? (float) ingameItem.getBaseItem().getDamage() / 10 : (float) 0.5;
 
         return (long) (addDamage * ingameItem.getSharpness() + ingameItem.getBaseItem().getDamage());
     }
-    public  static long countDamage(User user) {
+
+    public static long countDamage(User user) {
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
         long sum = 0L;
         for (IngameItem item : items) {
             if (item.isEquipped()) {
-                sum+=countItemDamage(item);
+                sum += countItemDamage(item);
             }
         }
         return sum;
     }
+
     public static long countItemArmor(IngameItem ingameItem) {
-        if(ingameItem.getBaseItem().getArmor() == null){
+        if (ingameItem.getBaseItem().getArmor() == null) {
             return 0;
         }
-        float addArmor = ingameItem.getBaseItem().getArmor() > 5? (float)ingameItem.getBaseItem().getArmor() /10: (float) 0.5;
+        float addArmor = ingameItem.getBaseItem().getArmor() > 5 ? (float) ingameItem.getBaseItem().getArmor() / 10 : (float) 0.5;
 
         return (long) (addArmor * ingameItem.getSharpness() + ingameItem.getBaseItem().getArmor());
     }
@@ -170,29 +186,29 @@ public class IngameUtil {
         long sum = 0L;
         for (IngameItem item : items) {
             if (item.isEquipped()) {
-                sum+=countItemArmor(item);
+                sum += countItemArmor(item);
             }
         }
         return sum;
     }
 
-    public static long countPrice(IngameItem item, long countItemsToSell){
+    public static long countPrice(IngameItem item, long countItemsToSell) {
         return item.getBaseItem().getMaxInStack() == null ? item.getBaseItem().getBuyPrice() / 3 : item.getBaseItem().getBuyPrice() / 3 * countItemsToSell;
     }
 
 
-    public static List<Class> getAllAvailableClasses(IngameItem item){
+    public static List<Class> getAllAvailableClasses(IngameItem item) {
         List<Class> result = new ArrayList<>();
         recGetAllAvailableClasses(item.getBaseItem().getClassRequired(), result);
         return result;
     }
 
-    public static List<Class> getAllAvailableClasses(User user){
-        return classRepository.findAllByBaseClass(user.getUserClass()).stream().filter(w-> w.getRequiredLevel()<=user.getLevel()).toList();
+    public static List<Class> getAllAvailableClasses(User user) {
+        return classRepository.findAllByBaseClass(user.getUserClass()).stream().filter(w -> w.getRequiredLevel() <= user.getLevel()).toList();
     }
 
 
-    private static void recGetAllAvailableClasses(Class baseClass, List<Class> result){
+    private static void recGetAllAvailableClasses(Class baseClass, List<Class> result) {
         var classes = classRepository.findAllByBaseClass(baseClass);
         result.add(baseClass);
         for (Class item :
@@ -200,6 +216,7 @@ public class IngameUtil {
             recGetAllAvailableClasses(item, result);
         }
     }
+
     public static List<PartialBotApiMethod<? extends Serializable>> cancel(User user) {
         Fight fight = moveRepository.getMoveByUserId(user).orElseThrow().getFightId();
         User actor = fight.getUser1Id();

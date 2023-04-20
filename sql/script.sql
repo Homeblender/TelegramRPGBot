@@ -103,6 +103,13 @@ CREATE TABLE fixed.base_item_craft (
 	material_base_item_id bigint references fixed.base_item(id),
 	countOfMaterial bigint
 );
+CREATE TABLE fixed.consumable_item_effect (
+    id serial PRIMARY KEY,
+	base_item_id bigint references fixed.base_item(id),
+	add_life bigint,
+	add_mana bigint,
+	add_stamina bigint
+);
 
 CREATE TABLE fixed.solo_activity_reward (
     id serial PRIMARY KEY,
@@ -203,6 +210,12 @@ insert into fixed.base_item
 insert into fixed.base_item
     (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
     VALUES ('Точильный камень', 'С его помощью можно заточить оружие или доспехи.', null, null,9,25, 50,true);
+insert into fixed.base_item
+    (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+    VALUES ('Малое зелье здоровья', 'Восстанавливает 50 здоровья.', null, null,7,5, 50,true);
+insert into fixed.consumable_item_effect
+    (base_item_id, add_life, add_mana, add_stamina)
+    VALUES(9,50,0,0);
 
 
 
@@ -222,6 +235,8 @@ insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sh
     VALUES (7,null,1436473525,false,0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
     VALUES (8,250,1436473525,false,null);
+insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
+    VALUES (9,1,1436473525,false,null);
 
 
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)

@@ -18,6 +18,7 @@ public enum Command {
     FIGHT(null),
     CLASSES(null),
     EQUIPMENT(null),
+    USE(null),
     ACCEPT("Принять"),
     CANCEL("Отменить"),
     PROPOSE(null),

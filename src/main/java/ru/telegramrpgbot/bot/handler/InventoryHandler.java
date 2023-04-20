@@ -8,8 +8,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.util.IngameUtil;
+import ru.telegramrpgbot.model.ConsumableItemEffect;
 import ru.telegramrpgbot.model.IngameItem;
 import ru.telegramrpgbot.model.User;
+import ru.telegramrpgbot.repository.ConsumableItemEffectRepository;
 import ru.telegramrpgbot.repository.IngameItemRepository;
 
 import java.io.Serializable;
@@ -25,11 +27,13 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 public class InventoryHandler implements Handler {
 
     private final IngameItemRepository ingameItemRepository;
+    private final ConsumableItemEffectRepository consumableItemEffectRepository;
     private final List<String> CALLBACK_LIST = new ArrayList<>();
 
 
-    public InventoryHandler(IngameItemRepository ingameItemRepository) {
+    public InventoryHandler(IngameItemRepository ingameItemRepository, ConsumableItemEffectRepository consumableItemEffectRepository) {
         this.ingameItemRepository = ingameItemRepository;
+        this.consumableItemEffectRepository = consumableItemEffectRepository;
         CALLBACK_LIST.add("EQUIPMENT");
         CALLBACK_LIST.add("CONSUMABLE");
         CALLBACK_LIST.add("MATERIAL");
@@ -44,11 +48,54 @@ public class InventoryHandler implements Handler {
         } else if (message.equals("MATERIAL")) {
             return showMaterialInventory(user);
         } else if (message.toUpperCase().contains(Command.SELL.name())) {
-            log.info(message);
             return sellItem(user, message);
+        }else if (message.toUpperCase().contains(Command.USE.name())) {
+            return useItem(user, message);
         }
         return showEquipmentInventory(user);
 
+    }
+
+    private List<PartialBotApiMethod<? extends Serializable>> useItem(User user, String message) {
+        var reply = createMessageTemplate(user);
+        reply.setReplyMarkup(createBaseReplyKeyboard());
+        List<String> messageList = Arrays.stream(message.split("_")).toList();
+        if (user.getUserState() != BotState.NONE) {
+            reply.setText("Вы сейчас заняты!");
+            return List.of(reply);
+        }
+        IngameItem item;
+        ConsumableItemEffect itemEffect;
+        if (messageList.size() < 2 || messageList.get(1).length() < 1) {
+            reply.setText("Не указан id предмета");
+            return List.of();
+        }
+        try {
+            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+        } catch (Exception exception) {
+            reply.setText("У вас нет таких предметов.");
+            return List.of(reply);
+        }
+        try {
+            itemEffect = consumableItemEffectRepository.findByBaseItem(item.getBaseItem()).orElseThrow();
+        } catch (Exception exception) {
+            reply.setText("Нельзя применить этот предмет.");
+            return List.of(reply);
+        }
+
+        userHealthChanges(user,itemEffect.getAddLife());
+        userManaChanges(user,itemEffect.getAddMana());
+        userStaminaChanges(user,itemEffect.getAddStamina());
+
+
+        reply.setText(String.format("Вы успешно применили *%s*.",item.getBaseItem().getName()));
+
+        if (item.getItemsInStack() == 1) ingameItemRepository.delete(item);
+        else{
+            item.setItemsInStack(item.getItemsInStack()-1);
+            ingameItemRepository.save(item);
+        }
+        return List.of(reply);
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sellItem(User user, String message) {
@@ -78,7 +125,7 @@ public class InventoryHandler implements Handler {
 
         try {
             item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
-        } catch (NumberFormatException exception) {
+        } catch (Exception exception) {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
         }
@@ -160,10 +207,13 @@ public class InventoryHandler implements Handler {
             replyMessage.append(String.format("%nИспользуемые предметы \uD83C\uDF77:%n%n"));
 
             for (IngameItem ingameItem : consumableItems) {
+                var consumableItemEffect = consumableItemEffectRepository.findById(ingameItem.getBaseItem().getId()).orElse(null);
                 replyMessage.append(String.format(
-                        "*%s* x%d%n",
+                        "*%s* x%d%n%s%n%s",
                         ingameItem.getBaseItem().getName(),
-                        ingameItem.getItemsInStack()
+                        ingameItem.getItemsInStack(),
+                        ingameItem.getBaseItem().getDescription(),
+                        consumableItemEffect==null?String.format("Использовать предмет - /use\\_%d%n",ingameItem.getId()) : ""
                 ));
                 if (ingameItem.getBaseItem().getBuyPrice() != null) {
                     replyMessage.append(sellTemplate(ingameItem));
@@ -239,7 +289,7 @@ public class InventoryHandler implements Handler {
 
     @Override
     public List<Command> operatedCommand() {
-        return List.of(Command.INVENTORY, Command.SELL);
+        return List.of(Command.INVENTORY, Command.SELL, Command.USE);
     }
 
     @Override
