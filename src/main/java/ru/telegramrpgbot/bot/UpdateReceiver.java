@@ -18,6 +18,7 @@ import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,11 +86,13 @@ public class UpdateReceiver {
                 } catch (Exception ignored) {
                 }
             }
-            List<PartialBotApiMethod<? extends Serializable>> allMessages = handler.handle(user, callbackQuery.getData()).stream().filter(w-> w instanceof SendMessage).toList();
-
+            List<PartialBotApiMethod<? extends Serializable>> allMessages = handler.handle(user, callbackQuery.getData()).stream().toList();
+//            log.info(allMessages.size()+"");
+//            log.info(((SendMessage)allMessages.get(0)).getChatId()+"  " + user.getChatId().toString());
+//            log.info(((SendMessage)allMessages.get(1)).getChatId()+"  " + user.getChatId().toString());
             SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())).findFirst().orElseThrow();
 
-            var otherMessages = allMessages.stream().filter(w-> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString())).toList();
+            var otherMessages = new ArrayList<>(allMessages.stream().filter(w -> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString())).toList());
             EditMessageText new_message = new EditMessageText();
             new_message.setChatId(messageToKeyboard.getChatId());
             new_message.setMessageId(callbackQuery.getMessage().getMessageId());

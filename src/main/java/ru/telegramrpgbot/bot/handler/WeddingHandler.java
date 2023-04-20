@@ -64,18 +64,17 @@ public class WeddingHandler implements Handler {
             return List.of(messageToUser);
         }
         if (userRepository.getUsersByName(messageMass[1]).orElse(null) == null) {
-
             messageToUser.setText("Нет такого игрока");
             return List.of(messageToUser);
         }
         if (messageMass[1].equalsIgnoreCase(actor.getName())) {
 
-            messageToUser.setText("Нельзя вызвать себя");
+            messageToUser.setText("Нельзя сделать предложение себе(");
             return List.of(messageToUser);
         }
-        User opponent = userRepository.getUsersByName(messageMass[1]).orElse(null);
-        if(opponent.getPartner() == null) {
-            messageToUser.setText("У этого игрока уже есть пара(((");
+        User opponent = userRepository.getUsersByName(messageMass[1]).orElseThrow();
+        if(opponent.getPartner() != null) {
+            messageToUser.setText("У этого игрока уже есть пара.\uD83D\uDC94");
             return  List.of(messageToUser);
         }
         if(opponent.getUserState() != BotState.NONE) {
@@ -102,7 +101,7 @@ public class WeddingHandler implements Handler {
         inlineKeyboardMarkupOpponent.setKeyboard(List.of(inlineKeyboardButtonsRowOneOpponent));
 
         messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
-        messageToOpponent.setText(String.format("Вам сделал предложение %s!!! <3", actor.getName()));
+        messageToOpponent.setText(String.format("Вам сделал предложение *%s*!!! \uD83D\uDC8D", actor.getName()));
         log.info(messageToUser.getText());
         log.info(messageToOpponent.getText());
         return List.of(messageToUser, messageToOpponent);
@@ -112,13 +111,13 @@ public class WeddingHandler implements Handler {
         actor.setPartner(null);
         userRepository.save(actor);
         var messageToOpponent = createMessageTemplate(opponent);
-        messageToOpponent.setText("К сожалению игрок ответил НЕТ(((");
+        messageToOpponent.setText("К сожалению игрок ответил *нет*.\uD83D\uDC94");
         return  List.of(messageToOpponent);
 
     }
     private List<PartialBotApiMethod<? extends Serializable>> waiting(User actor) {
         var messageToActor = createMessageTemplate(actor);
-        messageToActor.setText("Сначала ответьте на предложение");
+        messageToActor.setText("Сначала ответьте на предложение .");
         return  List.of(messageToActor);
 
     }
@@ -129,9 +128,9 @@ public class WeddingHandler implements Handler {
         userRepository.save(actor);
         userRepository.save(opponent);
         var messageToOpponent = createMessageTemplate(opponent);
-        messageToOpponent.setText(String.format("УРА!!! %s сказал ДА! ГОРЬКО!!!", actor.getName()));
-        var messageToActor = createMessageTemplate(opponent);
-        messageToActor.setText(String.format("Совет да любовь вам, %s и %s!!! ГОРЬКО!!!", actor.getName(), opponent.getName()));
+        messageToOpponent.setText(String.format("\uD83C\uDF7E УРА!!! _%s_ сказал ДА! ГОРЬКО!!! \uD83D\uDC9E", actor.getName()));
+        var messageToActor = createMessageTemplate(actor);
+        messageToActor.setText(String.format("Совет да любовь вам, _%s_ и _%s_!!! ГОРЬКО!!! \uD83C\uDF7E", actor.getName(), opponent.getName()));
         return List.of(messageToActor, messageToOpponent);
 
     }
