@@ -74,7 +74,7 @@ public class WeddingHandler implements Handler {
             return List.of(messageToUser);
         }
         User opponent = userRepository.getUsersByName(messageMass[1]).orElse(null);
-        if(opponent.getPartner() == null) {
+        if(opponent.getPartner() != null) {
             messageToUser.setText("У этого игрока уже есть пара(((");
             return  List.of(messageToUser);
         }
@@ -130,7 +130,7 @@ public class WeddingHandler implements Handler {
         userRepository.save(opponent);
         var messageToOpponent = createMessageTemplate(opponent);
         messageToOpponent.setText(String.format("УРА!!! %s сказал ДА! ГОРЬКО!!!", actor.getName()));
-        var messageToActor = createMessageTemplate(opponent);
+        var messageToActor = createMessageTemplate(actor);
         messageToActor.setText(String.format("Совет да любовь вам, %s и %s!!! ГОРЬКО!!!", actor.getName(), opponent.getName()));
         return List.of(messageToActor, messageToOpponent);
 
