@@ -39,14 +39,12 @@ public class Bot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-//        if (update.hasMessage()){
-//            log.info(update.getMessage().getChatId()+"");
-//            log.info(update.getMessage().getFrom().getId()+"");
-//            if (update.getMessage().isGroupMessage()){
-//                log.info("group");
-//                log.info(update.getMessage().getChat().getId()+"");
-//            }
-//        }
+        SendMessage send = new SendMessage();
+        send.setChatId(1436473525L);
+        send.enableMarkdown(true);
+        send.setText(String.format("[inline mention of a user](tg://user?id=%d)",1180645967));
+        executeWithExceptionCheck(send);
+
         var messagesToSend = updateReceiver.handle(update);
         if (messagesToSend != null && !messagesToSend.isEmpty()) {
             messagesToSend.forEach(response -> {

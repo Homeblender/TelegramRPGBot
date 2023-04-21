@@ -17,7 +17,6 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
 public class NameChosingHandler implements Handler {
-    //Храним поддерживаемые CallBackQuery в виде констант
     public static final String NAME_ACCEPT = "/enter_name_accept";
     public static final String NAME_CHANGE = "/WAITING_FOR_NAME";
     public static final String NAME_CHANGE_CANCEL = "/enter_name_cancel";
@@ -36,7 +35,6 @@ public class NameChosingHandler implements Handler {
             return changeName(user);
         }
         return checkName(user, message);
-
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> accept(User user) {
@@ -59,10 +57,8 @@ public class NameChosingHandler implements Handler {
             return List.of(reply);
         }
         user.setName(message);
-        // При проверке имени мы превентивно сохраняем пользователю новое имя в базе
         userRepository.save(user);
 
-        // Делаем кнопку для применения изменений
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
                 createInlineKeyboardButton("Да.", NAME_ACCEPT));
@@ -76,11 +72,9 @@ public class NameChosingHandler implements Handler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> changeName(User user) {
-        // При запросе изменения имени мы меняем BotState
         user.setUserState(BotState.WAITING_FOR_NAME);
         userRepository.save(user);
 
-        // Создаем кнопку для отмены операции
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(

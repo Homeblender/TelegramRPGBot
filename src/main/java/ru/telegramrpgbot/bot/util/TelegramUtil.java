@@ -34,14 +34,29 @@ public class TelegramUtil {
 
     public static ReplyKeyboard createBaseReplyKeyboard(){
 
-        var buttons = new KeyboardButton[] {
+        var buttons1 = new KeyboardButton[] {
                 new KeyboardButton("\uD83D\uDC64 Персонаж"),
                 new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Исследования"),
                 new KeyboardButton("\uD83C\uDF06 Город"),
-                new KeyboardButton("\uD83C\uDF89 Пати")
         };
 
-        return createKeyboard(buttons);
+        var buttons2 = new KeyboardButton[] {
+                new KeyboardButton("\uD83C\uDF89 Группа"),
+                new KeyboardButton("\uD83C\uDF89 Групповые сражения"),
+                new KeyboardButton("\uD83C\uDF96 События")
+        };
+        KeyboardRow row1 = new KeyboardRow();
+        row1.addAll(List.of(buttons1));
+        KeyboardRow row2 = new KeyboardRow();
+        row2.addAll(List.of(buttons2));
+
+        List<KeyboardRow> rows = new ArrayList<>();
+        rows.add(row1);
+        rows.add(row2);
+
+        var newReplyKeyboard = new ReplyKeyboardMarkup(rows);
+        newReplyKeyboard.setResizeKeyboard(true);
+        return newReplyKeyboard;
     }
 
     public static ReplyKeyboardMarkup createKeyboard(KeyboardButton[] buttons) {

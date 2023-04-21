@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Party{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long partyId;
+    Long id;
     @Column(columnDefinition = "Text")
     String name;
     @Column(columnDefinition = "Text")

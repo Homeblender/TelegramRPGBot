@@ -55,7 +55,6 @@ public class UpdateReceiver {
         if (isMessageWithText(update)) {
             Message message = update.getMessage();
             String messageText = update.getMessage().getText().toUpperCase();
-
             Long chatId = message.getFrom().getId();
             User user = userRepository.getUserByChatId(chatId).orElseGet(() ->
                     userRepository.save(User.builder()
@@ -63,8 +62,6 @@ public class UpdateReceiver {
                             .name(update.getMessage().getChat().getFirstName() + "TEMP0")
                             .userClass(classRepository.findById(1L).orElseThrow())
                             .build()));
-
-
             Handler handler = getHandlerByState(user.getUserState());
             if (handler == null) {
                 try {

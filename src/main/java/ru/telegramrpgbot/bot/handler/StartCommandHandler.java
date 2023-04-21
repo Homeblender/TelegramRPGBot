@@ -24,13 +24,10 @@ public class StartCommandHandler implements Handler{
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>>handle(User user, String message) {
-        // Приветствуем пользователя
         SendMessage welcomeMessage = createMessageTemplate(user);
         welcomeMessage.setText("Привет!");
-        // Просим назваться
         SendMessage registrationMessage = createMessageTemplate(user);
         registrationMessage.setText("Назови себя.");
-        // Меняем пользователю статус на - "ожидание ввода имени"
         user.setUserState(BotState.WAITING_FOR_NAME);
         userRepository.save(user);
 

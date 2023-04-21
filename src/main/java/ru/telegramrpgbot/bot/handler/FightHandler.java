@@ -4,26 +4,26 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import ru.telegramrpgbot.bot.enums.BodyPart;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
-import ru.telegramrpgbot.bot.enums.BodyPart;
 import ru.telegramrpgbot.bot.enums.MoveState;
-import ru.telegramrpgbot.model.Fight;
-import ru.telegramrpgbot.model.User;
-import ru.telegramrpgbot.model.Move;
 import ru.telegramrpgbot.bot.util.IngameUtil;
-import ru.telegramrpgbot.repository.UserRepository;
+import ru.telegramrpgbot.model.Fight;
+import ru.telegramrpgbot.model.Move;
+import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.FightRepository;
 import ru.telegramrpgbot.repository.MoveRepository;
+import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
@@ -41,6 +41,7 @@ public class FightHandler implements Handler {
         this.fightRepository = fightRepository;
         this.moveRepository = moveRepository;
     }
+
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User actor, String message) {
         log.info(message);
@@ -48,13 +49,12 @@ public class FightHandler implements Handler {
         if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT || actor.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
             if (message.equalsIgnoreCase(Command.CANCEL.name()) && actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
                 return IngameUtil.cancel(actor);
-            }
-            else {
+            } else {
                 return waiting(actor);
             }
         }
 
-        if(actor.getUserState() == BotState.WAITING_FOR_MOVE) {
+        if (actor.getUserState() == BotState.WAITING_FOR_MOVE) {
             log.info(actor.getName());
             return move(actor, message);
         }
@@ -63,35 +63,36 @@ public class FightHandler implements Handler {
         }
         return startFight(actor, message);
     }
+
     private List<PartialBotApiMethod<? extends Serializable>> startFight(User actor, String message) {
         log.info(actor.getName());
         log.info(message);
         var messageToUser = createMessageTemplate(actor);
         String[] messageMass = message.split("_");
-        if(messageMass.length<2){
+        if (messageMass.length < 2) {
             log.info("меньше 2");
             messageToUser.setText("Не указан ник соперника");
             return List.of(messageToUser);
         }
-        if(messageMass.length>2){
+        if (messageMass.length > 2) {
             messageToUser.setText("Можно указать ник только одного соперника");
             return List.of(messageToUser);
         }
-        if (userRepository.getUsersByName(messageMass[1]).orElse(null) == null){
+        if (userRepository.getUsersByName(messageMass[1]).orElse(null) == null) {
 
             messageToUser.setText("Нет такого игрока");
             return List.of(messageToUser);
         }
-        if (messageMass[1].equalsIgnoreCase(actor.getName())){
+        if (messageMass[1].equalsIgnoreCase(actor.getName())) {
 
             messageToUser.setText("Нельзя вызвать себя");
             return List.of(messageToUser);
         }
-        User opponent = userRepository.getUsersByName(messageMass[1]).orElse(null);
+        User opponent = userRepository.getUsersByName(messageMass[1]).orElseThrow();
         var messageToOpponent = createMessageTemplate(opponent);
-        if(opponent.getUserState() != BotState.NONE) {
+        if (opponent.getUserState() != BotState.NONE) {
             messageToUser.setText("В данный момент этот игрок занят\nПопробуйте позже");
-            return  List.of(messageToUser);
+            return List.of(messageToUser);
         }
 
 
@@ -102,10 +103,10 @@ public class FightHandler implements Handler {
         Move actorMove = moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null);
         Move opponentMove = moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null);
         if (actorMove != null) {
-            moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null));
+            moveRepository.delete(Objects.requireNonNull(moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null)));
         }
         if (opponentMove != null) {
-            moveRepository.delete(moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null));
+            moveRepository.delete(Objects.requireNonNull(moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null)));
         }
 
         moveRepository.save(Move.builder().userId(actor).fightId(fight).endTime(new Timestamp(System.currentTimeMillis() + waitingTime)).build());
@@ -130,6 +131,7 @@ public class FightHandler implements Handler {
         log.info(messageToOpponent.getText());
         return List.of(messageToUser, messageToOpponent);
     }
+
     private List<PartialBotApiMethod<? extends Serializable>> waiting(User user) {
         var reply = createMessageTemplate(user);
         if (user.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
@@ -146,9 +148,10 @@ public class FightHandler implements Handler {
         log.info(reply.getText());
         return List.of(reply);
     }
+
     private List<PartialBotApiMethod<? extends Serializable>> accept(User opponent) {
         log.info("accept");
-        Fight fight = fightRepository.getFightByUser2Id(opponent).orElse(null);
+        Fight fight = fightRepository.getFightByUser2Id(opponent).orElseThrow();
         User actor = fight.getUser1Id();
 
 
@@ -157,7 +160,6 @@ public class FightHandler implements Handler {
         userRepository.save(actor);
         userRepository.save(opponent);
 
-        
 
         var buttons = new KeyboardButton[]{
                 new KeyboardButton(BodyPart.HEAD.getTitle()),
@@ -175,24 +177,25 @@ public class FightHandler implements Handler {
         messageToOpponent1.setText(message1);
         return List.of(messageToActor1, messageToOpponent1);
     }
+
     private List<PartialBotApiMethod<? extends Serializable>> move(User user, String message) {
         var reply = createMessageTemplate(user);
 
-        Move move = moveRepository.getMoveByUserId(user).orElse(null);
+        Move move = moveRepository.getMoveByUserId(user).orElseThrow();
         log.info("юзер мува " + move.getUserId().getName());
-        log.info("юзер в хендлере "+user.getName());
+        log.info("юзер в хендлере " + user.getName());
         log.info("move");
-        BodyPart part= Arrays.stream(BodyPart.values())
+        BodyPart part = Arrays.stream(BodyPart.values())
                 .filter(h -> h.getTitle().equalsIgnoreCase(message))
                 .findFirst()
                 .orElse(null);
-        log.info(part == null? "y":"n");
+        log.info(part == null ? "y" : "n");
         if (part == null) {
             reply.setText("Не верно введена часть тела");
             return List.of(reply);
         }
 
-        if(move.getMoveState() == MoveState.NEW_MOVE) {
+        if (move.getMoveState() == MoveState.NEW_MOVE) {
             log.info("new");
             log.info(part.getTitle());
             move.setDefense(part);
@@ -203,32 +206,32 @@ public class FightHandler implements Handler {
 
         }
         if (move.getMoveState() == MoveState.DEFENSE_CHOSEN) {
-            log.info("def_chos");
             move.setAttack(part);
             move.setMoveState(MoveState.MOVE_MADE);
             moveRepository.save(move);
 
-            return chek(user, move);
+            return check(user, move);
         }
         return List.of(reply);
     }
-    private List<PartialBotApiMethod<? extends Serializable>> chek(User user, Move move) {
+
+    private List<PartialBotApiMethod<? extends Serializable>> check(User user, Move move) {
         User actor = move.getFightId().getUser1Id();
         User opponent = move.getFightId().getUser2Id();
-        Move actorMove = moveRepository.getMoveByUserId(actor).orElse(null);
-        Move opponentMove = moveRepository.getMoveByUserId(opponent).orElse(null);
+        Move actorMove = moveRepository.getMoveByUserId(actor).orElseThrow();
+        Move opponentMove = moveRepository.getMoveByUserId(opponent).orElseThrow();
 
         if (actorMove.getMoveState() == MoveState.MOVE_MADE &&
                 opponentMove.getMoveState() == MoveState.MOVE_MADE) {
             long damageToActor = IngameUtil.countDamage(opponent);
             actorMove.setHp(actorMove.getHp()
-                    - Math.round((damageToActor - ((double)IngameUtil.countArmor(actor) * damageToActor)/100)
-                    * (actorMove.getDefense() == opponentMove.getAttack()? 0.5 : 1)));
+                    - Math.round((damageToActor - ((double) IngameUtil.countArmor(actor) * damageToActor) / 100)
+                    * (actorMove.getDefense() == opponentMove.getAttack() ? 0.5 : 1)));
 
             long damageToOpponent = IngameUtil.countDamage(actor);
             opponentMove.setHp(opponentMove.getHp()
-                    - Math.round((damageToOpponent - ((double)IngameUtil.countArmor(opponent) * damageToOpponent)/100)
-                    * (opponentMove.getDefense() == actorMove.getAttack()? 0.5 : 1)));
+                    - Math.round((damageToOpponent - ((double) IngameUtil.countArmor(opponent) * damageToOpponent) / 100)
+                    * (opponentMove.getDefense() == actorMove.getAttack() ? 0.5 : 1)));
 
             moveRepository.save(actorMove);
             moveRepository.save(opponentMove);
@@ -242,23 +245,26 @@ public class FightHandler implements Handler {
             if (opponentMove.getHp() < 0) {
                 return ending(actor, opponent);
             }
-            if (actorMove.getNum() > 14) {
+            if (actorMove.getNum() > 40) {
                 actor.setUserState(BotState.NONE);
                 opponent.setUserState(BotState.NONE);
                 userRepository.save(actor);
                 userRepository.save(opponent);
-
                 moveRepository.delete(actorMove);
                 moveRepository.delete(opponentMove);
-                String message = "Ничья\nЗвкончилось количество ходов";
+                String message = "Ничья.\nПревышено максимальное количество ходов.";
                 messageForActor.setText(message);
                 messageForOpponent.setText(message);
                 return List.of(messageForActor, messageForOpponent);
             }
-            String hitMessage = "Вы били: %s\n" +
-                    "Соперник защищал: %s\n\n" +
-                    "Соперник бил: %s\n" +
-                    "Вы защищали: %s\n\n";
+            String hitMessage = """
+                    Вы били: %s
+                    Соперник защищал: %s
+
+                    Соперник бил: %s
+                    Вы защищали: %s
+
+                    """;
             String actorHitMessage = String.format(hitMessage,
                     actorMove.getAttack().getTitle(),
                     opponentMove.getDefense().getTitle(),
@@ -294,7 +300,7 @@ public class FightHandler implements Handler {
             return List.of(messageForActor, messageForOpponent);
         } else {
             var reply = createMessageTemplate(user);
-            reply.setText("Ожидаем оппонента");
+            reply.setText("Ожидаем оппонента. \uD83C\uDF7E");
             user.setUserState(BotState.WAITING_FOR_OPPONENT_MOVE);
             userRepository.save(user);
             return List.of(reply);
@@ -302,8 +308,9 @@ public class FightHandler implements Handler {
 
 
     }
+
     private List<PartialBotApiMethod<? extends Serializable>> ending(User winner, User loser) {
-        Move winnerMove = moveRepository.getMoveByUserId(winner).orElse(null);
+        Move winnerMove = moveRepository.getMoveByUserId(winner).orElseThrow();
         winnerMove.getFightId().setFightState(String.format("Победил %s", winner.getName()));
 
         winner.setUserState(BotState.NONE);
@@ -311,7 +318,7 @@ public class FightHandler implements Handler {
         userRepository.save(winner);
         userRepository.save(loser);
         moveRepository.delete(winnerMove);
-        moveRepository.delete(moveRepository.getMoveByUserId(loser).orElse(null));
+        moveRepository.delete(Objects.requireNonNull(moveRepository.getMoveByUserId(loser).orElse(null)));
 
         var messageForWinner = createMessageTemplate(winner);
         var messageForLoser = createMessageTemplate(loser);

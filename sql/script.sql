@@ -52,7 +52,12 @@ CREATE TABLE fixed.solo_activity
     required_stamina  bigint,
     activity_duration bigint
 );
-
+CREATE TABLE public.party
+(
+    id      serial primary key,
+    name          TEXT UNIQUE,
+    current_state TEXT
+);
 CREATE TABLE public.usr
 (
     chat_id         bigint PRIMARY KEY,
@@ -71,6 +76,8 @@ CREATE TABLE public.usr
     stamina_restor  TIMESTAMP,
     partner_chat_id bigint references public.usr (chat_id),
     class_id        bigint references fixed.class (id),
+    party_id        bigint references public.party (id),
+    host_party_id   bigint references public.party (id),
     gold            bigint,
     exp             bigint,
     is_game_master   boolean,
@@ -134,24 +141,7 @@ CREATE TABLE public.ingame_item
     sharpness      bigint
 );
 
--- CREATE TABLE public.equipment (
---     equipment_id serial PRIMARY KEY,
--- 	user_id bigint references public.usr(chat_id),
--- 	helmet bigint references public.inventory_cell(item_id),
--- 	chest_armor bigint references public.inventory_cell(item_id),
--- 	leg_armor bigint references public.inventory_cell(item_id),
--- 	boots bigint references public.inventory_cell(item_id),
--- 	left_hand bigint references public.inventory_cell(item_id),
--- 	right_hand bigint references public.inventory_cell(item_id)
--- );
 
-CREATE TABLE public.party
-(
-    party_id      serial primary key,
-    user_id       bigint references public.usr (chat_id),
-    name          TEXT UNIQUE,
-    current_state TEXT
-);
 
 CREATE TABLE public.fight
 (
