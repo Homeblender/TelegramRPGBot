@@ -12,10 +12,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
+import ru.telegramrpgbot.bot.handler.GroupChatHandler;
 import ru.telegramrpgbot.bot.handler.Handler;
 import ru.telegramrpgbot.bot.handler.UserDataHandler;
+import ru.telegramrpgbot.model.GroupChat;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.ClassRepository;
+import ru.telegramrpgbot.repository.GroupChatRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
@@ -28,17 +31,27 @@ import java.util.List;
 public class UpdateReceiver {
     private final List<Handler> handlers;
     private final UserRepository userRepository;
+    private final GroupChatRepository groupChatRepository;
     private final ClassRepository classRepository;
     private final UserDataHandler userDataHandler;
+    private final GroupChatHandler groupChatHandler;
 
-    public UpdateReceiver(List<Handler> handlers, UserRepository userRepository, ClassRepository classRepository, UserDataHandler userDataHandler) {
+    public UpdateReceiver(List<Handler> handlers, UserRepository userRepository, GroupChatRepository groupChatRepository, ClassRepository classRepository, UserDataHandler userDataHandler, GroupChatHandler groupChatHandler) {
         this.handlers = handlers;
         this.userRepository = userRepository;
+        this.groupChatRepository = groupChatRepository;
         this.classRepository = classRepository;
         this.userDataHandler = userDataHandler;
+        this.groupChatHandler = groupChatHandler;
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> handle(Update update) {
+        if (isGroupInvite(update)){
+            User user = userRepository.getUserByChatId(update.getMessage().getFrom().getId()).orElseThrow();
+            groupChatRepository.getGroupChatById(update.getMessage().getChatId()).orElseGet(()-> groupChatRepository.save(
+                    GroupChat.builder().id(update.getMessage().getChatId()).user(user).build()));
+            return groupChatHandler.handle(user,null);
+        }
         if (isMessageWithText(update)) {
             Message message = update.getMessage();
             String messageText = update.getMessage().getText().toUpperCase();
@@ -88,9 +101,6 @@ public class UpdateReceiver {
                 }
             }
             List<PartialBotApiMethod<? extends Serializable>> allMessages = handler.handle(user, callbackQuery.getData()).stream().toList();
-//            log.info(allMessages.size()+"");
-//            log.info(((SendMessage)allMessages.get(0)).getChatId()+"  " + user.getChatId().toString());
-//            log.info(((SendMessage)allMessages.get(1)).getChatId()+"  " + user.getChatId().toString());
             SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())&&!(((SendMessage) w).getReplyMarkup() instanceof ReplyKeyboardMarkup)).findFirst().orElse(null);
             if (messageToKeyboard ==null){
                 return allMessages;
@@ -141,6 +151,9 @@ public class UpdateReceiver {
 
     private boolean isMessageWithText(Update update) {
         return !update.hasCallbackQuery() && update.hasMessage() && update.getMessage().hasText();
+    }
+    private boolean isGroupInvite(Update update) {
+        return update.hasMessage() && update.getMessage().isGroupMessage() && update.getMessage().getNewChatMembers().size()>0&& update.getMessage().getNewChatMembers().get(0).getFirstName().equals("MMO_RPG_bot");
     }
 
 }

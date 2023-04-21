@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByHostPartyId(Party party);
     List<User> findAllByUserState(BotState currentUserState);
     List<User> findAllByPartyId(Party party);
+    Optional<User> findAllByName(String name);
 }

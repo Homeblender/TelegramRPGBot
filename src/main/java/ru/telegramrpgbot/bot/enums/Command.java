@@ -21,6 +21,7 @@ public enum Command {
     FIGHT(null),
     CLASSES(null),
     EQUIPMENT(null),
+    GRANT(null),
     USE(null),
     PASSIVES(null),
     APPLY(null),

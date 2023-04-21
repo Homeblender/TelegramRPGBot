@@ -39,7 +39,14 @@ public class Bot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        //log.info(update.getMessage().getText());
+//        if (update.hasMessage()){
+//            log.info(update.getMessage().getChatId()+"");
+//            log.info(update.getMessage().getFrom().getId()+"");
+//            if (update.getMessage().isGroupMessage()){
+//                log.info("group");
+//                log.info(update.getMessage().getChat().getId()+"");
+//            }
+//        }
         var messagesToSend = updateReceiver.handle(update);
         if (messagesToSend != null && !messagesToSend.isEmpty()) {
             messagesToSend.forEach(response -> {

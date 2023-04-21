@@ -73,6 +73,7 @@ CREATE TABLE public.usr
     class_id        bigint references fixed.class (id),
     gold            bigint,
     exp             bigint,
+    is_game_master   boolean,
     offline_points  bigint
 );
 
@@ -172,6 +173,13 @@ CREATE TABLE public.move
     hp         bigint,
     end_time   timestamp,
     num        bigint
+);
+
+
+CREATE TABLE public.group_chat
+(
+    id          bigint primary key,
+    user_invited    bigint references public.usr (chat_id)
 );
 
 

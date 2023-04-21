@@ -66,6 +66,8 @@ public class User {
     @Builder.Default
     Long gold = 0L;
     @Builder.Default
+    Boolean isGameMaster = false;
+    @Builder.Default
     Long offlinePoints = 0L;
 
 }

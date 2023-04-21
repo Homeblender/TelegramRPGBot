@@ -95,7 +95,7 @@ public class ShopHandler implements Handler {
 
         if (messageList.size() != 2 || messageList.get(1).length() < 1) {
             reply.setText("Не указан id предмета");
-            return List.of();
+            return List.of(reply);
         }
 
         try {
