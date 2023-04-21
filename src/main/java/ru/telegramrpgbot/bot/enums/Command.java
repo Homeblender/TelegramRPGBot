@@ -4,6 +4,9 @@ public enum Command {
     HERO ("\uD83D\uDC64"),
     ADVENTURES ("\uD83C\uDFC3\uD83C\uDFFC\u200D♂️"),
     CITY("\uD83C\uDF06"),
+    PARTY("\uD83C\uDF89"),
+    CREATE_PARTY("Создать пати"),
+    INVITE(null),
     FORGE("⚒"),
     SHOP("\uD83D\uDED2"),
     BACK("⬅️"),
@@ -27,6 +30,9 @@ public enum Command {
     PROPOSE(null),
     ACCEPT_PROPOSE("Принять"),
     CANCEL_PROPOSE("Отменить"),
+    ACCEPT_INVITE("Принять"),
+    CANCEL_INVITE("Отменить"),
+    EXIT(null),
     DIVORCE(null),
     CLASS(null);
     private final String russian;

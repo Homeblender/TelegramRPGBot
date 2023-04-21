@@ -55,6 +55,12 @@ public class User {
     @JoinColumn(name = "partner_chat_id")
     User partner = null;
     @ManyToOne
+    @JoinColumn(name = "party_id")
+    Party partyId;
+    @OneToOne
+    @JoinColumn(name = "host_party_id")
+    Party hostPartyId;
+    @ManyToOne
     @JoinColumn(name = "class_id")
     Class userClass = null;
     @Builder.Default

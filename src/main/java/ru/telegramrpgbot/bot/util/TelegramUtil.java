@@ -37,7 +37,9 @@ public class TelegramUtil {
         var buttons = new KeyboardButton[] {
                 new KeyboardButton("\uD83D\uDC64 Персонаж"),
                 new KeyboardButton("\uD83C\uDFC3\uD83C\uDFFC\u200D\u2642\uFE0F Исследования"),
-                new KeyboardButton("\uD83C\uDF06 Город")};
+                new KeyboardButton("\uD83C\uDF06 Город"),
+                new KeyboardButton("\uD83C\uDF89 Пати")
+        };
 
         return createKeyboard(buttons);
     }

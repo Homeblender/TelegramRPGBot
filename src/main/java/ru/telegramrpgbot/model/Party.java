@@ -17,9 +17,6 @@ public class Party{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long partyId;
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    User userId;
     @Column(columnDefinition = "Text")
     String name;
     @Column(columnDefinition = "Text")
