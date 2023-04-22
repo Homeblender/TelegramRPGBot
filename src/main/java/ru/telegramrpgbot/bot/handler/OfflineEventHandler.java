@@ -10,7 +10,6 @@ import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.enums.EventState;
 import ru.telegramrpgbot.bot.enums.EventType;
 import ru.telegramrpgbot.bot.util.TelegramUtil;
-import ru.telegramrpgbot.model.GroupChat;
 import ru.telegramrpgbot.model.OfflineEvent;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.GroupChatRepository;
@@ -18,10 +17,10 @@ import ru.telegramrpgbot.repository.OfflineEventRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.telegramrpgbot.bot.util.IngameUtil.Announcement;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
@@ -85,13 +84,7 @@ public class OfflineEventHandler implements Handler {
         reply.setText(String.format("Вы успешно создали событие *%s*! \uD83E\uDD42", event.getEventName()));
         reply.setReplyMarkup(createBaseReplyKeyboard());
         var announcement = String.format("Игрок [%s](tg://user?id=%d) создал событие _%s_", user.getName(), user.getChatId(), event.getEventName());
-        var chats = groupChatRepository.findAll();
-        List<PartialBotApiMethod<? extends Serializable>> sendMessageList = new ArrayList<>();
-        for (GroupChat groupChat : chats) {
-            var messageTemplate = createMessageTemplate(groupChat.getId().toString());
-            messageTemplate.setText(announcement);
-            sendMessageList.add(messageTemplate);
-        }
+        var sendMessageList = Announcement(announcement);
 
         sendMessageList.add(reply);
         event.setOfflinePointsReward(reward);
@@ -101,6 +94,7 @@ public class OfflineEventHandler implements Handler {
         userRepository.save(user);
         return sendMessageList;
     }
+
 
     private List<PartialBotApiMethod<? extends Serializable>> savingType(User user, String message) {
         var reply = createMessageTemplate(user);
@@ -201,7 +195,7 @@ public class OfflineEventHandler implements Handler {
                 replyMessage.append(String.format("%n\uD83C\uDF96 *%s* от [%s](tg://user?id=%d) %n_Цель_ - %s%n_Награда_: %d\uD83D\uDC8E%n", offlineEvent.getEventName(), offlineEvent.getCreator().getName(), offlineEvent.getCreator().getChatId(), offlineEvent.getEventGoal(), offlineEvent.getOfflinePointsReward()));
                 if (user.getIsGameMaster()) {
                     replyMessage.append(String.format("Завершить событие - /finish\\_%d\\_[имя победителя]%n", offlineEvent.getId()));
-                    replyMessage.append(String.format("Отменить событие - /cancel\\_%d%n", offlineEvent.getId()));
+                    replyMessage.append(String.format("Отменить событие - /annul\\_%d%n", offlineEvent.getId()));
                 }
             }
         }
@@ -214,7 +208,7 @@ public class OfflineEventHandler implements Handler {
                 replyMessage.append(String.format("%n\uD83C\uDF96 *%s* от [%s](tg://user?id=%d)%n_Цель_ - %s%n_Награда_: %d\uD83D\uDC8E%n", offlineEvent.getEventName(), offlineEvent.getCreator().getName(), offlineEvent.getCreator().getChatId(), offlineEvent.getEventGoal(), offlineEvent.getOfflinePointsReward()));
                 if (offlineEvent.getCreator().equals(user)) {
                     replyMessage.append(String.format("Завершить событие - /finish\\_%d\\_[имя победителя]%n", offlineEvent.getId()));
-                    replyMessage.append(String.format("Отменить событие - /cancel\\_%d%n", offlineEvent.getId()));
+                    replyMessage.append(String.format("Отменить событие - /annul\\_%d%n", offlineEvent.getId()));
                 }
             }
         }

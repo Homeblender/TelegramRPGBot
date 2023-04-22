@@ -38,6 +38,8 @@ public enum Command {
     DIVORCE(null),
     CREATE_EVENT(null),
     SHOW_EVENTS("\uD83C\uDF96"),
+    FINISH(null),
+    ANNUL(null),
     CLASS(null);
     private final String russian;
     public String getRussian() {

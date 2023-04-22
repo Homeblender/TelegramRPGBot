@@ -27,15 +27,17 @@ public class IngameUtil {
     private static ClassRepository classRepository;
     private static MoveRepository moveRepository;
     private static FightRepository fightRepository;
+    private static GroupChatRepository groupChatRepository;
     private static Bot bot;
 
-    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository, MoveRepository moveRepository, FightRepository fightRepository, AppliedSkillRepository appliedSkillRepository) {
+    public IngameUtil(UserRepository userRepository, IngameItemRepository ingameItemRepository, Bot bot, ClassRepository classRepository, MoveRepository moveRepository, FightRepository fightRepository, AppliedSkillRepository appliedSkillRepository, GroupChatRepository groupChatRepository) {
         IngameUtil.userRepository = userRepository;
         IngameUtil.ingameItemRepository = ingameItemRepository;
         IngameUtil.classRepository = classRepository;
         IngameUtil.moveRepository = moveRepository;
         IngameUtil.fightRepository = fightRepository;
         IngameUtil.appliedSkillRepository = appliedSkillRepository;
+        IngameUtil.groupChatRepository = groupChatRepository;
         IngameUtil.bot = bot;
     }
 
@@ -103,6 +105,17 @@ public class IngameUtil {
             levelUp(user);
         }
 
+    }
+
+    public static List<PartialBotApiMethod<? extends Serializable>> Announcement(String message){
+        var chats = groupChatRepository.findAll();
+        List<PartialBotApiMethod<? extends Serializable>> sendMessageList = new ArrayList<>();
+        for (GroupChat groupChat : chats) {
+            var messageTemplate = createMessageTemplate(groupChat.getId().toString());
+            messageTemplate.setText(message);
+            sendMessageList.add(messageTemplate);
+        }
+        return sendMessageList;
     }
 
     public static void userGetItem(User user, BaseItem baseItem) {

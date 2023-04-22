@@ -13,4 +13,6 @@ import java.util.List;
 public interface OfflineEventRepository extends JpaRepository<OfflineEvent, Long> {
     List<OfflineEvent> findAllByEventTypeAndEventState(EventType eventType, EventState eventState);
     OfflineEvent findByCreatorAndEventState(User creator, EventState eventState);
+
+    OfflineEvent findById(long parseLong);
 }
