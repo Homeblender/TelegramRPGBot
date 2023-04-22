@@ -222,7 +222,7 @@ VALUES ('Энергетик 0.25', 'Восстанавливает 1 ед. вы�
 insert into fixed.consumable_item_effect
     (base_item_id, add_life, add_mana, add_stamina)
 VALUES (9, 50, 0, 0),
-       (10, 50, 0, 0);
+       (10, 0, 0, 1);
 
 insert into fixed.solo_activity(name, state_name, description, required_level, required_stamina, activity_duration)
 values ('Руины',
@@ -261,7 +261,7 @@ VALUES (7, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (8, 250, 1436473525, false, null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-VALUES (9, 1, 1436473525, false, null);
+VALUES (10, 15, 1436473525, false, null);
 
 
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)

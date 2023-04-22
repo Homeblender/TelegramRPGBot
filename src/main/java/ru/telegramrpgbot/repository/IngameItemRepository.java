@@ -12,5 +12,5 @@ import java.util.List;
 public interface IngameItemRepository extends JpaRepository<IngameItem, Long> {
     List<IngameItem> findAllByUser(User user);
     List<IngameItem> findAllByUserAndBaseItem_Type(User user, ItemType baseItem_type);
-    IngameItem findAllById(Long id);
+    IngameItem findAllByIdAndUser(Long id, User user);
 }

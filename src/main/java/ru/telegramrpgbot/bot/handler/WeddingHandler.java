@@ -4,30 +4,19 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
-import ru.telegramrpgbot.bot.enums.BodyPart;
-import ru.telegramrpgbot.bot.enums.MoveState;
-import ru.telegramrpgbot.model.Fight;
 import ru.telegramrpgbot.model.User;
-import ru.telegramrpgbot.model.Move;
-import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.repository.UserRepository;
-import ru.telegramrpgbot.repository.FightRepository;
-import ru.telegramrpgbot.repository.MoveRepository;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
 @Slf4j
@@ -124,12 +113,9 @@ public class WeddingHandler implements Handler {
 
         messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
         messageToOpponent.setText(String.format("Вам сделал предложение *%s*!!! \uD83D\uDC8D", actor.getName()));
-        log.info(messageToUser.getText());
-        log.info(messageToOpponent.getText());
         return List.of(messageToUser, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> cancel(User actor) {
-        log.info("отмена");
         User opponent = actor.getPartner();
         if (opponent == null) {
             opponent = userRepository.findAll().stream()
@@ -137,7 +123,6 @@ public class WeddingHandler implements Handler {
                     .filter(h -> Objects.equals(h.getPartner().getChatId(), actor.getChatId()))
                     .findFirst()
                     .orElse(null);
-            log.info("actor");
         }
         actor.setPartner(null);
         opponent.setPartner(null);

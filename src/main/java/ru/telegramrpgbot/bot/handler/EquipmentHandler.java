@@ -64,7 +64,7 @@ public class EquipmentHandler implements Handler {
             return List.of(reply);
         }
         try {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         } catch (NumberFormatException exception) {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
@@ -94,7 +94,7 @@ public class EquipmentHandler implements Handler {
             return List.of(reply);
         }
         try {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         } catch (NumberFormatException exception) {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);

@@ -40,6 +40,7 @@ public enum Command {
     SHOW_EVENTS("\uD83C\uDF96"),
     FINISH(null),
     ANNUL(null),
+    TRADE(null),
     CLASS(null);
     private final String russian;
     public String getRussian() {

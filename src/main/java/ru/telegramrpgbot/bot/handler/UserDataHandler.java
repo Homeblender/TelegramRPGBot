@@ -76,7 +76,7 @@ public class UserDataHandler implements Handler {
                 user.getMaxHealth(),
                 user.getCurrentStamina(),
                 user.getMaxStamina(),
-                user.getCurrentStamina() < user.getMaxStamina() ? "time: " + minutes + ":" + seconds : "",
+                user.getCurrentStamina() < user.getMaxStamina() ? "(" + minutes + ":" + seconds +")": "",
                 user.getCurrentMana(),
                 user.getMaxMana(),
                 state,

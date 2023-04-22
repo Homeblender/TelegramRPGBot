@@ -49,7 +49,7 @@ public class SharpeningHandler implements Handler {
             reply.setText(Objects.requireNonNull(checker(user, messageList)));
             return List.of(reply);
         } else {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         }
         IngameItem sharpeningStones = ingameItemRepository.findAllByUserAndBaseItem_Type(user, ItemType.CONSUMABLE_SHARPENING_STONE).stream().findAny().orElse(null);
 
@@ -89,7 +89,7 @@ public class SharpeningHandler implements Handler {
             reply.setText(Objects.requireNonNull(checker(user, messageList)));
             return reply;
         } else {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         }
 
 
@@ -137,7 +137,7 @@ public class SharpeningHandler implements Handler {
             return ("Не указан id предмета");
         }
         try {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         } catch (NumberFormatException exception) {
             return ("У вас нет таких предметов.");
         }

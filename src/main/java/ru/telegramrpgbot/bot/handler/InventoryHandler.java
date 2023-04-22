@@ -13,6 +13,7 @@ import ru.telegramrpgbot.model.IngameItem;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.ConsumableItemEffectRepository;
 import ru.telegramrpgbot.repository.IngameItemRepository;
+import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,12 +28,14 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 public class InventoryHandler implements Handler {
 
     private final IngameItemRepository ingameItemRepository;
+    private final UserRepository userRepository;
     private final ConsumableItemEffectRepository consumableItemEffectRepository;
     private final List<String> CALLBACK_LIST = new ArrayList<>();
 
 
-    public InventoryHandler(IngameItemRepository ingameItemRepository, ConsumableItemEffectRepository consumableItemEffectRepository) {
+    public InventoryHandler(IngameItemRepository ingameItemRepository, UserRepository userRepository, ConsumableItemEffectRepository consumableItemEffectRepository) {
         this.ingameItemRepository = ingameItemRepository;
+        this.userRepository = userRepository;
         this.consumableItemEffectRepository = consumableItemEffectRepository;
         CALLBACK_LIST.add("EQUIPMENT");
         CALLBACK_LIST.add("CONSUMABLE");
@@ -71,7 +74,7 @@ public class InventoryHandler implements Handler {
             return List.of();
         }
         try {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         } catch (Exception exception) {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
@@ -86,7 +89,7 @@ public class InventoryHandler implements Handler {
         userHealthChanges(user,itemEffect.getAddLife());
         userManaChanges(user,itemEffect.getAddMana());
         userStaminaChanges(user,itemEffect.getAddStamina());
-
+        userRepository.save(user);
 
         reply.setText(String.format("Вы успешно применили *%s*.",item.getBaseItem().getName()));
 
@@ -124,7 +127,7 @@ public class InventoryHandler implements Handler {
         }
 
         try {
-            item = ingameItemRepository.findAllById(Long.parseLong(messageList.get(1)));
+            item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
         } catch (Exception exception) {
             reply.setText("У вас нет таких предметов.");
             return List.of(reply);
@@ -166,7 +169,8 @@ public class InventoryHandler implements Handler {
                 double armor = countItemArmor(ingameItem);
 
                 replyMessage.append(String.format(
-                        "+%d\uD83D\uDDE1 +%d\uD83D\uDEE1 *%s* (+%d)%n",
+                        "(id: %s)+%d\uD83D\uDDE1 +%d\uD83D\uDEE1 *%s* (+%d)%n",
+                        ingameItem.getId(),
                         Math.round(damage),
                         Math.round(armor),
                         ingameItem.getBaseItem().getName(),
@@ -207,13 +211,14 @@ public class InventoryHandler implements Handler {
             replyMessage.append(String.format("%nИспользуемые предметы \uD83C\uDF77:%n%n"));
 
             for (IngameItem ingameItem : consumableItems) {
-                var consumableItemEffect = consumableItemEffectRepository.findById(ingameItem.getBaseItem().getId()).orElse(null);
+                var consumableItemEffect = consumableItemEffectRepository.findByBaseItem(ingameItem.getBaseItem()).orElse(null);
                 replyMessage.append(String.format(
-                        "*%s* x%d%n%s%n%s",
+                        "(id: %s) *%s* x%d%n%s%n%s",
+                        ingameItem.getId(),
                         ingameItem.getBaseItem().getName(),
                         ingameItem.getItemsInStack(),
                         ingameItem.getBaseItem().getDescription(),
-                        consumableItemEffect==null?String.format("Использовать предмет - /use\\_%d%n",ingameItem.getId()) : ""
+                        consumableItemEffect!=null?String.format("Использовать предмет - /use\\_%d%n",ingameItem.getId()) : ""
                 ));
                 if (ingameItem.getBaseItem().getBuyPrice() != null) {
                     replyMessage.append(sellTemplate(ingameItem));
@@ -248,7 +253,8 @@ public class InventoryHandler implements Handler {
 
             for (IngameItem ingameItem : materialItems) {
                 replyMessage.append(String.format(
-                        "*%s* x%d%n",
+                        "(id: %s) *%s* x%d%n",
+                        ingameItem.getId(),
                         ingameItem.getBaseItem().getName(),
                         ingameItem.getItemsInStack()
                 ));
