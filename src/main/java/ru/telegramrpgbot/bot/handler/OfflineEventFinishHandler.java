@@ -87,7 +87,7 @@ public class OfflineEventFinishHandler implements Handler {
         userRepository.save(winner);
         offlineEventRepository.save(event);
 
-        var announcement = String.format("Игрок [%s](tg://user?id=%d) подебил в событии _%s_ \uD83C\uDF7E", winner.getName(), winner.getChatId(), event.getEventName());
+        var announcement = String.format("Игрок [%s](tg://user?id=%d) победил в событии _%s_ \uD83C\uDF7E", winner.getName(), winner.getChatId(), event.getEventName());
         var sendMessageList = Announcement(announcement);
 
         sendMessageList.add(replyToUser);
