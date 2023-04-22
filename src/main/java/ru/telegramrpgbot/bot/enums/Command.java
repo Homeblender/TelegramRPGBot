@@ -2,6 +2,7 @@ package ru.telegramrpgbot.bot.enums;
 
 public enum Command {
     HERO ("\uD83D\uDC64"),
+    CHANGE_NAME ("\uD83D\uDC64"),
     ADVENTURES ("\uD83C\uDFC3\uD83C\uDFFC\u200D♂️"),
     CITY("\uD83C\uDF06"),
     PARTY("\uD83C\uDF89"),
@@ -35,6 +36,8 @@ public enum Command {
     CANCEL_INVITE("Отменить"),
     EXIT(null),
     DIVORCE(null),
+    CREATE_EVENT(null),
+    SHOW_EVENTS("\uD83C\uDF96"),
     CLASS(null);
     private final String russian;
     public String getRussian() {

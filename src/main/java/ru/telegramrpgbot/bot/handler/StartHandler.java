@@ -9,16 +9,15 @@ import ru.telegramrpgbot.repository.UserRepository;
 import ru.telegramrpgbot.model.User;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
-public class StartCommandHandler implements Handler{
+public class StartHandler implements Handler{
     private final UserRepository userRepository;
 
-    public StartCommandHandler(UserRepository userRepository) {
+    public StartHandler(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

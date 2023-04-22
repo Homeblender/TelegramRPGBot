@@ -59,7 +59,7 @@ public class UserDataHandler implements Handler {
                         "\uD83C\uDFC3\uD83C\uDFFC\u200D♂️ Занятие: %s%n" +
                         "%n\uD83D\uDC8D Партнер: %s%n" +
                         "%n\uD83D\uDCB0 Золото: %s%n" +
-                        "\uD83D\uDC8E Очки оффлайн ивентов: %s%n" +
+                        "\uD83D\uDC8E Очки оффлайн событий: %s%n" +
                         "%nУрон = %d \uD83D\uDDE1 Защита = %d \uD83D\uDEE1 %n" +
                         "%n \uD83D\uDCE6 Инвентарь (x%d) - /inventory" +
                         "%n \uD83D\uDC5C Экипировка (x%d) - /equipment",

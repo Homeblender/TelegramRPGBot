@@ -16,7 +16,7 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
 @Slf4j
-public class CityCommandsHandler implements Handler {
+public class CityHandler implements Handler {
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {

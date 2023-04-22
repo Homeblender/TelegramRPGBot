@@ -5,23 +5,6 @@ drop schema if exists fixed cascade;
 CREATE SCHEMA public;
 CREATE SCHEMA fixed;
 
-drop table if exists public.party cascade;
-drop table if exists public.equipment cascade;
-drop table if exists public.inventory_cell cascade;
-drop table if exists public.ingame_item cascade;
-drop table if exists fixed.solo_activity_reward cascade;
-drop table if exists fixed.activity_result_message cascade;
-drop table if exists fixed.solo_activity cascade;
-drop table if exists fixed.base_item cascade;
-drop table if exists fixed.item_types cascade;
-drop table if exists public.applied_skill cascade;
-drop table if exists public.usr cascade;
-drop table if exists fixed.skill_bonus cascade;
-drop table if exists fixed.skill cascade;
-drop table if exists fixed.class cascade;
-drop table if exists public.fight cascade;
-drop table if exists public.move cascade;
-
 CREATE TABLE fixed.class
 (
     id             serial PRIMARY KEY,
@@ -54,7 +37,7 @@ CREATE TABLE fixed.solo_activity
 );
 CREATE TABLE public.party
 (
-    id      serial primary key,
+    id            serial primary key,
     name          TEXT UNIQUE,
     current_state TEXT
 );
@@ -80,7 +63,7 @@ CREATE TABLE public.usr
     host_party_id   bigint references public.party (id),
     gold            bigint,
     exp             bigint,
-    is_game_master   boolean,
+    is_game_master  boolean,
     offline_points  bigint
 );
 
@@ -168,11 +151,20 @@ CREATE TABLE public.move
 
 CREATE TABLE public.group_chat
 (
-    id          bigint primary key,
-    user_invited    bigint references public.usr (chat_id)
+    id           bigint primary key,
+    user_invited bigint references public.usr (chat_id)
 );
 
-
+CREATE TABLE public.offline_event
+(
+    id                    serial primary key,
+    creator               bigint references public.usr (chat_id),
+    event_name            text,
+    event_goal            text,
+    offline_points_reward bigint,
+    event_type            bigint,
+    event_state           integer
+);
 
 
 
@@ -229,26 +221,26 @@ VALUES ('Энергетик 0.25', 'Восстанавливает 1 ед. вы�
 
 insert into fixed.consumable_item_effect
     (base_item_id, add_life, add_mana, add_stamina)
-VALUES (9, 50, 0, 0), (10, 50, 0, 0);
+VALUES (9, 50, 0, 0),
+       (10, 50, 0, 0);
 
 insert into fixed.solo_activity(name, state_name, description, required_level, required_stamina, activity_duration)
-values
-    ('Руины',
+values ('Руины',
         'Исследование руин',
         'Заброшеные руины недалеко от города. Чего-то редкого там не найдешь, но наберешься опыта для более сложных приключений и, если повезет, пару монет.',
         1, 1, 1),
-    ('Музей последнего тестировщика',
+       ('Музей последнего тестировщика',
         'Исследование музея последнего тестировщика',
         'Музей последнего тестеровщика ОЭЗ. Говорят там осталось много денег.',
         5, 1, 2);
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-    values (1, 2, 3, null, 'Ты побродил по руинам пару часов, было очень скучно.');
+values (1, 2, 3, null, 'Ты побродил по руинам пару часов, было очень скучно.');
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-    values (2, 8, 10, 10, 'Ты обшарил старый заброшенный музей, тебе повезло найти *Энергетик 0.25*.');
+values (2, 8, 10, 10, 'Ты обшарил старый заброшенный музей, тебе повезло найти *Энергетик 0.25*.');
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-    values (2, 8, 10, null, 'Ты обшарил старый заброшенный музей, там давно никто не убирался, но ничего кроме пары монет не нашел.');
-
+values (2, 8, 10, null,
+        'Ты обшарил старый заброшенный музей, там давно никто не убирался, но ничего кроме пары монет не нашел.');
 
 
 

@@ -18,7 +18,6 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 @Component
 public class NameChosingHandler implements Handler {
     public static final String NAME_ACCEPT = "/enter_name_accept";
-    public static final String NAME_CHANGE = "/WAITING_FOR_NAME";
     public static final String NAME_CHANGE_CANCEL = "/enter_name_cancel";
 
     private final UserRepository userRepository;
@@ -31,7 +30,7 @@ public class NameChosingHandler implements Handler {
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
         if (message.equalsIgnoreCase(NAME_ACCEPT) || message.equalsIgnoreCase(NAME_CHANGE_CANCEL)) {
             return accept(user);
-        } else if (message.equalsIgnoreCase(NAME_CHANGE)) {
+        } else if (message.substring(1).toUpperCase().equalsIgnoreCase(Command.CHANGE_NAME.name())) {
             return changeName(user);
         }
         return checkName(user, message);
@@ -41,7 +40,7 @@ public class NameChosingHandler implements Handler {
         user.setUserState(BotState.NONE);
         userRepository.save(user);
         var reply = createMessageTemplate(user);
-        reply.setText(String.format("Теперь тебя зовут: *%s*", user.getName()));
+        reply.setText(String.format("Тебя зовут: *%s*", user.getName()));
         reply.setReplyMarkup(createBaseReplyKeyboard());
         return List.of(reply);
     }
@@ -78,7 +77,7 @@ public class NameChosingHandler implements Handler {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
-                createInlineKeyboardButton("Cancel", NAME_CHANGE_CANCEL));
+                createInlineKeyboardButton("Отменить", NAME_CHANGE_CANCEL));
 
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
 
@@ -96,11 +95,11 @@ public class NameChosingHandler implements Handler {
 
     @Override
     public List<Command> operatedCommand() {
-        return List.of();
+        return List.of(Command.CHANGE_NAME);
     }
 
     @Override
     public List<String> operatedCallBackQuery() {
-        return List.of(NAME_ACCEPT, NAME_CHANGE, NAME_CHANGE_CANCEL);
+        return List.of(NAME_ACCEPT, NAME_CHANGE_CANCEL);
     }
 }
