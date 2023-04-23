@@ -125,7 +125,7 @@ public class IngameUtil {
         var ingameItems = ingameItemRepository.findAllByUser(user);
         ingameItems = ingameItems.stream()
                 .filter(item ->
-                        item.getBaseItem() == baseItem &&
+                        item.getBaseItem().equals(baseItem)&&
                                 item.getBaseItem().getMaxInStack() != null &&
                                 item.getItemsInStack() < item.getBaseItem().getMaxInStack())
                 .toList();

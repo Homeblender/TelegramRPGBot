@@ -81,7 +81,6 @@ public class PartyHandler implements Handler {
                 "):");
         List<User> partyUsers = userRepository.findAllByPartyId(user.getPartyId());
         for (User partyUser : partyUsers) {
-            //TODO сделать норм вывод
             messageToUser.append("\n   - ").append(String.format("[%s](tg://user?id=%d)",partyUser.getName(),partyUser.getChatId()));
         }
         if (user.getHostPartyId() != null) {
