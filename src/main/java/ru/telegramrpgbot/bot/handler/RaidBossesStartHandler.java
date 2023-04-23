@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
@@ -56,6 +57,7 @@ public class RaidBossesStartHandler implements Handler {
             reply.setText("Кто-то из участников группы занят.");
             return List.of(reply);
         }
+
         partyMembers.remove(user);
         try {
             raidBoss = raidBossRepository.findById(Long.parseLong(message.split("_")[1])).orElseThrow();
@@ -63,10 +65,15 @@ public class RaidBossesStartHandler implements Handler {
             reply.setText("Проверьте правильность введенной команды.");
             return List.of(reply);
         }
+        if (!partyMembers.stream().filter(member -> member.getCurrentStamina() < raidBoss.getStaminaRequired()).toList().isEmpty()){
+            reply.setText("У кого-то из участников не хватает выносливости.");
+            return List.of(reply);
+        }
 
         for (User member :
                 partyMembers) {
             member.setUserState(BotState.RAIDING);
+            userStaminaChanges(member,-raidBoss.getStaminaRequired());
             var anons = createMessageTemplate(member);
             anons.setText(String.format("Капитан команды начал рейд на босса \uD83D\uDC7E*%s*.",raidBoss.getName()));
             replyList.add(anons);
@@ -100,15 +107,16 @@ public class RaidBossesStartHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder(String.format("Рейдовые *боссы*:%n"));
 
         for (RaidBoss raidBoss : bosses) {
-            replyMessage.append(String.format("%n\uD83D\uDC7E *%s*    Рекомендованный уровень = %d %nХарактеристики - %d♥️,  %d\uD83D\uDDE1,  %d \uD83D\uDEE1%n",
+            replyMessage.append(String.format("%n\uD83D\uDC7E *%s*%nРекомендованный уровень = %d\uD83D\uDCA0%nТребуется выносливости = %d⚡️ %nХарактеристики = %d♥️,  %d\uD83D\uDDE1,  %d \uD83D\uDEE1%n",
                     raidBoss.getName(),
                     raidBoss.getRecommendedLevel(),
+                    raidBoss.getStaminaRequired(),
                     raidBoss.getLife(),
                     raidBoss.getDamage(),
                     raidBoss.getArmor()
             ));
             if (user.getHostPartyId() != null){
-                replyMessage.append(String.format("Атаковать - /raid\\_%d%n",raidBoss.getId()));
+                replyMessage.append(String.format("Начать рейд - /raid\\_%d%n",raidBoss.getId()));
             }
         }
 

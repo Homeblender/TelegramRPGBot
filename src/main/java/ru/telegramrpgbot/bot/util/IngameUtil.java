@@ -66,6 +66,9 @@ public class IngameUtil {
         user.setCurrentStamina(user.getCurrentStamina() + staminaChanged);
         if (user.getCurrentStamina() > user.getMaxStamina()) {
             user.setCurrentStamina(user.getMaxStamina());
+        }if (user.getCurrentStamina() < user.getMaxStamina()) {
+            var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
+            user.setStaminaRestor(new Timestamp(System.currentTimeMillis() + delay));
         }
         if (user.getMaxStamina().equals(user.getCurrentStamina())) {
             user.setStaminaRestor(null);
@@ -147,8 +150,7 @@ public class IngameUtil {
 
     public static void userDied(User user) {
         user.setCurrentStamina(0L);
-        var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
-        user.setStaminaRestor(new Timestamp(System.currentTimeMillis() + delay));
+        userStaminaChanges(user, 0L);
         userRepository.save(user);
         var diedMessage = TelegramUtil.createMessageTemplate(user);
         diedMessage.setText("Вы умерли.");

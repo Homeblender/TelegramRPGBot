@@ -43,6 +43,7 @@ CREATE TABLE fixed.raid_boss
     damage            bigint,
     armor             bigint,
     recommended_level bigint,
+    stamina_required  bigint,
     gold_reward       bigint,
     exp_reward        bigint
 );
@@ -51,7 +52,7 @@ CREATE TABLE public.party
     id            serial primary key,
     name          TEXT UNIQUE,
     boss_fighting bigint references fixed.raid_boss (id),
-    boss_life bigint
+    boss_life     bigint
 );
 
 CREATE TABLE public.usr
@@ -126,7 +127,6 @@ CREATE TABLE fixed.solo_activity_reward
     item_reward      bigint references fixed.base_item (id),
     result_message   text
 );
-
 
 
 
@@ -265,13 +265,13 @@ insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward
 values (2, 8, 10, null,
         'Ты обшарил старый заброшенный музей, там давно никто не убирался, но ничего кроме пары монет не нашел.');
 
-insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward)
-    VALUES ('Драконид', 1000, 50,40,10,100,150);
+insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward,stamina_required)
+VALUES ('Драконид', 1000, 50, 40, 10, 100, 150,5);
 
 
 
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-VALUES (1, null, 1436473525, false, 1000);
+VALUES (1, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (2, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
@@ -283,7 +283,7 @@ VALUES (5, 1, 1436473525, false, null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (6, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-VALUES (7, null, 1436473525, false, 1000);
+VALUES (7, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (8, 250, 1436473525, false, null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)

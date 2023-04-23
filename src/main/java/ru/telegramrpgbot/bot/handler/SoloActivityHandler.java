@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
 @Slf4j
@@ -62,7 +62,7 @@ public class SoloActivityHandler implements Handler {
         SoloActivity activity = soloActivityRepository.getSoloActivityByName(message);
 
 
-        if (user.getCurrentStamina() == 0) {
+        if (user.getCurrentStamina() < activity.getRequiredStamina()) {
             return noStaminaReply(user);
         }
 
@@ -71,10 +71,6 @@ public class SoloActivityHandler implements Handler {
         var delay = TimeUnit.MILLISECONDS.convert(activity.getActivityDuration(), TimeUnit.MINUTES);
         user.setActivityEnds(new Timestamp(System.currentTimeMillis() + delay));
         userStaminaChanges(user, -activity.getRequiredStamina());
-        if (user.getStaminaRestor() == null) {
-            delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
-            user.setStaminaRestor(new Timestamp(System.currentTimeMillis()+delay));
-        }
         userRepository.save(user);
 
         var reply = createMessageTemplate(user);
@@ -92,7 +88,7 @@ public class SoloActivityHandler implements Handler {
 
         for (SoloActivity soloActivity : availableActivities) {
             inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(soloActivity.getName().split(" ")[0], soloActivity.getName()));
-            replyText.append(String.format("\n*%s* (%d мин.):\n\n%s%n", soloActivity.getName(), soloActivity.getActivityDuration(), soloActivity.getDescription()));
+            replyText.append(String.format("\n*%s* (%d мин.) (%d ⚡️):\n\n%s%n", soloActivity.getName(),soloActivity.getRequiredStamina(), soloActivity.getActivityDuration(), soloActivity.getDescription()));
         }
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setText(replyText.toString());

@@ -123,7 +123,6 @@ public class ScheduledRaidBosses {
                 allUsers) {
             var messageTMP = createMessageTemplate(user);
             var messageText = message + String.format("Ваше здоровье ♥️ - %d", user.getCurrentHealth());
-
             messageTMP.setReplyMarkup(createBaseReplyKeyboard());
             messageTMP.setText(messageText);
             sendMessageList.add(messageTMP);

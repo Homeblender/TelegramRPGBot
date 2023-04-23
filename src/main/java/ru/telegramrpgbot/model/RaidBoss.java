@@ -19,6 +19,7 @@ public class RaidBoss {
     Long id;
     String name;
     Long recommendedLevel;
+    Long staminaRequired;
     Long life;
     Long damage;
     Long armor;
