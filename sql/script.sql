@@ -117,7 +117,7 @@ CREATE TABLE fixed.base_item_craft
     id                    serial PRIMARY KEY,
     crafted_base_item_id  bigint references fixed.base_item (id),
     material_base_item_id bigint references fixed.base_item (id),
-    countOfMaterial       bigint
+    count_of_material       bigint
 );
 CREATE TABLE fixed.consumable_item_effect
 (
@@ -226,6 +226,8 @@ VALUES ('Базовое владение оружием.', 1, 1, 0, 0, 0),
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null, 0, null, 15, true);
+
+
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Старый железный меч', 'Старый железный меч, немного острый.', 2, null, 0, null, 15, true, 2);
@@ -253,6 +255,22 @@ VALUES ('Малое зелье здоровья', 'Восстанавливае�
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Энергетик 0.25', 'Восстанавливает 1 ед. выносливости.', null, null, 7, 5, 50, true);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+VALUES ('Драколит', 'Руда.', null, null, 8, 15, 50, false);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+VALUES ('Древний камень', 'Камень.', null, null, 8, 15, 50, false);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+VALUES ('Душа', 'Душа Древнего Драконида.', null, null, 8, 15, 50, false);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
+VALUES ('Кровь драконида', 'Кровь Древнего Драконида.', null, null, 8, 15, 50, false);
+
+
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
+values (2,13,2);
 
 insert into fixed.consumable_item_effect
     (base_item_id, add_life, add_mana, add_stamina)
@@ -277,13 +295,15 @@ insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward
 values (2, 8, 10, null,
         'Ты обшарил старый заброшенный музей, там давно никто не убирался, но ничего кроме пары монет не нашел.');
 
-insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward,stamina_required)
-VALUES ('Драконид', 1000, 50, 40, 10, 100, 150,5);
+insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
+VALUES ('Древний Драконид', 1000, 50, 40, 10, 100, 150, 5);
+insert into fixed.raid_boss_item_reward (boss_id, item_id)
+values (1, 11),(1, 13),(1, 13),(1, 14);
 
 
 
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-VALUES (1, null, 1436473525, false, 0);
+VALUES (1, null, 1436473525, false, 10000);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (2, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
@@ -295,7 +315,7 @@ VALUES (5, 1, 1436473525, false, null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (6, null, 1436473525, false, 0);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
-VALUES (7, null, 1436473525, false, 0);
+VALUES (7, null, 1436473525, false, 1000);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
 VALUES (8, 250, 1436473525, false, null);
 insert into public.ingame_item(item_id, items_in_stack, user_id, is_equipped, sharpness)
