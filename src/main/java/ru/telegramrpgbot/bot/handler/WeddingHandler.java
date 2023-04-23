@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import static ru.telegramrpgbot.bot.util.IngameUtil.Announcement;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
@@ -157,8 +158,13 @@ public class WeddingHandler implements Handler {
         messageToOpponent.setText(String.format("\uD83C\uDF7E УРА!!! _%s_ сказал ДА! ГОРЬКО!!! \uD83D\uDC9E", actor.getName()));
         var messageToActor = createMessageTemplate(actor);
         messageToActor.setText(String.format("Совет да любовь вам, _%s_ и _%s_!!! ГОРЬКО!!! \uD83C\uDF7E", actor.getName(), opponent.getName()));
+        var announcement = String.format("Игрок [%s](tg://user?id=%d) и Игрок [%s](tg://user?id=%d) поженились!\uD83D\uDC9E\nГОРЬКО!!!\uD83C\uDF7E",
+                actor.getName(), actor.getChatId(), opponent.getName(), opponent.getChatId());
+        var sendMessageList = Announcement(announcement);
+        sendMessageList.add(messageToActor);
+        sendMessageList.add(messageToOpponent);
 
-        return List.of(messageToActor, messageToOpponent);
+        return sendMessageList;
 
     }
     private List<PartialBotApiMethod<? extends Serializable>> divorce(User actor) {
@@ -173,11 +179,15 @@ public class WeddingHandler implements Handler {
         userRepository.save(actor);
         userRepository.save(opponent);
         var messageToOpponent = createMessageTemplate(opponent);
-        messageToOpponent.setText(String.format("К сожалению _%s_ разорвал ваш брак.\nВы разведены...", actor.getName()));
+        messageToOpponent.setText(String.format("К сожалению _%s_ разорвал ваш брак.\nВы разведены...\uD83D\uDC94", actor.getName()));
         var messageToActor = createMessageTemplate(actor);
-        messageToActor.setText(String.format("Вы больше не вместе с _%s_.\nВаш брак рассторгнут.", opponent.getName()));
-
-        return List.of(messageToActor, messageToOpponent);
+        messageToActor.setText(String.format("Вы больше не вместе с _%s_.\nВаш брак рассторгнут.\uD83D\uDC94", opponent.getName()));
+        var announcement = String.format("Игрок [%s](tg://user?id=%d) и Игрок [%s](tg://user?id=%d) развелись\uD83D\uDC94",
+                actor.getName(), actor.getChatId(), opponent.getName(), opponent.getChatId());
+        var sendMessageList = Announcement(announcement);
+        sendMessageList.add(messageToActor);
+        sendMessageList.add(messageToOpponent);
+        return sendMessageList;
 
     }
     @Override
