@@ -53,7 +53,7 @@ public class UserDataHandler implements Handler {
                         "%s" +
                         "%s" +
                         "%n\uD83C\uDF1F Опыт: (%s/%s)%n" +
-                        "♥️ Здоровье : %s/%s%n" +
+                        "♥️ Здоровье: %s/%s%n" +
                         "⚡️ Выносливость: %s/%s %s%n" +
                         "\uD83D\uDD39 Мана: %s/%s%n%n" +
                         "\uD83C\uDFC3\uD83C\uDFFC\u200D♂️ Занятие: %s%n" +
