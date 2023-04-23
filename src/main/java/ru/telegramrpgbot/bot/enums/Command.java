@@ -29,6 +29,7 @@ public enum Command {
     APPLY(null),
     RELEARN(null),
     GUIDE(null),
+    CRAFT(null),
     RAID(null),
     ACCEPT("Принять"),
     CANCEL("Отменить"),

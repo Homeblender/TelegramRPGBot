@@ -210,8 +210,6 @@ public class ScheduledRaidBosses {
     }
 
     private void sendAllMessages(List<SendMessage> sendMessageList) {
-
-
         for (SendMessage sendMessage : sendMessageList) {
             try {
                 bot.execute(sendMessage);

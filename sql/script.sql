@@ -107,7 +107,7 @@ CREATE TABLE fixed.base_item_craft
     id                    serial PRIMARY KEY,
     crafted_base_item_id  bigint references fixed.base_item (id),
     material_base_item_id bigint references fixed.base_item (id),
-    countOfMaterial       bigint
+    count_of_material       bigint
 );
 CREATE TABLE fixed.consumable_item_effect
 (
@@ -214,6 +214,8 @@ VALUES ('Базовое владение оружием.', 1, 1, 0, 0, 0),
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null, 0, null, 15, true);
+
+
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Старый железный меч', 'Старый железный меч, немного острый.', 2, null, 0, null, 15, true, 2);
@@ -253,6 +255,10 @@ VALUES ('Душа', 'Душа Древнего Драконида.', null, null,
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Кровь драконида', 'Кровь Древнего Драконида.', null, null, 8, 15, 50, false);
+
+
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
+values (2,13,2);
 
 insert into fixed.consumable_item_effect
     (base_item_id, add_life, add_mana, add_stamina)
