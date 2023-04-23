@@ -18,10 +18,9 @@ public enum BotState {
     SOLO_ACTIVITY("ACTIVITY");
     private final String title;
     public String getTitle() {
-
         return title == null?"":title;
     }
-    BotState(String russian) {
-        this.title = russian;
+    BotState(String title) {
+        this.title = title;
     }
 }
