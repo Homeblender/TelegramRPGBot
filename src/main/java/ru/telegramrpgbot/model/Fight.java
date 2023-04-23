@@ -26,6 +26,8 @@ public class Fight {
     User user2Id = null;
     @Column(name = "fight_state")
     String fightState;
+    @Builder.Default
+    Long bet = 0L;
 
 
 

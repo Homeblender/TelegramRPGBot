@@ -32,6 +32,9 @@ public class Move {
     @Column(name = "attack")
     @Builder.Default
     BodyPart attack = null;
+    @ManyToOne
+    @JoinColumn(name = "active_skill_id")
+    ActiveSkill activeSkillId;
     @Column(name = "move_state")
     @Builder.Default
     MoveState moveState = MoveState.NEW_MOVE;
@@ -41,4 +44,5 @@ public class Move {
     Timestamp endTime;
     @Builder.Default
     Long num = 0L;
+
 }

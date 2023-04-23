@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createBaseReplyKeyboard;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
@@ -271,6 +272,8 @@ public class IngameUtil {
 
         var messageToActor = createMessageTemplate(actor);
         var messageToOpponent = createMessageTemplate(opponent);
+        messageToActor.setReplyMarkup(createBaseReplyKeyboard());
+        messageToOpponent.setReplyMarkup(createBaseReplyKeyboard());
         messageToActor.setText("Вызов отменен");
         messageToOpponent.setText("Вызов отменен");
         return List.of(messageToActor, messageToOpponent);

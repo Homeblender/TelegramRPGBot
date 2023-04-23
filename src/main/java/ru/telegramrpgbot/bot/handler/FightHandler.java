@@ -34,7 +34,9 @@ public class FightHandler implements Handler {
     private final MoveRepository moveRepository;
     private final ActiveSkillRepository activeSkillRepository;
     private static final long waitingTime = TimeUnit.MILLISECONDS.convert(1L, TimeUnit.MINUTES);
-    private static final long maxCountMoves = 14;
+    private static final long maxCountMoves = 40L;
+    private static final float defenseCoef = 0.5f;
+    private static final float healthCoef = 0.3f;
 
     public FightHandler(UserRepository userRepository, ActiveSkillRepository activeSkillRepository, FightRepository fightRepository, MoveRepository moveRepository) {
         this.userRepository = userRepository;
@@ -69,13 +71,9 @@ public class FightHandler implements Handler {
         log.info(message);
         var messageToUser = createMessageTemplate(actor);
         String[] messageMass = message.split("_");
-        if(messageMass.length<2){
-            log.info("меньше 2");
-            messageToUser.setText("Не указан ник соперника");
-            return List.of(messageToUser);
-        }
-        if(messageMass.length>2){
-            messageToUser.setText("Можно указать ник только одного соперника");
+        if(messageMass.length != 3){
+            log.info("меньше 3");
+            messageToUser.setText("Команда должна выглядеть как /fight\\_<Ник соперника>\\_<ставка на бой>");
             return List.of(messageToUser);
         }
         if (userRepository.getUsersByName(messageMass[1]).orElse(null) == null){
@@ -88,7 +86,20 @@ public class FightHandler implements Handler {
             messageToUser.setText("Нельзя вызвать себя");
             return List.of(messageToUser);
         }
-        User opponent = userRepository.getUsersByName(messageMass[1]).orElse(null);
+        if (!messageMass[2].matches("[0-9]+")) {
+            messageToUser.setText("Ставка указана некорректно");
+            return List.of(messageToUser);
+        }
+        long bet = Long.valueOf(messageMass[2]);
+        if (bet > actor.getGold()) {
+            messageToUser.setText("У вас недостаточно денег для такой ставки");
+            return List.of(messageToUser);
+        }
+        User opponent = userRepository.getUsersByName(messageMass[1]).orElseThrow();
+        if (bet > opponent.getGold()) {
+            messageToUser.setText("У этого игрока недостаточно денег для такой ставки");
+            return List.of(messageToUser);
+        }
         var messageToOpponent = createMessageTemplate(opponent);
         if(opponent.getUserState() != BotState.NONE) {
             messageToUser.setText("В данный момент этот игрок занят\nПопробуйте позже");
@@ -99,7 +110,7 @@ public class FightHandler implements Handler {
         actor.setUserState(BotState.WAITING_FOR_OPPONENT);
         userRepository.save(actor);
 
-        Fight fight = fightRepository.save(Fight.builder().user1Id(actor).user2Id(opponent).build());
+        Fight fight = fightRepository.save(Fight.builder().user1Id(actor).user2Id(opponent).bet(bet).build());
         Move actorMove = moveRepository.getMoveByUserId(fight.getUser1Id()).orElse(null);
         Move opponentMove = moveRepository.getMoveByUserId(fight.getUser2Id()).orElse(null);
         if (actorMove != null) {
@@ -126,11 +137,12 @@ public class FightHandler implements Handler {
         inlineKeyboardMarkupOpponent.setKeyboard(List.of(inlineKeyboardButtonsRowOneOpponent));
 
         messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
-        messageToOpponent.setText(String.format("Вам бросил вызов %s", actor.getName()));
+        messageToOpponent.setText(String.format("Вам бросил вызов %s level: %d\nСтавка %d", actor.getName(), actor.getLevel(), fight.getBet()));
         log.info(messageToUser.getText());
         log.info(messageToOpponent.getText());
         return List.of(messageToUser, messageToOpponent);
     }
+
     private List<PartialBotApiMethod<? extends Serializable>> waiting(User user) {
         var reply = createMessageTemplate(user);
         if (user.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
@@ -184,13 +196,11 @@ public class FightHandler implements Handler {
         if (part == null) {
             if (message.equalsIgnoreCase(Command.USE_ACTIVE_SKILL.getRussian())) {
                 var activeSkills = activeSkillRepository.findAllByClassId(user.getUserClass());
-                String messageToUser = "Мана: " + user.getCurrentMana() + "\nВаши навыки:";
+                StringBuilder messageToUser = new StringBuilder("Мана: " + user.getCurrentMana() + "\nВаши навыки:");
                 for (var activeSkill : activeSkills) {
-                    messageToUser += "\n" + activeSkill.getName() +
-                            "  " + activeSkill.getManaCost() + " маны  урон: х" + activeSkill.getDamageBonus() +
-                            "  /skill\\_" + activeSkill.getId().toString();
+                    messageToUser.append("\n").append(activeSkill.getName()).append("  ").append(activeSkill.getManaCost()).append(" маны  урон: х").append(activeSkill.getDamageBonus()).append("  /skill\\_").append(activeSkill.getId().toString());
                 }
-                reply.setText(messageToUser);
+                reply.setText(messageToUser.toString());
                 return List.of(reply);
             }
             if (messageMas[0].substring(1).equalsIgnoreCase(Command.SKILL.name()) && move.getMoveState() == MoveState.DEFENSE_CHOSEN) {
@@ -217,43 +227,50 @@ public class FightHandler implements Handler {
             move.setMoveState(MoveState.MOVE_MADE);
             moveRepository.save(move);
 
-            return chek(user, move);
+            return check(user);
         }
         return List.of(reply);
     }
-    private List<PartialBotApiMethod<? extends Serializable>> chek(User user, Move move) {
-        Fight fight = move.getFightId();
+    private List<PartialBotApiMethod<? extends Serializable>> check(User user) {
+
+        Fight fight = moveRepository.getMoveByUserId(user).orElseThrow().getFightId();
         User actor = fight.getUser1Id();
+        log.info(Long.toString(actor.getCurrentMana()));
         User opponent = fight.getUser2Id();
-        Move actorMove = moveRepository.getMoveByUserId(actor).orElse(null);
-        Move opponentMove = moveRepository.getMoveByUserId(opponent).orElse(null);
+        Move actorMove = moveRepository.getMoveByUserId(actor).orElseThrow();
+        Move opponentMove = moveRepository.getMoveByUserId(opponent).orElseThrow();
 
         if (actorMove.getMoveState() == MoveState.MOVE_MADE &&
                 opponentMove.getMoveState() == MoveState.MOVE_MADE) {
-            long damageToActor = IngameUtil.countDamage(opponent);
+
+            long actorArm = IngameUtil.countArmor(actor);
+            long baseDamageToActor = IngameUtil.countDamage(opponent);
+            long damageToActor;
             if (opponentMove.getActiveSkillId() != null) {
-                actorMove.setHp(actorMove.getHp()
-                        - Math.round((damageToActor - ((double)IngameUtil.countArmor(actor) * damageToActor)/100)
-                        * opponentMove.getActiveSkillId().getDamageBonus()));
+                damageToActor = baseDamageToActor * opponentMove.getActiveSkillId().getDamageBonus();
+            } else if (actorMove.getDefense() == opponentMove.getAttack()) {
+                damageToActor = (long) (baseDamageToActor * defenseCoef);
+            } else {
+                damageToActor = baseDamageToActor;
             }
-            else {
-                actorMove.setHp(actorMove.getHp()
-                        - Math.round((damageToActor - ((double) IngameUtil.countArmor(actor) * damageToActor) / 100)
-                        * (actorMove.getDefense() == opponentMove.getAttack() ? 0.5 : 1)));
-            }
+            long finalDamageToActor = IngameUtil.damageTakes(actorArm, damageToActor);
+            long actorHp = actorMove.getHp() - finalDamageToActor;
 
-            long damageToOpponent = IngameUtil.countDamage(actor);
+            long opponentArm = IngameUtil.countArmor(opponent);
+            long baseDamageToOpponent = IngameUtil.countDamage(actor);
+            long damageToOpponent;
             if (actorMove.getActiveSkillId() != null) {
-                opponentMove.setHp(opponentMove.getHp()
-                        - Math.round((damageToOpponent - ((double)IngameUtil.countArmor(opponent) * damageToOpponent)/100)
-                        * actorMove.getActiveSkillId().getDamageBonus()));
+                damageToOpponent = baseDamageToOpponent * actorMove.getActiveSkillId().getDamageBonus();
+            } else if (opponentMove.getDefense() == actorMove.getAttack()) {
+                damageToOpponent = (long) (baseDamageToOpponent * defenseCoef);
+            } else {
+                damageToOpponent = baseDamageToOpponent;
             }
-            else {
-                opponentMove.setHp(opponentMove.getHp()
-                        - Math.round((damageToOpponent - ((double) IngameUtil.countArmor(opponent) * damageToOpponent) / 100)
-                        * (opponentMove.getDefense() == actorMove.getAttack() ? 0.5 : 1)));
-            }
+            long finalDamageToOpponent = IngameUtil.damageTakes(opponentArm, damageToOpponent);
+            long opponentHp = opponentMove.getHp() - finalDamageToOpponent;
 
+            actorMove.setHp(actorHp);
+            opponentMove.setHp(opponentHp);
             moveRepository.save(actorMove);
             moveRepository.save(opponentMove);
 
@@ -272,8 +289,6 @@ public class FightHandler implements Handler {
                 userRepository.save(actor);
                 userRepository.save(opponent);
 
-                moveRepository.delete(actorMove);
-                moveRepository.delete(opponentMove);
                 String message = "Ничья";
                 if (actorMove.getNum() > maxCountMoves) {
                     message += "\nЗакончилось количество ходов";
@@ -286,50 +301,14 @@ public class FightHandler implements Handler {
                 var moveMessageForActor = messages[0];
                 var moveMessageForOpponent = messages[1];
 
+                moveRepository.delete(actorMove);
+                moveRepository.delete(opponentMove);
+
                 return List.of(moveMessageForActor, messageForActor, moveMessageForOpponent, messageForOpponent);
             }
             var messages = createMessage(actor, opponent);
             messageForActor = messages[0];
             messageForOpponent = messages[1];
-/*            String hitMessage = "%s\n" +
-                    "Соперник защищал: %s\n\n" +
-                    "%s\n" +
-                    "Вы защищали: %s\n\n";
-            String actorHitMessage;
-            String actorAttack;
-            String actorAttackToOpponent;
-            if (actorMove.getActiveSkillId() != null) {
-                actorAttack = "Использован навык " + actorMove.getActiveSkillId().getName();
-                actorAttackToOpponent = "Соперник использовал навык " + actorMove.getActiveSkillId().getName();
-            } else {
-                actorAttack = "Вы били: " + actorMove.getAttack().getTitle();
-                actorAttackToOpponent = "Соперник бил: " + actorMove.getAttack().getTitle();
-            }
-            String opponentAttack;
-            String opponentAttackToActor;
-            if (opponentMove.getActiveSkillId() != null) {
-                opponentAttack = "Использован навык " + opponentMove.getActiveSkillId().getName();
-                opponentAttackToActor = "Соперник использовал навык " + opponentMove.getActiveSkillId().getName();
-            } else {
-                opponentAttack = "Вы били: " + opponentMove.getAttack().getTitle();
-                opponentAttackToActor = "Соперник бил: " + opponentMove.getAttack().getTitle();
-            }
-            actorHitMessage = String.format(hitMessage,
-                    actorAttack,
-                    opponentMove.getDefense().getTitle(),
-                    opponentAttackToActor,
-                    actorMove.getDefense().getTitle());
-            String opponentHitMessage;
-            opponentHitMessage = String.format(hitMessage,
-                    opponentAttack,
-                    actorMove.getDefense().getTitle(),
-                    actorAttackToOpponent,
-                    opponentMove.getDefense().getTitle());
-            String message = "%sВаше HP: %s\n HP Соперника: %s\n\nСледующий ход №%s\nВыберете, что защищать";
-            messageForActor.setReplyMarkup(createFightDefenseKeyboard());
-            messageForOpponent.setReplyMarkup(createFightDefenseKeyboard());
-            messageForActor.setText(String.format(message, actorHitMessage, actorMove.getHp(), opponentMove.getHp(), actorMove.getNum() + 2));
-            messageForOpponent.setText(String.format(message, opponentHitMessage, opponentMove.getHp(), actorMove.getHp(), opponentMove.getNum() + 2));*/
 
             actor.setUserState(BotState.WAITING_FOR_MOVE);
             opponent.setUserState(BotState.WAITING_FOR_MOVE);
@@ -363,7 +342,7 @@ public class FightHandler implements Handler {
 
     }
     private List<PartialBotApiMethod<? extends Serializable>> ending(User winner, User loser) {
-        Move winnerMove = moveRepository.getMoveByUserId(winner).orElse(null);
+        Move winnerMove = moveRepository.getMoveByUserId(winner).orElseThrow();
         Fight fight = winnerMove.getFightId();
         fight.setFightState(String.format("Победил %s", winner.getName()));
         fightRepository.save(fight);
@@ -377,15 +356,20 @@ public class FightHandler implements Handler {
         var messageForLoser = createMessageTemplate(loser);
         messageForWinner.setReplyMarkup(createBaseReplyKeyboard());
         messageForLoser.setReplyMarkup(createBaseReplyKeyboard());
-        messageForWinner.setText("Вы победили!!!");
-        messageForLoser.setText("Вы проиграли(");
+        messageForWinner.setText(String.format("Вы победили!!!\n+%d золотых монет\uD83D\uDCB0", fight.getBet()));
+        messageForLoser.setText(String.format("Вы проиграли(\n-%d золотых монет\uD83D\uDCB0", fight.getBet()));
 
         winner.setUserState(BotState.NONE);
         loser.setUserState(BotState.NONE);
+
+        winner.setGold(winner.getGold() + fight.getBet());
+        loser.setGold(loser.getGold() - fight.getBet());
+
+        loser.setCurrentHealth(loser.getCurrentHealth() - (long)(loser.getMaxHealth() * healthCoef));
         userRepository.save(winner);
         userRepository.save(loser);
         moveRepository.delete(winnerMove);
-        moveRepository.delete(moveRepository.getMoveByUserId(loser).orElse(null));
+        moveRepository.delete(moveRepository.getMoveByUserId(loser).orElseThrow());
         return List.of(moveMessageForWinner, messageForWinner, moveMessageForLoser, messageForLoser);
     }
     private List<PartialBotApiMethod<? extends Serializable>> useSkill(User user, String message) {
@@ -420,8 +404,9 @@ public class FightHandler implements Handler {
         user.setCurrentMana(mana);
         userRepository.save(user);
         log.info(Long.toString(user.getCurrentMana()));
+        log.info(Long.toString(moveRepository.getMoveByUserId(user).orElseThrow().getFightId().getUser1Id().getCurrentMana()));
 
-        return chek(user, move);
+        return check(user);
     }
     private SendMessage[] createMessage(User actor, User opponent) {
         Move actorMove = moveRepository.getMoveByUserId(actor).orElseThrow();
@@ -429,10 +414,14 @@ public class FightHandler implements Handler {
         var messageForActor = createMessageTemplate(actor);
         var messageForOpponent = createMessageTemplate(opponent);
 
-        String hitMessage = "%s\n" +
-                "Соперник защищал: %s\n\n" +
-                "%s\n" +
-                "Вы защищали: %s\n\n";
+        String hitMessage = """
+                %s
+                Соперник защищал: %s
+
+                %s
+                Вы защищали: %s
+
+                """;
         String actorHitMessage;
         String actorAttack;
         String actorAttackToOpponent;
@@ -463,7 +452,7 @@ public class FightHandler implements Handler {
                 actorMove.getDefense().getTitle(),
                 actorAttackToOpponent,
                 opponentMove.getDefense().getTitle());
-        String message = "%sВаше HP: %s\n HP Соперника: %s\n\nСледующий ход №%s\nВыберете, что защищать";
+        String message = "%sВаше HP: %s/%s\n HP Соперника: %s/%s\n\nСледующий ход №%s\nВыберете, что защищать";
         messageForActor.setReplyMarkup(createFightDefenseKeyboard());
         messageForOpponent.setReplyMarkup(createFightDefenseKeyboard());
         long actorHp;
@@ -478,8 +467,8 @@ public class FightHandler implements Handler {
         } else {
             opponentHp = 0;
         }
-        messageForActor.setText(String.format(message, actorHitMessage, actorHp, opponentHp, actorMove.getNum() + 2));
-        messageForOpponent.setText(String.format(message, opponentHitMessage, opponentHp, actorHp, opponentMove.getNum() + 2));
+        messageForActor.setText(String.format(message, actorHitMessage, actorHp, actor.getMaxHealth(), opponentHp, opponent.getMaxHealth(), actorMove.getNum() + 2));
+        messageForOpponent.setText(String.format(message, opponentHitMessage, opponentHp, opponent.getMaxHealth(), actorHp, actor.getMaxHealth(), opponentMove.getNum() + 2));
 
         return new SendMessage[]{messageForActor, messageForOpponent};
     }

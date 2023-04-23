@@ -12,6 +12,8 @@ public enum BotState {
     WAITING_FOR_EVENT_REWARD(null),
     WAITING_FOR_ANSWER_TO_INVITE(null),
     WAITING_FOR_OPPONENT(null),
+    WAITING_FOR_BET(null),
+    WAITING_FOR_OPPONENT_NAME(null),
     WAITING_FOR_OPPONENT_MOVE(null),
     WAITING_FOR_PARTY_NAME(null),
     RAIDING(null),

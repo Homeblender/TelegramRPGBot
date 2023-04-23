@@ -164,7 +164,8 @@ CREATE TABLE public.fight
     id          serial primary key,
     user1_id    bigint references public.usr (chat_id),
     user2_id    bigint references public.usr (chat_id),
-    fight_state TEXT
+    fight_state TEXT,
+    bet bigint
 );
 
 
@@ -175,6 +176,7 @@ CREATE TABLE public.move
     fight_id   bigint references public.fight (id),
     defense    int,
     attack     int,
+    active_skill_id bigint,
     move_state int,
     hp         bigint,
     end_time   timestamp,
