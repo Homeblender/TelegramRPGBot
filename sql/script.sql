@@ -35,6 +35,16 @@ CREATE TABLE fixed.solo_activity
     required_stamina  bigint,
     activity_duration bigint
 );
+
+CREATE TABLE fixed.active_skill
+(
+    id           serial PRIMARY KEY,
+    name         text unique ,
+    class_id     bigint references fixed.class (id),
+    damage_bonus bigint,
+    mana_cost    bigint
+);
+
 CREATE TABLE fixed.raid_boss
 (
     id                serial PRIMARY KEY,
