@@ -16,8 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.telegramrpgbot.bot.util.IngameUtil.countItemArmor;
-import static ru.telegramrpgbot.bot.util.IngameUtil.countItemDamage;
+import static ru.telegramrpgbot.bot.util.IngameUtil.*;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
@@ -87,9 +86,8 @@ public class TradeHandler implements Handler {
         }else if(item.getItemsInStack() == 1){
             item.setUser(user);
         }else{
+            userGetItem(user,item.getBaseItem());
             item.setItemsInStack(item.getItemsInStack()-1);
-            var newItem = IngameItem.builder().baseItem(item.getBaseItem()).user(user).itemsInStack(1L).build();
-            ingameItemRepository.save(newItem);
         }
 
         user.setGold(user.getGold()-price);
@@ -151,7 +149,7 @@ public class TradeHandler implements Handler {
         }
         try {
             price = Long.parseLong(messageMass[3]);
-        } catch (NumberFormatException exception) {
+        } catch (Exception exception) {
             reply.setText("Цена должна быть целым числом.");
             return List.of(reply);
         }
@@ -164,7 +162,7 @@ public class TradeHandler implements Handler {
         var messageToSecondUser = createMessageTemplate(secondUser);
         double damage = countItemDamage(item);
         double armor = countItemArmor(item);
-        double sharpness = item.getSharpness() == null?0:item.getSharpness();
+        long sharpness = item.getSharpness() == null?0:item.getSharpness();
 
         messageToSecondUser.setText(String.format(
                 "Игрок [%s](tg://user?id=%d) предлагает вам купить предмет.%n%n+%d\uD83D\uDDE1 +%d\uD83D\uDEE1 *%s* (+%d)%n%n Цена - %d \uD83D\uDCB0",

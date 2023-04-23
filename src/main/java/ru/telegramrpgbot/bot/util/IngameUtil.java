@@ -67,7 +67,7 @@ public class IngameUtil {
         user.setCurrentStamina(user.getCurrentStamina() + staminaChanged);
         if (user.getCurrentStamina() > user.getMaxStamina()) {
             user.setCurrentStamina(user.getMaxStamina());
-        }if (user.getCurrentStamina() < user.getMaxStamina()) {
+        }if (user.getCurrentStamina() < user.getMaxStamina() && user.getStaminaRestor()==null) {
             var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);
             user.setStaminaRestor(new Timestamp(System.currentTimeMillis() + delay));
         }
@@ -164,7 +164,7 @@ public class IngameUtil {
 
     public static long countExpToLevel(long level) {
         long base_exp = 20;
-        double constant = 1.4;
+        double constant = 1.2;
 
         return (long) (base_exp * (Math.pow(level, constant)) - base_exp * level);
 

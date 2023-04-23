@@ -95,12 +95,12 @@ public class EquipmentHandler implements Handler {
         }
         try {
             item = ingameItemRepository.findAllByIdAndUser(Long.parseLong(messageList.get(1)),user);
-        } catch (NumberFormatException exception) {
+            if (item.isEquipped()) {
+                reply.setText("Предмет экипирован.");
+                return List.of(reply);
+            }
+        } catch (Exception exception) {
             reply.setText("У вас нет таких предметов.");
-            return List.of(reply);
-        }
-        if (item.isEquipped()) {
-            reply.setText("Предмет экипирован.");
             return List.of(reply);
         }
         if (!item.getBaseItem().getType().name().contains("EQUIPMENT")) {
