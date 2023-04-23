@@ -19,6 +19,8 @@ public class Party{
     Long id;
     @Column(columnDefinition = "Text")
     String name;
-    @Column(columnDefinition = "Text")
-    String current_state;
+    @ManyToOne
+    @JoinColumn(name = "boss_fighting")
+    RaidBoss bossFighting;
+    Long bossLife;
 }

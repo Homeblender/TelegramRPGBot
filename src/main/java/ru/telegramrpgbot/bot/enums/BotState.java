@@ -14,6 +14,7 @@ public enum BotState {
     WAITING_FOR_OPPONENT(null),
     WAITING_FOR_OPPONENT_MOVE(null),
     WAITING_FOR_PARTY_NAME(null),
+    RAIDING(null),
     SOLO_ACTIVITY("ACTIVITY");
     private final String title;
     public String getTitle() {

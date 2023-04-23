@@ -61,8 +61,8 @@ public class ScheduledCheckUsers {
                 var reward = possibleRewards.get(new Random().nextInt(possibleRewards.size()));
 
                 var soloActivityEnded = TelegramUtil.createMessageTemplate(user);
-                var gold = rnd.nextLong(reward.getGoldReward() / 2, reward.getGoldReward() * 2);
-                var exp =  rnd.nextLong(reward.getExpReward() / 2, reward.getExpReward() * 2);
+                var gold = rnd.nextLong(reward.getGoldReward(), reward.getGoldReward() * 2);
+                var exp =  rnd.nextLong(reward.getExpReward(), reward.getExpReward() * 2);
 
                 var reply = reward.getResultMessage() + String.format("%n%nНаграда:%n+%d зол. монет%n+%d очк. опыта",gold, exp );
                 if (reward.getItemReward() != null) {

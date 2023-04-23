@@ -18,6 +18,7 @@ public class RaidBoss {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
+    Long recommendedLevel;
     Long life;
     Long damage;
     Long armor;

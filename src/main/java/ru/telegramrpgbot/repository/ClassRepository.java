@@ -11,5 +11,6 @@ import java.util.List;
 public interface ClassRepository extends JpaRepository<Class, Long> {
     @Override
     Optional<Class> findById(Long aLong);
+    Optional<Class> findByName(String name);
     List<Class> findAllByBaseClass(Class baseClass);
 }

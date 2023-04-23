@@ -107,7 +107,7 @@ public class IngameUtil {
 
     }
 
-    public static List<PartialBotApiMethod<? extends Serializable>> Announcement(String message){
+    public static List<PartialBotApiMethod<? extends Serializable>> Announcement(String message) {
         var chats = groupChatRepository.findAll();
         List<PartialBotApiMethod<? extends Serializable>> sendMessageList = new ArrayList<>();
         for (GroupChat groupChat : chats) {
@@ -185,8 +185,8 @@ public class IngameUtil {
                 sum += countItemDamage(item);
             }
         }
-        for (AppliedSkill skill: skills){
-            sum += (skill.getSkill().getDamageBonus()*skill.getSkillLevel());
+        for (AppliedSkill skill : skills) {
+            sum += (skill.getSkill().getDamageBonus() * skill.getSkillLevel());
         }
         return sum;
     }
@@ -200,6 +200,11 @@ public class IngameUtil {
         return (long) (addArmor * ingameItem.getSharpness() + ingameItem.getBaseItem().getArmor());
     }
 
+    public static long damageTakes(long armor, long damage) {
+        float damageLeft = 1 - (float)((0.02 * armor) / (1 + 0.02 * armor));
+        return (long) (damageLeft * damage);
+    }
+
     public static long countArmor(User user) {
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
         var skills = appliedSkillRepository.findAllByUser(user);
@@ -209,8 +214,8 @@ public class IngameUtil {
                 sum += countItemArmor(item);
             }
         }
-        for (AppliedSkill skill: skills){
-            sum += (skill.getSkill().getArmorBonus()*skill.getSkillLevel());
+        for (AppliedSkill skill : skills) {
+            sum += (skill.getSkill().getArmorBonus() * skill.getSkillLevel());
         }
         return sum;
     }
@@ -230,6 +235,11 @@ public class IngameUtil {
         return classRepository.findAllByBaseClass(user.getUserClass()).stream().filter(w -> w.getRequiredLevel() <= user.getLevel()).toList();
     }
 
+    public static List<Class> getAvailableClasses(Class baseClass) {
+        List<Class> result = new ArrayList<>();
+        recGetAllAvailableClasses(baseClass, result);
+        return result;
+    }
 
     private static void recGetAllAvailableClasses(Class baseClass, List<Class> result) {
         var classes = classRepository.findAllByBaseClass(baseClass);

@@ -22,10 +22,6 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 @Component
 @Slf4j
 public class PartyHandler implements Handler {
-//    public static final String NAME_ACCEPT = "/enter_name_accept";
-//    public static final String NAME_CHANGE = "/WAITING_FOR_NAME";
-//    public static final String NAME_CHANGE_CANCEL = "/enter_name_cancel";
-
     private final UserRepository userRepository;
     private final PartyRepository partyRepository;
     public static final String PARTY_NAME_ACCEPT = "/enter_party_name_accept";
@@ -43,7 +39,7 @@ public class PartyHandler implements Handler {
         }
         if (message.equalsIgnoreCase(Command.CREATE_PARTY.name())) {
             var reply = createMessageTemplate(user);
-            reply.setText("Введите название пати");
+            reply.setText("Введите название группы");
             user.setUserState(BotState.WAITING_FOR_PARTY_NAME);
             userRepository.save(user);
             return List.of(reply);
@@ -80,12 +76,13 @@ public class PartyHandler implements Handler {
         var reply = createMessageTemplate(user);
         StringBuilder messageToUser = new StringBuilder("Группа " +
                 user.getPartyId().getName() +
-                "(Хост: " +
+                " (Капитан: " +
                 userRepository.findUserByHostPartyId(user.getPartyId()).orElseThrow().getName() +
                 "):");
         List<User> partyUsers = userRepository.findAllByPartyId(user.getPartyId());
         for (User partyUser : partyUsers) {
-            messageToUser.append("\n   - ").append(partyUser.getName());
+            //TODO сделать норм вывод
+            messageToUser.append("\n   - ").append(String.format("[%s](tg://user?id=%d)",partyUser.getName(),partyUser.getChatId()));
         }
         if (user.getHostPartyId() != null) {
             messageToUser.append("\n\nВы можете удалить команду - /exit");
@@ -98,7 +95,7 @@ public class PartyHandler implements Handler {
     }
     private List<PartialBotApiMethod<? extends Serializable>> create(User user, String message) {
         var reply = createMessageTemplate(user);
-        if (partyRepository.getPartysByName(message).orElse(null) != null){
+        if (partyRepository.getPartyByName(message).orElse(null) != null){
             reply.setText("Это название уже занято, выбери другое.");
             return List.of(reply);
         }
@@ -133,14 +130,11 @@ public class PartyHandler implements Handler {
 
     }
     private List<PartialBotApiMethod<? extends Serializable>> accept(User user) {
-        log.info("0");
         user.setUserState(BotState.NONE);
         userRepository.save(user);
         var reply = createMessageTemplate(user);
-        log.info("1");
         reply.setReplyMarkup(createBaseReplyKeyboard());
-        reply.setText(String.format("Твоя группа называется: *%s*\n Ты можешь приглашать игроков в группу командой '/invite\\_<Имя игрока>'", user.getHostPartyId().getName()));
-        log.info("2");
+        reply.setText(String.format("Вы создали группу: *%s*\nПригласить игрока в группу:\n'/invite\\_<Имя игрока>'", user.getHostPartyId().getName()));
 
         return List.of(reply);
     }
@@ -173,7 +167,7 @@ public class PartyHandler implements Handler {
         User opponent = userRepository.getUsersByName(messageMass[1]).orElseThrow();
 
         if(opponent.getPartyId() != null) {
-            messageToUser.setText("Этот игрок уже состоит в пати.");
+            messageToUser.setText("Этот игрок уже состоит в группе.");
             return  List.of(messageToUser);
         }
 
@@ -195,7 +189,7 @@ public class PartyHandler implements Handler {
         inlineKeyboardMarkupOpponent.setKeyboard(List.of(inlineKeyboardButtonsRowOneOpponent));
 
         messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
-        messageToOpponent.setText(String.format("%s пригласил вас в пати %s", user.getName(), user.getHostPartyId().getName()));
+        messageToOpponent.setText(String.format("%s пригласил вас в группу %s", user.getName(), user.getHostPartyId().getName()));
         return List.of(messageToUser, messageToOpponent);
     }
     private List<PartialBotApiMethod<? extends Serializable>> cancel(User actor) {
