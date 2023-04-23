@@ -42,7 +42,7 @@ public class TelegramUtil {
 
         var buttons2 = new KeyboardButton[] {
                 new KeyboardButton("\uD83C\uDF89 Группа"),
-                new KeyboardButton("\uD83C\uDF89 Групповые сражения"),
+                new KeyboardButton("\uD83D\uDC65 Групповые сражения"),
                 new KeyboardButton("\uD83C\uDF96 События")
         };
         KeyboardRow row1 = new KeyboardRow();

@@ -114,6 +114,26 @@ CREATE TABLE fixed.solo_activity_reward
     result_message   text
 );
 
+
+
+CREATE TABLE fixed.raid_boss
+(
+    id             serial PRIMARY KEY,
+    name           text,
+    life           bigint,
+    damage         bigint,
+    armor          bigint,
+    gold_reward    bigint,
+    exp_reward     bigint
+);
+
+CREATE TABLE fixed.raid_boss_item_reward
+(
+    id             serial PRIMARY KEY,
+    boss_id bigint references fixed.raid_boss(id),
+    item_id bigint references fixed.base_item(id)
+);
+
 CREATE TABLE public.ingame_item
 (
     id             serial PRIMARY KEY,
