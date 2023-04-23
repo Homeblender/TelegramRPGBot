@@ -148,7 +148,6 @@ public class ForgeHandler implements Handler {
                     base.getArmor() == null ? 0 : base.getArmor(),
                     base.getName(),
                     base.getClassRequired().getName()));
-
             for (BaseItemCraft material :
                     materials) {
                 replyMessage.append(String.format("x%d _%s_%n",material.getCountOfMaterial(),material.getMaterialBaseItemId().getName()));

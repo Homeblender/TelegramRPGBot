@@ -5,7 +5,7 @@ public enum BodyPart {
     CHEST ("грудь"),
     LEGS ("ноги");
 
-    private String title;
+    private final String title;
 
     BodyPart(String title) {
         this.title = title;
