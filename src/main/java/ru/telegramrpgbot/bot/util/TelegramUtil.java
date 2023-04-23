@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import ru.telegramrpgbot.bot.enums.BodyPart;
+import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.User;
 
 import java.io.Serializable;
@@ -64,6 +66,47 @@ public class TelegramUtil {
         row.addAll(Arrays.asList(buttons));
         List<KeyboardRow> rows = new ArrayList<>();
         rows.add(row);
+
+        var newReplyKeyboard = new ReplyKeyboardMarkup(rows);
+        newReplyKeyboard.setResizeKeyboard(true);
+        return newReplyKeyboard;
+    }
+
+    public static ReplyKeyboard createFightDefenseKeyboard(){
+
+        var buttons = new KeyboardButton[]{
+                new KeyboardButton(BodyPart.HEAD.getTitle()),
+                new KeyboardButton(BodyPart.CHEST.getTitle()),
+                new KeyboardButton(BodyPart.LEGS.getTitle())
+        };
+
+        KeyboardRow row = new KeyboardRow(2);
+        row.addAll(Arrays.asList(buttons));
+        List<KeyboardRow> rows = new ArrayList<>();
+        rows.add(row);
+
+        var newReplyKeyboard = new ReplyKeyboardMarkup(rows);
+        newReplyKeyboard.setResizeKeyboard(true);
+        return newReplyKeyboard;
+    }
+    public static ReplyKeyboard createFightAttackKeyboard(){
+
+        var buttons1 = new KeyboardButton[]{
+                new KeyboardButton(BodyPart.HEAD.getTitle()),
+                new KeyboardButton(BodyPart.CHEST.getTitle()),
+                new KeyboardButton(BodyPart.LEGS.getTitle())
+        };
+        var buttons2 = new KeyboardButton[]{
+                new KeyboardButton(Command.USE_ACTIVE_SKILL.getRussian())
+        };
+
+        KeyboardRow row1 = new KeyboardRow(2);
+        row1.addAll(Arrays.asList(buttons1));
+        KeyboardRow row2 = new KeyboardRow(2);
+        row2.addAll(Arrays.asList(buttons2));
+        List<KeyboardRow> rows = new ArrayList<>();
+        rows.add(row1);
+        rows.add(row2);
 
         var newReplyKeyboard = new ReplyKeyboardMarkup(rows);
         newReplyKeyboard.setResizeKeyboard(true);

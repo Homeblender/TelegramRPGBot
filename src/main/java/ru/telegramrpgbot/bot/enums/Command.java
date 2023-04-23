@@ -38,6 +38,8 @@ public enum Command {
     CANCEL_PROPOSE("Отменить"),
     ACCEPT_INVITE("Принять"),
     CANCEL_INVITE("Отменить"),
+    USE_ACTIVE_SKILL("Скиллы"),
+    SKILL(null),
     EXIT(null),
     DIVORCE(null),
     CREATE_EVENT(null),
