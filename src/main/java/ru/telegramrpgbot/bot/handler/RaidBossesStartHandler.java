@@ -107,7 +107,7 @@ public class RaidBossesStartHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder(String.format("Рейдовые *боссы*:%n"));
 
         for (RaidBoss raidBoss : bosses) {
-            replyMessage.append(String.format("%n\uD83D\uDC7E *%s*%nРекомендованный уровень = %d\uD83D\uDCA0%nТребуется выносливости = %d⚡️ %nХарактеристики = %d♥️,  %d\uD83D\uDDE1,  %d \uD83D\uDEE1%n",
+            replyMessage.append(String.format("%n\uD83D\uDC7E *%s*%nРекомендованный уровень: %d\uD83D\uDCA0%nТребуется выносливости = %d⚡️ %nХарактеристики = %d♥️,  %d\uD83D\uDDE1,  %d \uD83D\uDEE1%n",
                     raidBoss.getName(),
                     raidBoss.getRecommendedLevel(),
                     raidBoss.getStaminaRequired(),

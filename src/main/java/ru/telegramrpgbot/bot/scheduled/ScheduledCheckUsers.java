@@ -47,6 +47,7 @@ public class ScheduledCheckUsers {
         restorAskUsers(afkUsers);
         List<User> onSoloActivityUsers = userRepository.findAllByUserState(BotState.SOLO_ACTIVITY);
         checkSoloActivityEnds(onSoloActivityUsers);
+        CheckMoves();
     }
 
     private void checkSoloActivityEnds(List<User> onSoloActivityUsers) {
@@ -115,9 +116,7 @@ public class ScheduledCheckUsers {
             }
         }
     }
-
-    @Scheduled(fixedDelay = 15000)
-    public void CheckMoves() throws InterruptedException {
+    public void CheckMoves() {
         List<Move> moves = moveRepository.findAll();
         for (Move move : moves) {
             if (move.getEndTime().before(new Timestamp(System.currentTimeMillis()))) {

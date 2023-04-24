@@ -88,7 +88,7 @@ public class SoloActivityHandler implements Handler {
 
         for (SoloActivity soloActivity : availableActivities) {
             inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(soloActivity.getName().split(" ")[0], soloActivity.getName()));
-            replyText.append(String.format("\n*%s* (%d мин.) (%d ⚡️):\n\n%s%n", soloActivity.getName(),soloActivity.getRequiredStamina(), soloActivity.getActivityDuration(), soloActivity.getDescription()));
+            replyText.append(String.format("\n*%s* (%d мин.) (%d ⚡️):\n\n%s%n", soloActivity.getName(), soloActivity.getActivityDuration(),soloActivity.getRequiredStamina(), soloActivity.getDescription()));
         }
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setText(replyText.toString());
