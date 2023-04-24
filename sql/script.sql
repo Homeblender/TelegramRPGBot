@@ -469,37 +469,37 @@ insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Демонический меч', 'Этот одноручный меч внушает страх одним своим видом', 80, null, 0, null, 300, true, 5);
 insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
-VALUES (24, 1, 3), (24, 4, 2), (24, 6, 1);
+VALUES (34, 11, 3), (34, 14, 2), (34, 16, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Меч короля Ада', 'Этот двуручный меч может лишить жизни одним движением.', 100, null, 1, null, 300, true, 6);
 insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
-VALUES (25, 2, 3), (25, 5, 2), (25, 6, 1);
+VALUES (35, 12, 3), (35, 15, 2), (35, 16, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Драконидовый лук', 'Этот лук сравним с древнем оружием, которое могло стрелять за километр', 100, null, 1, null, 300, true, 7);
 insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
-VALUES (26, 3, 3), (26, 5, 2), (26, 6, 1);
+VALUES (36, 13, 3), (36, 15, 2), (36, 16, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Рог единорога', 'Этот клинок опасен так же как и сам единорог.', 70, null, 0, null, 300, true, 8);
 insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
-VALUES (27, 1, 1), (27, 6, 1);
+VALUES (37, 11, 1), (37, 16, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Бузинная палочка', 'Эта волшебная палочка - самое мощное магическое оружие в природе.', 80, null, 0, null, 300, true, 9);
 insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
-VALUES (28, 2, 3), (28, 4, 2), (28, 6, 1);
+VALUES (38, 12, 3), (38, 14, 2), (38, 16, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Молния Конгресса', 'Оружие бога, и этим все сказано.', 100, null, 1, null, 300, true, 10);
 insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
-VALUES (29, 3, 3), (29, 4, 2), (29, 6, 1);
+VALUES (39, 13, 3), (39, 14, 2), (39, 16, 1);
 
 
 
