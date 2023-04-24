@@ -1,7 +1,6 @@
 package ru.telegramrpgbot.bot.handler;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -20,7 +19,6 @@ import java.util.List;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
-@Slf4j
 public class PartyHandler implements Handler {
     private final UserRepository userRepository;
     private final PartyRepository partyRepository;
@@ -33,7 +31,6 @@ public class PartyHandler implements Handler {
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
-        log.info(message);
         if (message.substring(1).equalsIgnoreCase(Command.EXIT.name())) {
             return exit(user);
         }
@@ -247,7 +244,6 @@ public class PartyHandler implements Handler {
             return messages;
         }
         User opponent = userRepository.findUserByHostPartyId(actor.getPartyId()).orElseThrow();
-        log.info(opponent.getName());
         actor.setPartyId(null);
         userRepository.save(actor);
         var messageToOpponent = createMessageTemplate(opponent);
