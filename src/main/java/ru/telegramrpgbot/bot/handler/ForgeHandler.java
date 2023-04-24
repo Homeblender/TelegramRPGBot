@@ -41,7 +41,7 @@ public class ForgeHandler implements Handler {
         this.classRepository = classRepository;
         CLASS_LIST.add("⚔ Воин");
         CLASS_LIST.add("🏹 Рейнджер");
-        CLASS_LIST.add("\uD83E\uDDD9\uD83C\uDFFB\u200D♀️ Маг");
+        CLASS_LIST.add("💫 Маг");
     }
 
 
