@@ -4,14 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.telegramrpgbot.bot.BotState;
+import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.repository.ClassRepository;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
-@Table(name = "usr")
+@Table(name = "usr", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,13 +20,14 @@ import java.sql.Timestamp;
 public class User {
     @Id
     Long chatId;
-    String name;
+    @Builder.Default
+    String name = null;
     @Builder.Default
     Long level = 1L;
     @Builder.Default
     Long passivePoints = 0L;
     @Builder.Default
-    Long currentExp = 0L;
+    Long exp = 0L;
     @Builder.Default
     Long currentHealth = 100L;
     @Builder.Default
@@ -38,17 +40,34 @@ public class User {
     Long currentMana = 100L;
     @Builder.Default
     Long maxMana = 100L;
-    Timestamp lastAction = null;
+    @Builder.Default
+    Timestamp activityEnds = null;
+    @Builder.Default
+    @OneToOne
+    @JoinColumn(name = "activity_id")
+    SoloActivity activityId = null;
+    @Builder.Default
     Timestamp staminaRestor = null;
     @Builder.Default
-    @Column(columnDefinition = "Text")
-    BotState currentUserState = BotState.START;
+    @Column(columnDefinition = "integer")
+    BotState userState = BotState.START;
     @OneToOne
     @JoinColumn(name = "partner_chat_id")
     User partner = null;
-    Long classId = null;
+    @ManyToOne
+    @JoinColumn(name = "party_id")
+    Party partyId;
+    @OneToOne
+    @JoinColumn(name = "host_party_id")
+    Party hostPartyId;
+    @ManyToOne
+    @JoinColumn(name = "class_id")
+    Class userClass = null;
     @Builder.Default
     Long gold = 0L;
     @Builder.Default
+    Boolean isGameMaster = false;
+    @Builder.Default
     Long offlinePoints = 0L;
+
 }
