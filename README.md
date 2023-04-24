@@ -26,7 +26,7 @@ ____
 ____
 ### Build
 
-####To build, run the command:
+>To build, run the command:
 ```
 mvn spring-boot:build-image
 ```
