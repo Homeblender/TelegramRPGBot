@@ -11,28 +11,29 @@
 ____
 ### Set up properties
 
-*Create telegram bot
+>Create telegram bot
 
 – Using BotFather create telegram bot and save username and token
 
-*Set environment variables in application.properties
+>Set environment variables in application.properties
 
 – Add database connection properties
 – Add telegram bot username and token to properties
 ____
 ### Database
 
-Run file sql/script.sql in your postgresql database to create database
+>Run file sql/script.sql in your postgresql database to create database
+____
 ### Build
 
-To build, run the command:
+####To build, run the command:
 ```
 mvn spring-boot:build-image
 ```
 ____
 ### Run
 
-To run application use command:
+>To run application use command:
 ```
 docker run -p 8080:8080 spring-boot-docker:telegramBot
 ```
