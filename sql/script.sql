@@ -117,7 +117,7 @@ CREATE TABLE fixed.base_item_craft
     id                    serial PRIMARY KEY,
     crafted_base_item_id  bigint references fixed.base_item (id),
     material_base_item_id bigint references fixed.base_item (id),
-    countOfMaterial       bigint
+    count_of_material       bigint
 );
 CREATE TABLE fixed.consumable_item_effect
 (
@@ -208,7 +208,7 @@ VALUES ('⚒ Работяга', 'Обычный работяга без каки
 insert into fixed.class(name, description, required_level, base_class)
 VALUES ('⚔ Воин', 'Этот закаленный в сражениях боец всегда храбро сражается до конца.', 7, 1);
 insert into fixed.class(name, description, required_level, base_class)
-VALUES ('\uD83E\uDDD9\uD83C\uDFFB\u200D♀️ Маг', 'Лишь его эффектное появление вгоняет врагов в ужас.', 7, 1);
+VALUES ('💫 Маг', 'Лишь его эффектное появление вгоняет врагов в ужас.', 7, 1);
 insert into fixed.class(name, description, required_level, base_class)
 VALUES ('🏹 Рейнджер', 'Ловкий странник. Его стиль - бесшумно убить врага и остаться незамеченым.', 7, 1);
 insert into fixed.class(name, description, required_level, base_class)
@@ -468,37 +468,37 @@ VALUES ('Охотничий лук', 'Лук - дальнобойное легк
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Демонический меч', 'Этот одноручный меч внушает страх одним своим видом', 80, null, 0, null, 300, true, 5);
-insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
 VALUES (24, 1, 3), (24, 4, 2), (24, 6, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Меч короля Ада', 'Этот двуручный меч может лишить жизни одним движением.', 100, null, 1, null, 300, true, 6);
-insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
 VALUES (25, 2, 3), (25, 5, 2), (25, 6, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Драконидовый лук', 'Этот лук сравним с древнем оружием, которое могло стрелять за километр', 100, null, 1, null, 300, true, 7);
-insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
 VALUES (26, 3, 3), (26, 5, 2), (26, 6, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Рог единорога', 'Этот клинок опасен так же как и сам единорог.', 70, null, 0, null, 300, true, 8);
-insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
 VALUES (27, 1, 1), (27, 6, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Бузинная палочка', 'Эта волшебная палочка - самое мощное магическое оружие в природе.', 80, null, 0, null, 300, true, 9);
-insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
 VALUES (28, 2, 3), (28, 4, 2), (28, 6, 1);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Молния Конгресса', 'Оружие бога, и этим все сказано.', 100, null, 1, null, 300, true, 10);
-insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, countofmaterial)
+insert into fixed.base_item_craft(crafted_base_item_id, material_base_item_id, count_of_material)
 VALUES (29, 3, 3), (29, 4, 2), (29, 6, 1);
 
 
