@@ -561,3 +561,41 @@ insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Рунические ботинки', 'Броня усилена рунами.', null, 4, 6, null, 30, true, 3);
 
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Сильный удар', 1, 5, 10);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Разъяренный волк', 2, 5, 20);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Сильнее сильного', 2, 7, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Огненный шар', 3, 5, 20);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Рунический удар', 3, 7, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Крысиный бой', 4, 5, 20);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Жало пчелы', 4, 7, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Карусель ярости', 5, 5, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Тотальное превосходство', 5, 7, 35);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Силовая комбинация', 6, 5, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Мощь гладиатора', 6, 7, 35);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Рояль в кустах', 7, 5, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Тройной выстрел', 7, 7, 35);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Тихое убийство', 8, 5, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Тайный замысел', 8, 7, 35);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Ведьмино проклятье', 9, 5, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Испепеляющий луч', 9, 7, 35);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Божественное начало', 10, 5, 30);
+insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
+VALUES ('Удар Бога', 10, 7, 35);
