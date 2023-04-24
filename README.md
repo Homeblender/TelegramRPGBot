@@ -26,14 +26,14 @@ ____
 ____
 ### Build
 
->To build, run the command:
+>To build, run the command in the root of the project:
 ```
 mvn spring-boot:build-image
 ```
 ____
 ### Run
 
->To run application use command:
+>Run application use command:
 ```
 docker run -p 8080:8080 spring-boot-docker:telegramBot
 ```
