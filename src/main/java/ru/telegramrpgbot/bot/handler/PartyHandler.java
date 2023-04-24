@@ -71,11 +71,11 @@ public class PartyHandler implements Handler {
             return List.of(reply);
         }
         var reply = createMessageTemplate(user);
-        StringBuilder messageToUser = new StringBuilder("Группа " +
+        StringBuilder messageToUser = new StringBuilder("Группа *" +
                 user.getPartyId().getName() +
-                " (Капитан: " +
+                "* (Капитан: *" +
                 userRepository.findUserByHostPartyId(user.getPartyId()).orElseThrow().getName() +
-                "):");
+                "*):");
         List<User> partyUsers = userRepository.findAllByPartyId(user.getPartyId());
         for (User partyUser : partyUsers) {
             messageToUser.append("\n   - ").append(String.format("[%s](tg://user?id=%d)",partyUser.getName(),partyUser.getChatId()));

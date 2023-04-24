@@ -70,7 +70,7 @@ public class OfflineEventHandler implements Handler {
         StringBuilder replyMessage = new StringBuilder();
         List<User> topUsers = userRepository.findAll((Sort.by("offlinePoints").descending()));
 
-        replyMessage.append("Топ игроков по очкам оффлайн событий:");
+        replyMessage.append("\uD83C\uDFC6*Топ игроков по очкам оффлайн событий:*");
         for (User topUser :
              topUsers) {
             replyMessage.append(String.format("\n%d  -  [%s](tg://user?id=%d)     %d\uD83D\uDC8E", topUsers.indexOf(topUser) + 1, topUser.getName(), topUser.getChatId(), topUser.getOfflinePoints()));
@@ -255,7 +255,7 @@ public class OfflineEventHandler implements Handler {
             }
         }
         replyMessage.append("\nВы можете создать событие командой - /create\\_event.");
-        replyMessage.append("\n\nВы можете обменять очки оффлайн событий\uD83D\uDC8E на золотые монеты\uD83D\uDCB0 1\uD83D\uDC8E к 50\uD83D\uDCB0 командой - /convert\\_<кол-во очков>.");
+        replyMessage.append("\n\nВы можете обменять очки оффлайн событий на золотые монеты 1\uD83D\uDC8E к 50\uD83D\uDCB0 командой - /convert\\_<кол-во очков>.");
         replyMessage.append("\n\nТоп игроков по очкам оффлайн событий\uD83D\uDC8E - /top.");
         if (user.getIsGameMaster()) {
             replyMessage.append("\nВы *администратор*. \uD83D\uDE0E");
