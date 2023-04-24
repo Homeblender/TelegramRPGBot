@@ -1,6 +1,7 @@
 package ru.telegramrpgbot.bot.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -19,6 +20,7 @@ import ru.telegramrpgbot.repository.UserRepository;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.telegramrpgbot.bot.util.IngameUtil.Announcement;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
@@ -30,6 +32,7 @@ public class OfflineEventHandler implements Handler {
     public static final String EVENT_NAME_ACCEPT = "/enter_event_name_accept";
     public static final String EVENT_TYPE_ADMIN = EventType.ADMIN.name();
     public static final String EVENT_TYPE_USER = EventType.USER.name();
+    public static final long rate = 50L;
 
     private final OfflineEventRepository offlineEventRepository;
     private final GroupChatRepository groupChatRepository;
@@ -47,6 +50,10 @@ public class OfflineEventHandler implements Handler {
             return eventGoalEnter(user);
         } else if (message.toUpperCase().substring(1).equals(Command.CREATE_EVENT.name())) {
             return startCreateEvent(user);
+        } else if (message.toUpperCase().substring(1).split("_")[0].equals(Command.CONVERT.name())) {
+            return convert(user, message);
+        } else if (message.toUpperCase().substring(1).equals(Command.TOP.name())) {
+            return top(user);
         } else if (message.equals(EVENT_TYPE_ADMIN) || message.equals(EVENT_TYPE_USER)) {
             return savingType(user, message);
         } else if (user.getUserState() == BotState.WAITING_FOR_EVENT_NAME) {
@@ -58,7 +65,42 @@ public class OfflineEventHandler implements Handler {
         }
         return showEvents(user);
     }
+    private List<PartialBotApiMethod<? extends Serializable>> top(User user) {
+        var reply = TelegramUtil.createMessageTemplate(user);
+        StringBuilder replyMessage = new StringBuilder();
+        List<User> topUsers = userRepository.findAll((Sort.by("offlinePoints").descending()));
 
+        replyMessage.append("Топ игроков по очкам оффлайн событий:");
+        for (User topUser :
+             topUsers) {
+            replyMessage.append(String.format("\n%d  -  [%s](tg://user?id=%d)     %d\uD83D\uDC8E", topUsers.indexOf(topUser) + 1, topUser.getName(), topUser.getChatId(), topUser.getOfflinePoints()));
+        }
+        reply.setText(replyMessage.toString());
+        return List.of(reply);
+    }
+    private List<PartialBotApiMethod<? extends Serializable>> convert(User user, String message) {
+        var messageMass = message.split("_");
+        var messageToUser = createMessageTemplate(user);
+        if (!messageMass[1].matches("[0-9]+")) {
+            messageToUser.setText("Количество очков оффлафйн событий указано некорректно.");
+            return List.of(messageToUser);
+        }
+        long offPoints = Long.valueOf(messageMass[1]);
+        if (offPoints > user.getOfflinePoints()) {
+            messageToUser.setText("У вас нет столько очков оффлафйн событий.");
+            return List.of(messageToUser);
+        }
+        user.setGold(user.getGold() + offPoints * rate);
+        long userOffPoints = user.getOfflinePoints() - offPoints;
+        if (userOffPoints > 0) {
+            user.setOfflinePoints(userOffPoints);
+        } else {
+            user.setOfflinePoints(0L);
+        }
+        userRepository.save(user);
+        messageToUser.setText(String.format("Вы обменяли %d очков оффлафйн событий\uD83D\uDC8E на %d золотых монет\uD83D\uDCB0", offPoints, offPoints * rate));
+        return List.of(messageToUser);
+    }
     private List<PartialBotApiMethod<? extends Serializable>> savingReward(User user, String message) {
         var reply = createMessageTemplate(user);
         var event = offlineEventRepository.findByCreatorAndEventState(user, EventState.CREATING);
@@ -213,6 +255,8 @@ public class OfflineEventHandler implements Handler {
             }
         }
         replyMessage.append("\nВы можете создать событие командой - /create\\_event.");
+        replyMessage.append("\n\nВы можете обменять очки оффлайн событий\uD83D\uDC8E на золотые монеты\uD83D\uDCB0 1 к 50 командой - /convert\\_<кол-во очков>.");
+        replyMessage.append("\n\nТоп игроков по очкам оффлайн событий\uD83D\uDC8E - /top.");
         if (user.getIsGameMaster()) {
             replyMessage.append("\nВы *администратор*. \uD83D\uDE0E");
         }
@@ -227,7 +271,7 @@ public class OfflineEventHandler implements Handler {
 
     @Override
     public List<Command> operatedCommand() {
-        return List.of(Command.CREATE_EVENT, Command.SHOW_EVENTS);
+        return List.of(Command.CREATE_EVENT, Command.SHOW_EVENTS, Command.CONVERT, Command.TOP);
     }
 
     @Override

@@ -43,6 +43,8 @@ public enum Command {
     EXIT(null),
     DIVORCE(null),
     CREATE_EVENT(null),
+    CONVERT(null),
+    TOP(null),
     SHOW_EVENTS("\uD83C\uDF96"),
     FINISH(null),
     ANNUL(null),
