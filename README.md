@@ -22,7 +22,7 @@ ____
 ____
 ### Database
 
->Run file sql/script.sql in your postgresql database to create database
+>Run file sql/script.sql in your postgresql to create database
 ____
 ### Build
 
