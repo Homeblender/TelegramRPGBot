@@ -1,7 +1,6 @@
 package ru.telegramrpgbot.bot.handler;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -27,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
-@Slf4j
 public class FightHandler implements Handler {
     private final UserRepository userRepository;
     private final FightRepository fightRepository;
@@ -46,8 +44,6 @@ public class FightHandler implements Handler {
     }
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User actor, String message) {
-        log.info(message);
-        log.info(actor.getUserState().name());
         if (actor.getUserState() == BotState.WAITING_FOR_OPPONENT || actor.getUserState() == BotState.WAITING_FOR_OPPONENT_MOVE) {
             if (message.equalsIgnoreCase(Command.CANCEL.name()) && actor.getUserState() == BotState.WAITING_FOR_OPPONENT) {
                 return IngameUtil.cancel(actor);
@@ -58,7 +54,6 @@ public class FightHandler implements Handler {
         }
 
         if(actor.getUserState() == BotState.WAITING_FOR_MOVE) {
-            log.info(actor.getName());
             return move(actor, message);
         }
         if (message.equalsIgnoreCase(Command.ACCEPT.name())) {
@@ -67,12 +62,9 @@ public class FightHandler implements Handler {
         return startFight(actor, message);
     }
     private List<PartialBotApiMethod<? extends Serializable>> startFight(User actor, String message) {
-        log.info(actor.getName());
-        log.info(message);
         var messageToUser = createMessageTemplate(actor);
         String[] messageMass = message.split("_");
         if(messageMass.length != 3){
-            log.info("меньше 3");
             messageToUser.setText("Команда должна выглядеть как /fight\\_<Ник соперника>\\_<ставка на бой>");
             return List.of(messageToUser);
         }
@@ -98,6 +90,14 @@ public class FightHandler implements Handler {
         User opponent = userRepository.getUsersByName(messageMass[1]).orElseThrow();
         if (bet > opponent.getGold()) {
             messageToUser.setText("У этого игрока недостаточно денег для такой ставки");
+            return List.of(messageToUser);
+        }
+        if (IngameUtil.countDamage(actor) <= 0) {
+            messageToUser.setText("У вас не экипировано оружие");
+            return List.of(messageToUser);
+        }
+        if (IngameUtil.countDamage(opponent) <= 0) {
+            messageToUser.setText("У этого игрока не экипировано оружие");
             return List.of(messageToUser);
         }
         var messageToOpponent = createMessageTemplate(opponent);
@@ -138,8 +138,7 @@ public class FightHandler implements Handler {
 
         messageToOpponent.setReplyMarkup(inlineKeyboardMarkupOpponent);
         messageToOpponent.setText(String.format("\uD83D\uDC4AВам бросил вызов %s level: %d\nСтавка %d\uD83D\uDCB0", actor.getName(), actor.getLevel(), fight.getBet()));
-        log.info(messageToUser.getText());
-        log.info(messageToOpponent.getText());
+
         return List.of(messageToUser, messageToOpponent);
     }
 
@@ -156,11 +155,9 @@ public class FightHandler implements Handler {
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setReplyMarkup(inlineKeyboardMarkup);
         reply.setText("Ожидаем оппонента\uD83D\uDD53");
-        log.info(reply.getText());
         return List.of(reply);
     }
     private List<PartialBotApiMethod<? extends Serializable>> accept(User opponent) {
-        log.info("accept");
         Fight fight = moveRepository.getMoveByUserId(opponent).orElseThrow().getFightId();
         User actor = fight.getUser1Id();
 
@@ -184,14 +181,10 @@ public class FightHandler implements Handler {
         var reply = createMessageTemplate(user);
 
         Move move = moveRepository.getMoveByUserId(user).orElse(null);
-        log.info("юзер мува " + move.getUserId().getName());
-        log.info("юзер в хендлере "+user.getName());
-        log.info("move");
         BodyPart part= Arrays.stream(BodyPart.values())
                 .filter(h -> h.getTitle().equalsIgnoreCase(message))
                 .findFirst()
                 .orElse(null);
-        log.info(part == null? "y":"n");
         var messageMas = message.split("_");
         if (part == null) {
             if (message.equalsIgnoreCase(Command.USE_ACTIVE_SKILL.getRussian())) {
@@ -212,8 +205,6 @@ public class FightHandler implements Handler {
         }
 
         if(move.getMoveState() == MoveState.NEW_MOVE) {
-            log.info("new");
-            log.info(part.getTitle());
             move.setDefense(part);
             move.setMoveState(MoveState.DEFENSE_CHOSEN);
             moveRepository.save(move);
@@ -235,7 +226,6 @@ public class FightHandler implements Handler {
 
         Fight fight = moveRepository.getMoveByUserId(user).orElseThrow().getFightId();
         User actor = fight.getUser1Id();
-        log.info(Long.toString(actor.getCurrentMana()));
         User opponent = fight.getUser2Id();
         Move actorMove = moveRepository.getMoveByUserId(actor).orElseThrow();
         Move opponentMove = moveRepository.getMoveByUserId(opponent).orElseThrow();
@@ -377,7 +367,6 @@ public class FightHandler implements Handler {
         var messageToUser = createMessageTemplate(user);
         String[] messageMass = message.split("_");
         if(messageMass.length<2){
-            log.info("меньше 2");
             messageToUser.setText("Не указан id способности");
             return List.of(messageToUser);
         }
@@ -399,14 +388,9 @@ public class FightHandler implements Handler {
         move.setActiveSkillId(skill);
         move.setMoveState(MoveState.MOVE_MADE);
         moveRepository.save(move);
-        log.info(Long.toString(skill.getManaCost()));
-        log.info(Long.toString(user.getCurrentMana() - skill.getManaCost()));
         long mana = user.getCurrentMana() - skill.getManaCost();
         user.setCurrentMana(mana);
         userRepository.save(user);
-        log.info(Long.toString(user.getCurrentMana()));
-        log.info(Long.toString(moveRepository.getMoveByUserId(user).orElseThrow().getFightId().getUser1Id().getCurrentMana()));
-
         return check(user);
     }
     private SendMessage[] createMessage(User actor, User opponent) {

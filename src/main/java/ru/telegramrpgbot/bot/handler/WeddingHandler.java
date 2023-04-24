@@ -1,7 +1,6 @@
 package ru.telegramrpgbot.bot.handler;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -20,7 +19,6 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
-@Slf4j
 public class WeddingHandler implements Handler {
     private final UserRepository userRepository;
 
@@ -41,7 +39,6 @@ public class WeddingHandler implements Handler {
                 return waiting(actor);
             }
         }
-        log.info(message);
         if (message.substring(1).equalsIgnoreCase(Command.DIVORCE.name())) {
             return divorce(actor);
         }
@@ -65,7 +62,6 @@ public class WeddingHandler implements Handler {
             return  List.of(messageToUser);
         }
         if (messageMass.length < 2) {
-            log.info("меньше 2");
             messageToUser.setText("Не указан ник игрока");
             return List.of(messageToUser);
         }
