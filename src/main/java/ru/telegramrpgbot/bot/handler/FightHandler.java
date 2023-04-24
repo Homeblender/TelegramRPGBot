@@ -92,6 +92,14 @@ public class FightHandler implements Handler {
             messageToUser.setText("У этого игрока недостаточно денег для такой ставки");
             return List.of(messageToUser);
         }
+        if (IngameUtil.countDamage(actor) <= 0) {
+            messageToUser.setText("У вас не экипировано оружие");
+            return List.of(messageToUser);
+        }
+        if (IngameUtil.countDamage(opponent) <= 0) {
+            messageToUser.setText("У этого игрока не экипировано оружие");
+            return List.of(messageToUser);
+        }
         var messageToOpponent = createMessageTemplate(opponent);
         if(opponent.getUserState() != BotState.NONE) {
             messageToUser.setText("В данный момент этот игрок занят\nПопробуйте позже");
