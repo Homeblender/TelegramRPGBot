@@ -58,7 +58,6 @@ public class RaidBossesStartHandler implements Handler {
             return List.of(reply);
         }
 
-        partyMembers.remove(user);
         try {
             raidBoss = raidBossRepository.findById(Long.parseLong(message.split("_")[1])).orElseThrow();
         }catch (Exception ignored){
@@ -69,6 +68,7 @@ public class RaidBossesStartHandler implements Handler {
             reply.setText("У кого-то из участников не хватает выносливости.");
             return List.of(reply);
         }
+        partyMembers.remove(user);
 
         for (User member :
                 partyMembers) {
