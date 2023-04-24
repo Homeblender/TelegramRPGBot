@@ -33,7 +33,7 @@ mvn spring-boot:build-image
 ____
 ### Run
 
->Run application use command:
+>Run application using command:
 ```
 docker run -p 8080:8080 spring-boot-docker:telegramBot
 ```
