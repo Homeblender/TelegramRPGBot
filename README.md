@@ -1,3 +1,3 @@
-Почти
+почти
 # TelegramRPGBot
  
