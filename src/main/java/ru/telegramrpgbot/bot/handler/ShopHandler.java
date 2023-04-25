@@ -1,6 +1,5 @@
 package ru.telegramrpgbot.bot.handler;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -23,7 +22,6 @@ import static ru.telegramrpgbot.bot.util.IngameUtil.userGoldChanges;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.*;
 
 @Component
-@Slf4j
 public class ShopHandler implements Handler {
 
     private final BaseItemRepository baseItemRepository;

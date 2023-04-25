@@ -340,9 +340,9 @@ values (1, 2, 3, null, 'Ты побродил по руинам пару час�
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
 values (1, 3, 2, null, 'Ты побродил по руинам пару часов. Нашел какие-то монеты.');
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-values (1, 1, 2, 1, 'Ты побродил по руинам пару часов. Тебе пвоезло найти *Байкал 0.25*.');
+values (1, 1, 2, 1, 'Ты побродил по руинам пару часов. Тебе повезло найти *Байкал 0.25*.');
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-values (1, 2, 2, 10, 'Ты побродил по руинам пару часов. Тебе пвоезло найти *Точильный камень*.');
+values (1, 2, 2, 10, 'Ты побродил по руинам пару часов. Тебе повезло найти *Точильный камень*.');
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
 values (2, 8, 5, 4, 'Ты обыскал пещеры. Тебе повезло найти *Энергетик 0.25*.');
@@ -353,7 +353,7 @@ values (2, 6, 7, 7, 'Ты обыскал пещеры. Тебе повезло �
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
 values (2, 6, 7, null, 'Ты обыскал пещеры. Ты вышел весь в грязи, найдя лишь пару монет.');
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-values (2, 6, 6, 10, 'Ты обыскал пещеры. Тебе пвоезло найти *Точильный камень*.');
+values (2, 6, 6, 10, 'Ты обыскал пещеры. Тебе повезло найти *Точильный камень*.');
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
 values (3, 20, 15, 2, 'Ты обошел все долины. Тебе повезло найти *Байкал 0.5*.');
@@ -364,7 +364,7 @@ values (3, 21, 16, 8, 'Ты обошел все долины. Тебе пове�
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
 values (3, 21, 16, 4, 'Ты обошел все долины. Ты нашел лишь *Энергетик 0.25*.');
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
-values (3, 20, 16, 10, 'Ты обошел все долины. Тебе пвоезло найти *Точильный камень*.');
+values (3, 20, 16, 10, 'Ты обошел все долины. Тебе повезло найти *Точильный камень*.');
 
 insert into fixed.solo_activity_reward(solo_activity_id, gold_reward, exp_reward, item_reward, result_message)
 values (4, 30, 22, 3, 'Ты перерыл весь храм. Тебе повезло найти *Байкал 1.0*.');
@@ -400,9 +400,9 @@ VALUES ('Рог единорога', 'Магический рог единоро
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
 VALUES ('Древний Драконид', 1000, 50, 40, 10, 100, 150, 5);
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
-VALUES ('Принц демонов', 5000, 100, 80, 15, 500, 750, 10);
+VALUES ('Принц демонов', 3000, 100, 80, 15, 500, 750, 10);
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
-VALUES ('Летучий единорог', 10000, 150, 120, 18, 1200, 1500, 20);
+VALUES ('Летучий единорог', 5000, 150, 120, 18, 1200, 1500, 20);
 
 insert into fixed.raid_boss_item_reward (boss_id, item_id)
 values (1, 1),(1, 2),(1, 3),
@@ -463,8 +463,6 @@ VALUES ('Лёгкий меч', 'Лёгкий меч является легки�
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Охотничий лук', 'Лук - дальнобойное легкое оружие', null, 25, 1, null, 150, true, 4);
-
-
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Демонический меч', 'Этот одноручный меч внушает страх одним своим видом', 80, null, 0, null, 300, true, 5);
