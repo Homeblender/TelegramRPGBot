@@ -1,6 +1,5 @@
 package ru.telegramrpgbot.bot.handler;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -22,7 +21,6 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.createInlineKeyboardButton
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
-@Slf4j
 public class SharpeningHandler implements Handler {
     private final String CALLBACK = "SHARPENING";
     private final IngameItemRepository ingameItemRepository;
@@ -59,7 +57,6 @@ public class SharpeningHandler implements Handler {
         } else if (sharpeningStones.getItemsInStack() > 1) {
             sharpeningStones.setItemsInStack(sharpeningStones.getItemsInStack() - 1);
             ingameItemRepository.save(sharpeningStones);
-            log.info(sharpeningStones.getItemsInStack()+"");
         } else if (sharpeningStones.getItemsInStack() == 1) {
             ingameItemRepository.delete(sharpeningStones);
         }

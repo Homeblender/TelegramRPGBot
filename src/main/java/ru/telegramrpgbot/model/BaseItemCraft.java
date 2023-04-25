@@ -6,14 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "base_item_craft", schema = "fixed")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class BaseItemCraft {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

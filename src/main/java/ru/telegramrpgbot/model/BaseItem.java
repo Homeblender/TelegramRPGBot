@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import ru.telegramrpgbot.bot.enums.ItemType;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name = "base_item", schema = "fixed")

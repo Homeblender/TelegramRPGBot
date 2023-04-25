@@ -7,23 +7,19 @@ import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.Class;
 import ru.telegramrpgbot.model.User;
-import ru.telegramrpgbot.repository.ClassRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.telegramrpgbot.bot.util.IngameUtil.getAvailableClasses;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
 public class ClassesHandler implements Handler {
-    private final ClassRepository classRepository;
     private final UserRepository userRepository;
 
-    public ClassesHandler(ClassRepository classRepository, UserRepository userRepository) {
-        this.classRepository = classRepository;
+    public ClassesHandler(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -32,7 +28,7 @@ public class ClassesHandler implements Handler {
         if (message.substring(1).split("_")[0].toUpperCase().equals(Command.CLASS.name())) {
             return classAccept(user, message);
         }
-        return showClasses(user, message);
+        return showClasses(user);
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> classAccept(User user, String message) {
@@ -65,7 +61,7 @@ public class ClassesHandler implements Handler {
         return List.of(reply);
     }
 
-    private List<PartialBotApiMethod<? extends Serializable>> showClasses(User user, String message) {
+    private List<PartialBotApiMethod<? extends Serializable>> showClasses(User user) {
         var reply = createMessageTemplate(user);
         var availableClasses = IngameUtil.getAvailableClasses(user);
         if (availableClasses.isEmpty()) {

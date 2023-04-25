@@ -114,18 +114,18 @@ public class EquipmentHandler implements Handler {
         List<IngameItem> sameEquipmentItems = ingameItemRepository.findAllByUser(user).stream().filter(c -> c.getBaseItem().getType() == item.getBaseItem().getType() && c.isEquipped()).toList();
         List<IngameItem> equipped = ingameItemRepository.findAllByUser(user).stream().filter(IngameItem::isEquipped).toList();
 
-        List<IngameItem> weapon_equipment = new ArrayList<>(equipped.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
-        List<IngameItem> shield_equipped = equipped.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();
+        List<IngameItem> weaponEquipment = new ArrayList<>(equipped.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
+        List<IngameItem> shieldEquipped = equipped.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();
 
-        List<IngameItem> two_handed_equipped = equipped.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON).toList();
+        List<IngameItem> twoHandedEquipped = equipped.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON).toList();
 
-        weapon_equipment.addAll(shield_equipped);
+        weaponEquipment.addAll(shieldEquipped);
 
         if ((item.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON
-                || item.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD) && (weapon_equipment.size() == 2||!two_handed_equipped.isEmpty())) {
+                || item.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD) && (weaponEquipment.size() == 2||!twoHandedEquipped.isEmpty())) {
             reply.setText("Предмет этого типа уже экипирован.");
             return List.of(reply);
-        }else if (item.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON && !weapon_equipment.isEmpty()) {
+        }else if (item.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON && !weaponEquipment.isEmpty()) {
             reply.setText("Предмет этого типа уже экипирован.");
             return List.of(reply);
         } else if (item.getBaseItem().getType() != ItemType.EQUIPMENT_ONE_HANDED_WEAPON && !sameEquipmentItems.isEmpty()) {
@@ -146,14 +146,14 @@ public class EquipmentHandler implements Handler {
         List<IngameItem> equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT") && c.isEquipped()).toList();
         List<IngameItem> sharpeningStones = ingameItemRepository.findAllByUserAndBaseItem_Type(user, ItemType.CONSUMABLE_SHARPENING_STONE);
         log.info(sharpeningStones.size()+"");
-        List<IngameItem> weapon_equipment = new java.util.ArrayList<>(equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
-        List<IngameItem> shield_equipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();
-        List<IngameItem> two_handed_equipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON).toList();
+        List<IngameItem> weaponEquipment = new java.util.ArrayList<>(equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
+        List<IngameItem> shieldEquipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();
+        List<IngameItem> twoHandedEquipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON).toList();
 
-        weapon_equipment.addAll(shield_equipped);
-        weapon_equipment.addAll(two_handed_equipped);
+        weaponEquipment.addAll(shieldEquipped);
+        weaponEquipment.addAll(twoHandedEquipped);
 
-        for (IngameItem item : weapon_equipment) {
+        for (IngameItem item : weaponEquipment) {
             replyMessage.append(createItemStats(item));
             if (!sharpeningStones.isEmpty())
                 replyMessage.append(sharpeningTemplate(item));

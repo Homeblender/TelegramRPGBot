@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.telegramrpgbot.bot.Bot;
 import ru.telegramrpgbot.bot.enums.BotState;
-import ru.telegramrpgbot.model.*;
 import ru.telegramrpgbot.model.Class;
+import ru.telegramrpgbot.model.*;
 import ru.telegramrpgbot.repository.*;
 
 import java.io.Serializable;
@@ -44,7 +44,7 @@ public class IngameUtil {
 
     public static Long userHealthChanges(User user, Long healthChanged) {
         user.setCurrentHealth(user.getCurrentHealth() + healthChanged);
-        if (user.getCurrentHealth() > user.getMaxHealth()) user.setMaxHealth(user.getCurrentHealth());
+        if (user.getCurrentHealth() > user.getMaxHealth()) user.setCurrentHealth(user.getMaxHealth());
         else if (user.getCurrentHealth() < 0) {
             user.setCurrentHealth(0L);
             userDied(user);
@@ -55,7 +55,7 @@ public class IngameUtil {
 
     public static void userManaChanges(User user, Long manaChanged) {
         user.setCurrentMana(user.getCurrentMana() + manaChanged);
-        if (user.getCurrentMana() > user.getMaxMana()) user.setMaxMana(user.getCurrentMana());
+        if (user.getCurrentMana() > user.getMaxMana()) user.setCurrentMana(user.getMaxMana());
         else if (user.getCurrentMana() < 0) {
             user.setCurrentMana(0L);
             userDied(user);

@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ActiveSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

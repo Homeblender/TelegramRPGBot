@@ -81,6 +81,7 @@ public class RaidBossesStartHandler implements Handler {
         }
         reply.setText(String.format("Вы начали рейд на босса \uD83D\uDC7E*%s*.",raidBoss.getName()));
         user.setUserState(BotState.RAIDING);
+        userStaminaChanges(user,-raidBoss.getStaminaRequired());
         userRepository.save(user);
 
         replyList.add(reply);

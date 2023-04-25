@@ -159,7 +159,6 @@ public class WeddingHandler implements Handler {
         var sendMessageList = Announcement(announcement);
         sendMessageList.add(messageToActor);
         sendMessageList.add(messageToOpponent);
-
         return sendMessageList;
 
     }
