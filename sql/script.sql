@@ -411,13 +411,13 @@ values (1, 11),(1, 12),(1, 13),
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Деревянный меч', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null, 0, null, 3, true);
+VALUES ('Деревянный меч (одноручный)', 'Тренировочный меч, победить кого с ним настоящая удача.', 2, null, 0, null, 3, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Деревянный щит', 'Тренировочный щит, победить кого с ним настоящая удача.', null, 2, 2, null, 3, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Старый железный меч', 'Старый железный меч. Этот меч отслужил свое и уже не так хорош.', 8, null, 0, null, 20, true);
+VALUES ('Старый железный меч (одноручный)', 'Старый железный меч. Этот меч отслужил свое и уже не так хорош.', 8, null, 0, null, 20, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Старый железный двуручный меч', 'Старый железный двуручный меч. Этот меч отслужил свое и уже не так хорош.', 12, null, 1, null, 25, true);
@@ -426,7 +426,7 @@ insert into fixed.base_item
 VALUES ('Старый железный щит', 'Старый железный щит. Этот щит отслужил свое и уже не так хорош.', null, 8, 2, null, 20, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Железный меч', 'Железный меч. Отличное оружие за соответствующую цену.', 12, null, 0, null, 25, true);
+VALUES ('Железный меч (одноручный)', 'Железный меч. Отличное оружие за соответствующую цену.', 12, null, 0, null, 25, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Железный двуручный меч', 'Железный двуручный меч. Отличное оружие за соответствующую цену.', 18, null, 1, null, 30, true);
@@ -439,30 +439,91 @@ insert into fixed.base_item
 VALUES ('Элитный двуручный меч', 'Элитный меч. Таким оружием пользуется большинство доблестных войнов.', 20, null, 1, null, 100, true, 2);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Копье', 'Копье требует особого навыка, зато наносит огромный урон противнику.', 30, null, 1, null, 180, true, 2);
+VALUES ('Копье (двуручное)', 'Копье требует особого навыка, зато наносит огромный урон противнику.', 30, null, 1, null, 180, true, 2);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Щит воина', 'Этот щит предназначен для того, чтобы выдерживать удары любых противников.', null, 20, 2, null, 100, true, 2);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Посох', 'Посох - древнее оружие магов.', 30, null, 1, null, 180, true, 3);
+VALUES ('Посох (двуручное)', 'Посох - древнее оружие магов.', 30, null, 1, null, 180, true, 3);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Изумрудный меч', 'Изумрудный меч является легким, но смертоносным оружием, а так же помогает концентрировать магию.', 15, null, 0, null, 100, true, 3);
+VALUES ('Изумрудный меч (одноручное)', 'Изумрудный меч является легким, но смертоносным оружием, а так же помогает концентрировать магию.', 15, null, 0, null, 100, true, 3);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Щит с рунами', 'Это обычный железный щит, усиленный руническими заклятьями.', null, 20, 2, null, 100, true, 3);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Стилет', 'Стилет - идеальное оружие для тихого убийства', 13, null, 0, null, 70, true, 4);
+VALUES ('Стилет (одноручное)', 'Стилет - идеальное оружие для тихого убийства', 13, null, 0, null, 70, true, 4);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Лёгкий меч', 'Лёгкий меч является легким, но смертоносным оружием.', 15, null, 1, null, 100, true, 4);
+VALUES ('Лёгкий меч (одноручное)', 'Лёгкий меч является легким, но смертоносным оружием.', 15, null, 0, null, 100, true, 4);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Охотничий лук', 'Лук - дальнобойное легкое оружие', 25, null, 1, null, 150, true, 4);
+VALUES ('Охотничий лук (двуручное)', 'Лук - дальнобойное легкое оружие', 25, null, 1, null, 150, true, 4);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Меч короля артура (двуручный)', 'Королевский меч может уничтожать целые города.', 40, null, 1, null, 200, true, 5);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Алебарда (двуручное)', 'Это оружие позволит вам крошить врагов даже не подпуская к себе.', 50, null, 1, null, 240, true, 5);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Рыцарский щит', 'Этот щит предназначен для того, чтобы выдерживать удары магических чудищ.', null, 50, 2, null, 300, true, 5);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Турнирный меч (двуручный)', 'Лучший меч. Такой брали на турниры только с самыми сильными врагами.', 40, null, 1, null, 200, true, 6);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Трезубец (двуручный)', 'В правильных руках это оружие внушает ужас.', 50, null, 1, null, 240, true, 6);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Турнирный щит', 'Лучший щит. Такой брали на турниры только с самыми сильными врагами.', null, 50, 2, null, 300, true, 6);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Нож Иуды (одноручный)', 'Враги до последнего не поймут, кто их атакует.', 30, null, 0, null, 200, true, 7);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Золотая рапира (одноручная)', 'Даже убийство может быть элегантным', 35, null, 0, null, 240, true, 7);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Снайперский лук (двуручное)', 'Лук с прицелом обладает высочайшей точностью.', null, 50, 1, null, 300, true, 7);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Скрытый клинок (одноручный)', 'Позволяет скрыться с мета убийства незамеченным.', 30, null, 0, null, 200, true, 8);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Шэнбяо (одноручное)', 'Этот нож на вервке становится прекрасным оружием в правильных руках.', 32, null, 0, null, 240, true, 8);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Кастет с шипами (одноручное)', 'Просто крошит черепа.', null, 35, 0, null, 300, true, 8);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Проклятый клинок (одноручное)', 'Питается душами убитых', 30, null, 0, null, 200, true, 9);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Посох дьяввола (двуручное)', 'Материал этого посоха выдерживает адские температуры.', 50, null, 1, null, 240, true, 9);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Перчатка стихий. (одноручное)', 'Эта перчатка повеливает стихиями.', null, 35, 0, null, 300, true, 9);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Клинок гнева (одноручное)', 'Гнев богов во плоти.', 30, null, 0, null, 200, true, 10);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Посох богов (двуручное)', 'Этот посох концентрирует силу богов.', 50, null, 1, null, 240, true, 10);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Атакующий щит. (одноручное)', 'Этот щит плох в защите, но хорош в использовании атакующей магии.', 20, 20, 2, null, 300, true, 10);
+
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Демонический меч', 'Этот одноручный меч внушает страх одним своим видом', 80, null, 0, null, 300, false, 5);
@@ -558,6 +619,84 @@ VALUES ('Рунические поножи', 'Броня усилена руна
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
 VALUES ('Рунические ботинки', 'Броня усилена рунами.', null, 3, 6, null, 30, true, 3);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Боевой шлем', 'Броня, закаленная в легендарных боях.', null, 20, 5, null, 60, true, 5);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Боевой нагрудник', 'Броня, закаленная в легендарных боях.', null, 20, 3, null, 60, true, 5);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Боевые поножи', 'Броня, закаленная в легендарных боях.', null, 20, 4, null, 60, true, 5);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Боевые ботинки', 'Броня, закаленная в легендарных боях.', null, 20, 6, null, 60, true, 5);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Гладиаторский шлем', 'Броня, в которой гладиаторы сокрушают врагов.', null, 19, 5, null, 60, true, 6);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Гладиаторский нагрудник', 'Броня, в которой гладиаторы сокрушают врагов.', null, 19, 3, null, 60, true, 6);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Гладиаторские поножи', 'Броня, в которой гладиаторы сокрушают врагов.', null, 19, 4, null, 60, true, 6);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Гладиаторские ботинки', 'Броня, в которой гладиаторы сокрушают врагов.', null, 19, 6, null, 60, true, 6);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Маскировочный шлем', 'Эта броня сбивает врага с толку своим видом.', null, 15, 5, null, 45, true, 7);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Маскировочный нагрудник', 'Эта броня сбивает врага с толку своим видом.', null, 15, 3, null, 45, true, 7);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Маскировочные поножи', 'Эта броня сбивает врага с толку своим видом.', null, 15, 4, null, 45, true, 7);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Маскировочные ботинки', 'Эта броня сбивает врага с толку своим видом.', null, 15, 6, null, 45, true, 7);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Шлем ассасина', 'Подвижная, но надежная древняя броня.', null, 16, 5, null, 45, true, 8);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Нагрудник ассасина', 'Подвижная, но надежная древняя броня.', null, 16, 3, null, 45, true, 8);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Поножи ассасина', 'Подвижная, но надежная древняя броня.', null, 16, 4, null, 45, true, 8);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Ботинки ассасина', 'Подвижная, но надежная древняя броня.', null, 16, 6, null, 45, true, 8);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Зачарованный шлем', 'Чары этой брони дают дополнительную силу атаки.', 7, 10, 5, null, 45, true, 9);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Зачарованный нагрудник', 'Чары этой брони дают дополнительную силу атаки.', 7, 10, 3, null, 45, true, 9);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Зачарованные поножи', 'Чары этой брони дают дополнительную силу атаки.', 7, 10, 4, null, 45, true, 9);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Зачарованные ботинки', 'Чары этой брони дают дополнительную силу атаки.', 7, 10, 6, null, 45, true, 9);
+
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Небесный шлем', 'В этой броне вера в богов дает их силу.', 8, 9, 5, null, 45, true, 10);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Небесный нагрудник', 'В этой броне вера в богов дает их силу.', 9, 10, 3, null, 45, true, 10);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Небесные поножи', 'В этой броне вера в богов дает их силу.', 8, 9, 4, null, 45, true, 10);
+insert into fixed.base_item
+(name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
+VALUES ('Небесные ботинки', 'В этой броне вера в богов дает их силу.', 8, 9, 6, null, 45, true, 10);
 
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
 VALUES ('Сильный удар', 1, 1.2, 10);
