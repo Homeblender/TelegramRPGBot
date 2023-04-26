@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.Party;
 import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.PartyRepository;
@@ -75,10 +76,15 @@ public class PartyHandler implements Handler {
                 user.getPartyId().getName() +
                 "* (Капитан: *" +
                 userRepository.findUserByHostPartyId(user.getPartyId()).orElseThrow().getName() +
-                "*):");
+                "*):\n\n");
         List<User> partyUsers = userRepository.findAllByPartyId(user.getPartyId());
         for (User partyUser : partyUsers) {
-            messageToUser.append("\n   - ").append(String.format("[%s](tg://user?id=%d)",partyUser.getName(),partyUser.getChatId()));
+            messageToUser.append(String.format("[%s](tg://user?id=%d) - Уровень -\uD83D\uDCA0%d (%d \uD83D\uDDE1, %d \uD83D\uDEE1) %n",
+                    partyUser.getName(),
+                    partyUser.getChatId(),
+                    partyUser.getLevel(),
+                    IngameUtil.countDamage(partyUser),
+                    IngameUtil.countArmor(partyUser)));
         }
         if (user.getHostPartyId() != null) {
             messageToUser.append("\n\nВы можете удалить команду - /exit");
@@ -203,7 +209,16 @@ public class PartyHandler implements Handler {
 
     }
     private List<PartialBotApiMethod<? extends Serializable>> acceptInvite(User actor) {
-        User opponent = userRepository.findUserByHostPartyId(actor.getPartyId()).orElseThrow();
+        User opponent;
+        try {
+            opponent = userRepository.findUserByHostPartyId(actor.getPartyId()).orElseThrow();
+        }catch (Exception exception){
+            actor.setUserState(BotState.NONE);
+            var messageToActor = createMessageTemplate(actor);
+            messageToActor.setText("Ошибка, приглашение не действительно.");
+            return List.of(messageToActor);
+        }
+
         if (actor.getUserState() == BotState.WAITING_FOR_ANSWER_TO_INVITE) {
             actor.setUserState(BotState.NONE);
         }

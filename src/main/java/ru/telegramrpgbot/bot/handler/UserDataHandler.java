@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createBaseReplyKeyboard;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
@@ -27,6 +28,56 @@ public class UserDataHandler implements Handler {
         this.ingameItemRepository = ingameItemRepository;
     }
 
+    public static List<PartialBotApiMethod<? extends Serializable>> handleGroupChat(User user, Long chatId) {
+        var reply = createMessageTemplate(chatId.toString());
+
+        var time = user.getStaminaRestor() == null ? 0 : user.getStaminaRestor().getTime() - System.currentTimeMillis();
+        long secondsTmp = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
+        long minutes = secondsTmp / 60;
+        secondsTmp = secondsTmp % 60 >= 0?secondsTmp % 60:0;
+        String seconds = Long.toString(secondsTmp);
+        if (seconds.length() == 1)
+            seconds = "0" + seconds;
+
+        String state = user.getUserState().getTitle();
+        if (state != null && state.equals("ACTIVITY")) {
+            state = user.getActivityId().getStateName();
+        }
+
+        reply.setText(String.format("*%s* - *%s*%n" +
+                "\uD83D\uDCA0 Уровень: %s%n" +
+                "%n\uD83C\uDF1F Опыт: (%s/%s)%n" +
+                "♥️ Здоровье: %s/%s%n" +
+                "⚡️ Выносливость: %s/%s %s%n" +
+                "\uD83D\uDD39 Мана: %s/%s%n%n" +
+                "\uD83C\uDFC3\uD83C\uDFFC\u200D♂️ Занятие: %s%n" +
+                "%n\uD83D\uDC8D Партнер: %s%n" +
+                "%n\uD83D\uDCB0 Золото: %s%n" +
+                "\uD83D\uDC8E Очки оффлайн событий: %s%n" +
+                "%nУрон = %d \uD83D\uDDE1 Защита = %d \uD83D\uDEE1 %n",
+                user.getUserClass().getName(),
+                user.getName(),
+                user.getLevel(),
+                user.getExp(),
+                IngameUtil.countExpToLevel(user.getLevel() + 1),
+                user.getCurrentHealth(),
+                user.getMaxHealth(),
+                user.getCurrentStamina(),
+                user.getMaxStamina(),
+                user.getCurrentStamina() < user.getMaxStamina() ? "(" + minutes + ":" + seconds + ")" : "",
+                user.getCurrentMana(),
+                user.getMaxMana(),
+                state,
+                user.getPartner() != null ? "*" + user.getPartner().getName() + "*" : "вы одиноки \uD83D\uDE22",
+                user.getGold(),
+                user.getOfflinePoints(),
+                IngameUtil.countDamage(user),
+                IngameUtil.countArmor(user)
+        ));
+
+        return List.of(reply);
+    }
+
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(User user, String message) {
         var reply = createMessageTemplate(user);
@@ -35,7 +86,7 @@ public class UserDataHandler implements Handler {
         var time = user.getStaminaRestor() == null ? 0 : user.getStaminaRestor().getTime() - System.currentTimeMillis();
         long secondsTmp = TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS);
         long minutes = secondsTmp / 60;
-        secondsTmp = secondsTmp % 60;
+        secondsTmp = secondsTmp % 60 >= 0?secondsTmp % 60:0;
         String seconds = Long.toString(secondsTmp);
         if (seconds.length() == 1)
             seconds = "0" + seconds;
@@ -67,7 +118,7 @@ public class UserDataHandler implements Handler {
                 user.getUserClass().getName(),
                 user.getName(),
                 user.getLevel(),
-                IngameUtil.getAvailableClasses(user).size() > 0 ? "\n\uD83C\uDD95 Доступно улучшение *класса* - /classes \n" +
+                !IngameUtil.getAvailableClasses(user).isEmpty() ? "\n\uD83C\uDD95 Доступно улучшение *класса* - /classes \n" +
                         "" : "",
                 user.getPassivePoints() > 0 ? "\n\uD83C\uDD99Очков пассивных умений: *" + user.getPassivePoints() + "* (/passives)\n" +
                         "" : "",
@@ -77,11 +128,11 @@ public class UserDataHandler implements Handler {
                 user.getMaxHealth(),
                 user.getCurrentStamina(),
                 user.getMaxStamina(),
-                user.getCurrentStamina() < user.getMaxStamina() ? "(" + minutes + ":" + seconds +")": "",
+                user.getCurrentStamina() < user.getMaxStamina() ? "(" + minutes + ":" + seconds + ")" : "",
                 user.getCurrentMana(),
                 user.getMaxMana(),
                 state,
-                user.getPartner() != null ? "*"+user.getPartner().getName()+"*" : "вы одиноки \uD83D\uDE22",
+                user.getPartner() != null ? "*" + user.getPartner().getName() + "*" : "вы одиноки \uD83D\uDE22",
                 user.getGold(),
                 user.getOfflinePoints(),
                 IngameUtil.countDamage(user),

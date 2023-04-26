@@ -25,7 +25,6 @@ import static ru.telegramrpgbot.bot.util.TelegramUtil.createBaseReplyKeyboard;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
 
 @Component
-@Slf4j
 public class EquipmentHandler implements Handler {
 
     private final IngameItemRepository ingameItemRepository;
@@ -145,7 +144,6 @@ public class EquipmentHandler implements Handler {
         List<IngameItem> items = ingameItemRepository.findAllByUser(user);
         List<IngameItem> equipmentItems = items.stream().filter(c -> c.getBaseItem().getType().name().contains("EQUIPMENT") && c.isEquipped()).toList();
         List<IngameItem> sharpeningStones = ingameItemRepository.findAllByUserAndBaseItem_Type(user, ItemType.CONSUMABLE_SHARPENING_STONE);
-        log.info(sharpeningStones.size()+"");
         List<IngameItem> weaponEquipment = new java.util.ArrayList<>(equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_ONE_HANDED_WEAPON).toList());
         List<IngameItem> shieldEquipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_SHIELD).toList();
         List<IngameItem> twoHandedEquipped = equipmentItems.stream().filter(w -> w.getBaseItem().getType() == ItemType.EQUIPMENT_TWO_HANDED_WEAPON).toList();

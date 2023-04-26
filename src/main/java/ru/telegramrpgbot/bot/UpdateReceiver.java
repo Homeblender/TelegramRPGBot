@@ -50,6 +50,11 @@ public class UpdateReceiver {
             groupChatRepository.getGroupChatById(update.getMessage().getChatId()).orElseGet(()-> groupChatRepository.save(
                     GroupChat.builder().id(update.getMessage().getChatId()).user(user).build()));
             return groupChatHandler.handle(user,null);
+        }if (isGroupMessage(update)){
+            User user = userRepository.getUserByChatId(update.getMessage().getFrom().getId()).orElseThrow();
+            groupChatRepository.getGroupChatById(update.getMessage().getChatId()).orElseGet(()-> groupChatRepository.save(
+                    GroupChat.builder().id(update.getMessage().getChatId()).user(user).build()));
+            return UserDataHandler.handleGroupChat(user, update.getMessage().getChatId());
         }
         if (isMessageWithText(update)) {
             Message message = update.getMessage();
@@ -121,6 +126,8 @@ public class UpdateReceiver {
         return List.of();
     }
 
+
+
     private Handler getHandlerByState(BotState state) {
         return handlers.stream()
                 .filter(h -> h.operatedBotState() != null)
@@ -152,6 +159,10 @@ public class UpdateReceiver {
     }
     private boolean isGroupInvite(Update update) {
         return update.hasMessage() && update.getMessage().isGroupMessage() && update.getMessage().getNewChatMembers().size()>0&& update.getMessage().getNewChatMembers().get(0).getFirstName().equals("MMO_RPG_bot");
+    }
+    private boolean isGroupMessage(Update update) {
+        return update.hasMessage() && update.getMessage().isGroupMessage() && update.getMessage().hasText();
+
     }
 
 }

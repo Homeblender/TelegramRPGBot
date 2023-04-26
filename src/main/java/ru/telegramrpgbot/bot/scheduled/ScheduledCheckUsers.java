@@ -39,7 +39,7 @@ public class ScheduledCheckUsers {
     }
 
 
-    @Scheduled(fixedDelay = 15000)
+    @Scheduled(fixedDelay = 10000)
     public void CheckUsers() {
         List<User> afkUsers = userRepository.findAllByUserState(BotState.NONE);
         restorAskUsers(afkUsers);

@@ -29,8 +29,24 @@ public class GuideHandler implements Handler {
             return weddingsGuide(user);
         }else if (Objects.equals(message.split("_")[1].toUpperCase(), "FIGHTS")){
             return fightsGuide(user);
+        }else if (Objects.equals(message.split("_")[1].toUpperCase(), "TRADE")){
+            return tradeGuide(user);
+        }else if (Objects.equals(message.split("_")[1].toUpperCase(), "CHANGENAME")){
+            return changenameGuide(user);
         }
         return baseGuide(user);
+    }
+
+    private List<PartialBotApiMethod<? extends Serializable>> changenameGuide(User user) {
+        var reply = createMessageTemplate(user);
+        reply.setText("Игрок может сменить имя командой \n/change\\_name.");
+        return List.of(reply);
+    }
+
+    private List<PartialBotApiMethod<? extends Serializable>> tradeGuide(User user) {
+        var reply = createMessageTemplate(user);
+        reply.setText("Игрок может продать предмет другому игроку командой \n/trade\\_[имя]\\_[id предмета]\\_[цена].\n");
+        return List.of(reply);
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> fightsGuide(User user) {
@@ -72,6 +88,8 @@ public class GuideHandler implements Handler {
                 "*Рейды* - /guide\\_raids\n" +
                 "*Сражения* - /guide\\_fights\n" +
                 "*События* - /guide\\_events\n" +
+                "*Продажа предметов игрокам* - /guide\\_trade\n" +
+                "*Смена имени* - /guide\\_changename\n" +
                 "*Свадьбы* - /guide\\_weddings\n");
         return List.of(reply);
     }

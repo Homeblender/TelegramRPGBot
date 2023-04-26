@@ -128,7 +128,7 @@ public class TradeHandler implements Handler {
         }
         try {
             secondUser = userRepository.findAllByName(messageMass[1]).orElseThrow();
-        } catch (NumberFormatException exception) {
+        } catch (Exception exception) {
             reply.setText("Нет такого игрока.");
             return List.of(reply);
         }

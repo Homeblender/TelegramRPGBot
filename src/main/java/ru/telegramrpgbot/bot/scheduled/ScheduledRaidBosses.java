@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.telegramrpgbot.bot.Bot;
 import ru.telegramrpgbot.bot.enums.BotState;
+import ru.telegramrpgbot.bot.util.IngameUtil;
 import ru.telegramrpgbot.model.*;
 import ru.telegramrpgbot.model.Class;
 import ru.telegramrpgbot.repository.*;
@@ -164,7 +165,12 @@ public class ScheduledRaidBosses {
     private List<SendMessage> getSendMessages(Party party, List<GroupChat> allChats, List<SendMessage> sendMessageList, StringBuilder anons) {
         List<User> partyUsers = userRepository.findAllByPartyId(party);
         for (User partyUser : partyUsers) {
-            anons.append(("\n   - ")).append(String.format("[%s](tg://user?id=%d)", partyUser.getName(), partyUser.getChatId()));
+            anons.append(String.format("[%s](tg://user?id=%d) - Уровень -\uD83D\uDCA0%d (%d \uD83D\uDDE1, %d \uD83D\uDEE1) %n",
+                    partyUser.getName(),
+                    partyUser.getChatId(),
+                    partyUser.getLevel(),
+                    IngameUtil.countDamage(partyUser),
+                    IngameUtil.countArmor(partyUser)));
         }
 
         for (GroupChat chat :
