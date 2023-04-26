@@ -237,7 +237,7 @@ public class FightHandler implements Handler {
             long baseDamageToActor = IngameUtil.countDamage(opponent);
             long damageToActor;
             if (opponentMove.getActiveSkillId() != null) {
-                damageToActor = baseDamageToActor * opponentMove.getActiveSkillId().getDamageBonus();
+                damageToActor = (long) (baseDamageToActor * opponentMove.getActiveSkillId().getDamageBonus());
             } else if (actorMove.getDefense() == opponentMove.getAttack()) {
                 damageToActor = (long) (baseDamageToActor * defenseCoef);
             } else {
@@ -250,7 +250,7 @@ public class FightHandler implements Handler {
             long baseDamageToOpponent = IngameUtil.countDamage(actor);
             long damageToOpponent;
             if (actorMove.getActiveSkillId() != null) {
-                damageToOpponent = baseDamageToOpponent * actorMove.getActiveSkillId().getDamageBonus();
+                damageToOpponent = (long) (baseDamageToOpponent * actorMove.getActiveSkillId().getDamageBonus());
             } else if (opponentMove.getDefense() == actorMove.getAttack()) {
                 damageToOpponent = (long) (baseDamageToOpponent * defenseCoef);
             } else {

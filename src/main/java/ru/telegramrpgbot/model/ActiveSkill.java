@@ -1,7 +1,6 @@
 package ru.telegramrpgbot.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +21,7 @@ public class ActiveSkill {
     @JoinColumn(name = "class_id")
     Class classId;
     @Column(name = "damage_bonus")
-    Long damageBonus;
+    Double damageBonus;
     @Column(name = "mana_cost")
     Long manaCost;
 

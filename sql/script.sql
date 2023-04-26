@@ -41,7 +41,7 @@ CREATE TABLE fixed.active_skill
     id           serial PRIMARY KEY,
     name         text unique ,
     class_id     bigint references fixed.class (id),
-    damage_bonus bigint,
+    damage_bonus double precision,
     mana_cost    bigint
 );
 
@@ -560,40 +560,40 @@ insert into fixed.base_item
 VALUES ('Рунические ботинки', 'Броня усилена рунами.', null, 4, 6, null, 30, true, 3);
 
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Сильный удар', 1, 2, 10);
+VALUES ('Сильный удар', 1, 1.2, 10);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Разъяренный волк', 2, 3, 20);
+VALUES ('Разъяренный волк', 2, 1.6, 30);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Сильнее сильного', 2, 5, 30);
+VALUES ('Сильнее сильного', 2, 2, 40);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Огненный шар', 3, 4, 20);
+VALUES ('Огненный шар', 3, 2, 20);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Рунический удар', 3, 7, 30);
+VALUES ('Рунический удар', 3, 2.5, 30);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Крысиный бой', 4, 3, 25);
+VALUES ('Крысиный бой', 4, 1.5, 25);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Жало пчелы', 4, 6, 35);
+VALUES ('Жало пчелы', 4, 1.7, 35);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Карусель ярости', 5, 4, 30);
+VALUES ('Карусель ярости', 5, 2, 30);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Тотальное превосходство', 5, 6, 45);
+VALUES ('Тотальное превосходство', 5, 2.5, 45);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Силовая комбинация', 6, 5, 35);
+VALUES ('Силовая комбинация', 6, 2.2, 35);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Мощь гладиатора', 6, 7, 55);
+VALUES ('Мощь гладиатора', 6, 2.5, 55);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Рояль в кустах', 7, 5, 40);
+VALUES ('Рояль в кустах', 7, 2, 35);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Тройной выстрел', 7, 7, 45);
+VALUES ('Тройной выстрел', 7, 2.5, 55);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Тихое убийство', 8, 5, 60);
+VALUES ('Тихое убийство', 8, 2.5, 40);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Тайный замысел', 8, 7, 75);
+VALUES ('Тайный замысел', 8, 3, 55);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Ведьмино проклятье', 9, 5, 50);
+VALUES ('Ведьмино проклятье', 9, 3, 50);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Испепеляющий луч', 9, 7, 35);
+VALUES ('Испепеляющий луч', 9, 3.5, 35);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Божественное начало', 10, 5, 50);
+VALUES ('Божественное начало', 10, 3, 50);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Удар Бога', 10, 7, 65);
+VALUES ('Удар Бога', 10, 4, 75);
