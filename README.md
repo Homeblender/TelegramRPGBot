@@ -7,7 +7,7 @@
 - Jdk 17
 - Postgresql
 - Maven
-- Doker
+- Docker
 ____
 ### Set up properties
 
