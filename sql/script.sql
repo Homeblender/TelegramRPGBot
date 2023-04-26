@@ -244,12 +244,12 @@ VALUES ('Магическая защита', 3, 0, 2, 5, 0),
 
 insert into fixed.skill(name, class_id, damage_bonus, armor_bonus, health_bonus, mana_bonus)
 VALUES ('Мастер меча', 5, 4, 0, 0, 5),
-       ('Бронированный', 5, 0, 2, 5, 0),
+       ('Бронированный', 5, 0, 4, 5, 0),
        ('Выживший', 5, 0, 2, 15, 5);
 insert into fixed.skill(name, class_id, damage_bonus, armor_bonus, health_bonus, mana_bonus)
 VALUES ('Убийца', 6, 3, 1, 0, 5),
        ('Шахматист', 6, 0, 3, 10, 5),
-       ('Чемпион', 6, 1, 1, 10, 0);
+       ('Чемпион', 6, 1, 2, 10, 0);
 
 insert into fixed.skill(name, class_id, damage_bonus, armor_bonus, health_bonus, mana_bonus)
 VALUES ('Соколиный глаз', 7, 2, 0, 0, 10),
@@ -276,10 +276,10 @@ insert into fixed.base_item
 VALUES ('Байкал 0.25', 'Восстанавливает 20 здоровья.', null, null, 7, 5, 50, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Байкал 0.5', 'Восстанавливает 40 здоровья.', null, null, 7, 3, 100, true);
+VALUES ('Байкал 0.5', 'Восстанавливает 50 здоровья.', null, null, 7, 3, 100, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Байкал 1.0', 'Восстанавливает 80 здоровья.', null, null, 7, 2, 200, true);
+VALUES ('Байкал 1.0', 'Восстанавливает 100 здоровья.', null, null, 7, 2, 200, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
 VALUES ('Энергетик 0.25', 'Восстанавливает 1 ед. выносливости.', null, null, 7, 5, 50, true);
@@ -291,25 +291,25 @@ insert into fixed.base_item
 VALUES ('Энергетик 1.0', 'Восстанавливает 4 ед. выносливости.', null, null, 7, 2, 200, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Квас 0.25', 'Восстанавливает 1 ед. маны.', null, null, 7, 5, 50, true);
+VALUES ('Квас 0.25', 'Восстанавливает 20 ед. маны.', null, null, 7, 5, 50, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Квас 0.5', 'Восстанавливает 2 ед. маны.', null, null, 7, 3, 100, true);
+VALUES ('Квас 0.5', 'Восстанавливает 50 ед. маны.', null, null, 7, 3, 100, true);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
-VALUES ('Квас 1.0', 'Восстанавливает 4 ед. маны.', null, null, 7, 2, 200, true);
+VALUES ('Квас 1.0', 'Восстанавливает 100 ед. маны.', null, null, 7, 2, 200, true);
 
 insert into fixed.consumable_item_effect
     (base_item_id, add_life, add_mana, add_stamina)
 VALUES (1, 20, 0, 0),
-       (2, 40, 0, 0),
-       (3, 80, 0, 0),
+       (2, 50, 0, 0),
+       (3, 100, 0, 0),
        (4, 0, 0, 1),
        (5, 0, 0, 2),
        (6, 0, 0, 4),
-       (7, 0, 1, 0),
-       (8, 0, 2, 0),
-       (9, 0, 4, 0);
+       (7, 0, 20, 0),
+       (8, 0, 50, 0),
+       (9, 0, 100, 0);
 
 
 
@@ -322,9 +322,9 @@ values ('Руины Зоны',
         'Исследование руин Зоны',
         'Заброшеные руины недалеко от города. Судя по обрывкам надписей, найденых среди этих руин, древние называли это место словом "Зона". Не известно, что это за зона, но людей это слово пугает, хотя там можно найти что-нибудь полезное.',
         1, 1, 1),
-       ('Пещеры Тестеровщиков',
-        'Исследование пещер Тестеровщиков',
-        'Происхождение этих пещер не известно. Однако, там часто находят клочки бумаги с надписью "тестеровщик". Может быть древние так называли воинов... К сожалению древнего оружия там не осталось, но можно отыскать что-нибудь полезное.',
+       ('Пещеры Тестировщиков',
+        'Исследование пещер Тестировщиков',
+        'Происхождение этих пещер неизвестно. Однако, там часто находят клочки бумаги с надписью "тестировщик". Может быть древние так называли воинов... К сожалению древнего оружия там не осталось, но можно отыскать что-нибудь полезное.',
         5, 2, 2),
        ('Долины Программистов',
         'Исследование долин Программистов',
