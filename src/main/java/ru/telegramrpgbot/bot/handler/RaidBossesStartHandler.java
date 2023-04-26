@@ -134,7 +134,7 @@ public class RaidBossesStartHandler implements Handler {
             }
         }
 
-        replyMessage.append("\nДополнительная информация -  /guide\\_raid");
+        replyMessage.append("\nДополнительная информация -  /guide\\_raids");
         reply.setText(replyMessage.toString());
         return List.of(reply);
     }

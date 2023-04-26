@@ -84,7 +84,7 @@ public class SoloActivityHandler implements Handler {
             inputFile = new InputFile(new File(imagePath));
         }catch (Exception ignored){}
         image.setPhoto(inputFile);
-        image.setCaption(String.format("Ты отправился в %s.%n%nВремя до возвращения - примерно %d мин.", activity.getName(), activity.getActivityDuration()));
+        image.setCaption(String.format("Вы отправились в %s.%n%nВремя до возвращения - примерно %d мин.", activity.getName(), activity.getActivityDuration()));
 
         return List.of(image);
     }
@@ -98,7 +98,7 @@ public class SoloActivityHandler implements Handler {
 
         for (SoloActivity soloActivity : availableActivities) {
             inlineKeyboardButtonsRowOne.add(createInlineKeyboardButton(soloActivity.getName().split(" ")[0], soloActivity.getName()));
-            replyText.append(String.format("\n*%s* (%d мин.) (%d ⚡️):\n\n%s%n", soloActivity.getName(), soloActivity.getActivityDuration(),soloActivity.getRequiredStamina(), soloActivity.getDescription()));
+            replyText.append(String.format("%n*%s* (%d мин.) (%d ⚡️):%n%n%s%n", soloActivity.getName(), soloActivity.getActivityDuration(),soloActivity.getRequiredStamina(), soloActivity.getDescription()));
         }
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
         reply.setText(replyText.toString());
