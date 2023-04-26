@@ -400,9 +400,9 @@ VALUES ('Рог единорога', 'Магический рог единоро
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
 VALUES ('Древний Драконид', 1000, 50, 40, 10, 100, 150, 5);
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
-VALUES ('Принц демонов', 3000, 100, 80, 15, 250, 250, 10);
+VALUES ('Принц демонов', 3000, 100, 100, 15, 250, 250, 10);
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
-VALUES ('Летучий единорог', 5000, 150, 120, 20, 500, 500, 20);
+VALUES ('Летучий единорог', 5000, 150, 150, 20, 500, 500, 20);
 
 insert into fixed.raid_boss_item_reward (boss_id, item_id)
 values (1, 1),(1, 2),(1, 3),
@@ -535,29 +535,29 @@ VALUES ('Железные ботинки', 'Хорошая защита.', null,
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Легкий шлем', 'Легкая броня.', null, 3, 5, null, 30, true, 4);
+VALUES ('Легкий шлем', 'Легкая броня.', null, 4, 5, null, 30, true, 4);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Легкий нагрудник', 'Легкая броня.', null, 3, 3, null, 30, true, 4);
+VALUES ('Легкий нагрудник', 'Легкая броня.', null, 4, 3, null, 30, true, 4);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Легкие поножи', 'Легкая броня.', null, 3, 4, null, 30, true, 4);
+VALUES ('Легкие поножи', 'Легкая броня.', null, 4, 4, null, 30, true, 4);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Легкие ботинки', 'Легкая броня.', null, 3, 6, null, 30, true, 4);
+VALUES ('Легкие ботинки', 'Легкая броня.', null, 4, 6, null, 30, true, 4);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Рунический шлем', 'Броня усилена рунами.', null, 4, 5, null, 30, true, 3);
+VALUES ('Рунический шлем', 'Броня усилена рунами.', null, 3, 5, null, 30, true, 3);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Рунический нагрудник', 'Броня усилена рунами.', null, 4, 3, null, 30, true, 3);
+VALUES ('Рунический нагрудник', 'Броня усилена рунами.', null, 3, 3, null, 30, true, 3);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Рунические поножи', 'Броня усилена рунами.', null, 4, 4, null, 30, true, 3);
+VALUES ('Рунические поножи', 'Броня усилена рунами.', null, 3, 4, null, 30, true, 3);
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale, class_required_id)
-VALUES ('Рунические ботинки', 'Броня усилена рунами.', null, 4, 6, null, 30, true, 3);
+VALUES ('Рунические ботинки', 'Броня усилена рунами.', null, 3, 6, null, 30, true, 3);
 
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
 VALUES ('Сильный удар', 1, 1.2, 10);
@@ -566,13 +566,13 @@ VALUES ('Разъяренный волк', 2, 1.6, 30);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
 VALUES ('Сильнее сильного', 2, 2, 40);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Огненный шар', 3, 2, 20);
+VALUES ('Огненный шар', 3, 2.2, 20);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
 VALUES ('Рунический удар', 3, 2.5, 30);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Крысиный бой', 4, 1.5, 25);
+VALUES ('Крысиный бой', 4, 2, 25);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
-VALUES ('Жало пчелы', 4, 1.7, 35);
+VALUES ('Жало пчелы', 4, 2.3, 45);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
 VALUES ('Карусель ярости', 5, 2, 30);
 insert into fixed.active_skill(name, class_id, damage_bonus, mana_cost)
