@@ -211,7 +211,7 @@ public class ScheduledRaidBosses {
             userRepository.save(user);
             sendMessageList.add(messageTMP);
         }
-        StringBuilder anons = new StringBuilder(String.format("Команда _%s_ проиграла сражение с боссом \uD83D\uDC7E%s.", party.getName(), party.getBossFighting().getName()));
+        StringBuilder anons = new StringBuilder(String.format("Команда _%s_ проиграла сражение с боссом \uD83D\uDC7E%s.%n%n", party.getName(), party.getBossFighting().getName()));
         return getSendMessages(party, allChats, sendMessageList, anons);
     }
 

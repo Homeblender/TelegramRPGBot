@@ -400,9 +400,9 @@ VALUES ('Рог единорога', 'Магический рог единоро
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
 VALUES ('Древний Драконид', 1000, 50, 40, 10, 100, 150, 5);
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
-VALUES ('Принц демонов', 3000, 100, 80, 15, 500, 750, 10);
+VALUES ('Принц демонов', 3000, 100, 80, 15, 250, 250, 10);
 insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_reward, exp_reward, stamina_required)
-VALUES ('Летучий единорог', 5000, 150, 120, 18, 1200, 1500, 20);
+VALUES ('Летучий единорог', 5000, 150, 120, 20, 500, 500, 20);
 
 insert into fixed.raid_boss_item_reward (boss_id, item_id)
 values (1, 1),(1, 2),(1, 3),
