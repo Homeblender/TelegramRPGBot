@@ -2,6 +2,7 @@ package ru.telegramrpgbot.bot.util;
 
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -20,11 +21,19 @@ public class TelegramUtil {
     public static SendMessage createMessageTemplate(User user) {
         return createMessageTemplate(String.valueOf(user.getChatId()));
     }
+    public static SendPhoto createPhotoTemplate(User user) {
+        return createPhotoTemplate(String.valueOf(user.getChatId()));
+    }
     public static SendMessage createMessageTemplate(String chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.enableMarkdown(true);
         return sendMessage;
+    }
+    public static SendPhoto createPhotoTemplate(String chatId) {
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(chatId);
+        return sendPhoto;
     }
 
     public static InlineKeyboardButton createInlineKeyboardButton(String text, String command) {

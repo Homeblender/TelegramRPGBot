@@ -145,7 +145,7 @@ public class ScheduledRaidBosses {
 
             var gold = rnd.nextLong(party.getBossFighting().getGoldReward(), party.getBossFighting().getGoldReward() * 2);
             var exp = rnd.nextLong(party.getBossFighting().getExpReward(), party.getBossFighting().getExpReward() * 2);
-            messageTMP.setText(String.format("Ваша команда победила босса \uD83D\uDC7E%s.", party.getBossFighting().getName()) + String.format("%n%nНаграда:%n+%d зол. монет%n+%d очк. опыта%n%n", gold, exp));
+            messageTMP.setText(String.format("Ваша команда победила босса \uD83D\uDC7E%s.", party.getBossFighting().getName()) + String.format("%n%nНаграда:%n+%d \uD83D\uDCB0 зол. монет%n+%d \uD83C\uDF1F очк. опыта%n%n", gold, exp));
             var reward = reward(user, party.getBossFighting());
             for (BaseItem baseItem :
                     reward) {

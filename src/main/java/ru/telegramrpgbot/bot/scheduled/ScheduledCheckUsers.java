@@ -1,6 +1,5 @@
 package ru.telegramrpgbot.bot.scheduled;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import static ru.telegramrpgbot.bot.util.IngameUtil.*;
 
 @Component
-@Slf4j
 public class ScheduledCheckUsers {
 
     private final UserRepository userRepository;
@@ -53,10 +51,6 @@ public class ScheduledCheckUsers {
     private void checkSoloActivityEnds(List<User> onSoloActivityUsers) {
         for (User user : onSoloActivityUsers) {
             if (user.getActivityEnds() != null && user.getActivityEnds().before(new Timestamp(System.currentTimeMillis()))) {
-
-                log.info(user.getActivityEnds() + " " + user.getActivityId().getName());
-
-
                 List<SoloActivityReward> possibleRewards = soloActivityRewardRepository.findAllBySoloActivity(user.getActivityId());
                 var reward = possibleRewards.get(new Random().nextInt(possibleRewards.size()));
 
@@ -64,7 +58,7 @@ public class ScheduledCheckUsers {
                 var gold = rnd.nextLong(reward.getGoldReward(), reward.getGoldReward() * 2);
                 var exp =  rnd.nextLong(reward.getExpReward(), reward.getExpReward() * 2);
 
-                var reply = reward.getResultMessage() + String.format("%n%nНаграда:%n+%d зол. монет%n+%d очк. опыта",gold, exp );
+                var reply = reward.getResultMessage() + String.format("%n%nНаграда:%n+%d \uD83D\uDCB0 зол. монет%n+%d \uD83C\uDF1F очк. опыта",gold, exp );
                 if (reward.getItemReward() != null) {
                     reply += String.format("%n+%s", reward.getItemReward().getName());
                     userGetItem(user, reward.getItemReward());
@@ -86,8 +80,7 @@ public class ScheduledCheckUsers {
     private void executeWithExceptionCheck(SendMessage sendMessage) {
         try {
             bot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            log.error(e.getMessage());
+        } catch (TelegramApiException ignored) {
         }
     }
 
@@ -104,7 +97,7 @@ public class ScheduledCheckUsers {
                     if (user.getCurrentStamina().equals(user.getMaxStamina())) {
                         var staminaRestoredMessage = TelegramUtil.createMessageTemplate(user);
                         user.setStaminaRestor(null);
-                        staminaRestoredMessage.setText("*Ваша выносливность полностью остановлена!*");
+                        staminaRestoredMessage.setText("*Ваша выносливность полностью восстановлена!*");
                         executeWithExceptionCheck(staminaRestoredMessage);
                     } else {
                         var delay = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES);

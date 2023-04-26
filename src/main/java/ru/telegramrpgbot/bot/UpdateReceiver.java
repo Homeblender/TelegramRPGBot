@@ -22,7 +22,6 @@ import ru.telegramrpgbot.repository.GroupChatRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -97,12 +96,14 @@ public class UpdateReceiver {
                 } catch (Exception ignored) {
                 }
             }
-            List<PartialBotApiMethod<? extends Serializable>> allMessages = handler.handle(user, callbackQuery.getData()).stream().toList();
+            List<PartialBotApiMethod<? extends Serializable>> allMessages = new java.util.ArrayList<>(handler.handle(user, callbackQuery.getData()).stream().toList());
             SendMessage messageToKeyboard =(SendMessage) allMessages.stream().filter(w-> w instanceof SendMessage && ((SendMessage) w).getChatId().equals(user.getChatId().toString())&&!(((SendMessage) w).getReplyMarkup() instanceof ReplyKeyboardMarkup)).findFirst().orElse(null);
+
             if (messageToKeyboard ==null){
                 return allMessages;
             }
-            var otherMessages = new ArrayList<>(allMessages.stream().filter(w -> w instanceof SendMessage && !((SendMessage) w).getChatId().equals(user.getChatId().toString()) ).toList());
+            allMessages.remove(messageToKeyboard);
+
             EditMessageText new_message = new EditMessageText();
             new_message.setChatId(messageToKeyboard.getChatId());
             new_message.setMessageId(callbackQuery.getMessage().getMessageId());
@@ -111,9 +112,9 @@ public class UpdateReceiver {
             try {
                 new_message.setReplyMarkup((InlineKeyboardMarkup) messageToKeyboard.getReplyMarkup());
             }catch (Exception ignored){ }
-            if (!otherMessages.isEmpty()){
-                otherMessages.add(new_message);
-                return otherMessages;
+            if (!allMessages.isEmpty()){
+                allMessages.add(new_message);
+                return allMessages;
             }
             return List.of(new_message);
         }

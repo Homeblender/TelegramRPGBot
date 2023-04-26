@@ -3,6 +3,7 @@ package ru.telegramrpgbot.bot.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import ru.telegramrpgbot.bot.enums.BotState;
 import ru.telegramrpgbot.bot.enums.Command;
 import ru.telegramrpgbot.model.RaidBoss;
@@ -11,12 +12,14 @@ import ru.telegramrpgbot.repository.PartyRepository;
 import ru.telegramrpgbot.repository.RaidBossRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
 import static ru.telegramrpgbot.bot.util.TelegramUtil.createMessageTemplate;
+import static ru.telegramrpgbot.bot.util.TelegramUtil.createPhotoTemplate;
 
 @Component
 @Slf4j
@@ -70,21 +73,31 @@ public class RaidBossesStartHandler implements Handler {
         }
         partyMembers.remove(user);
 
+        String imagePath = String.format("src/main/java/ru/telegramrpgbot/bot/images/Bosses/%s.png",raidBoss.getName());
+        InputFile inputFile = null;
+        try{
+            inputFile = new InputFile(new File(imagePath));
+        }catch (Exception ignored){}
+
+
         for (User member :
                 partyMembers) {
             member.setUserState(BotState.RAIDING);
             userStaminaChanges(member,-raidBoss.getStaminaRequired());
-            var anons = createMessageTemplate(member);
-            anons.setText(String.format("Капитан команды начал рейд на босса \uD83D\uDC7E*%s*.",raidBoss.getName()));
+            var anons = createPhotoTemplate(member);
+            anons.setCaption(String.format("Капитан команды начал рейд на босса \uD83D\uDC7E %s.",raidBoss.getName()));
+            anons.setPhoto(inputFile);
             replyList.add(anons);
             userRepository.save(member);
         }
-        reply.setText(String.format("Вы начали рейд на босса \uD83D\uDC7E*%s*.",raidBoss.getName()));
+        var image = createPhotoTemplate(user);
+        image.setPhoto(inputFile);
+        image.setCaption(String.format("Вы начали рейд на босса \uD83D\uDC7E %s.",raidBoss.getName()));
         user.setUserState(BotState.RAIDING);
         userStaminaChanges(user,-raidBoss.getStaminaRequired());
         userRepository.save(user);
 
-        replyList.add(reply);
+        replyList.add(image);
 
         var party = user.getPartyId();
         party.setBossFighting(raidBoss);

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.telegramrpgbot.bot.enums.BotState;
@@ -13,10 +14,12 @@ import ru.telegramrpgbot.model.User;
 import ru.telegramrpgbot.repository.SoloActivityRepository;
 import ru.telegramrpgbot.repository.UserRepository;
 
+import java.io.File;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import static ru.telegramrpgbot.bot.util.IngameUtil.userStaminaChanges;
@@ -29,6 +32,7 @@ public class SoloActivityHandler implements Handler {
     private final SoloActivityRepository soloActivityRepository;
     private final List<SoloActivity> allActivities;
     private final List<String> AVAILABLE_ACTIVITIES = new ArrayList<>();
+    private final Random random = new Random();
 
     public SoloActivityHandler(UserRepository userRepository, SoloActivityRepository soloActivityRepository) {
         this.userRepository = userRepository;
@@ -73,10 +77,16 @@ public class SoloActivityHandler implements Handler {
         userStaminaChanges(user, -activity.getRequiredStamina());
         userRepository.save(user);
 
-        var reply = createMessageTemplate(user);
-        reply.setText(String.format("Ты отправился в *%s*.%n%nВремя до возвращения - *%d* мин.", activity.getName(), activity.getActivityDuration()));
+        var image = createPhotoTemplate(user);
+        String imagePath = String.format("src/main/java/ru/telegramrpgbot/bot/images/%s/%d.png",activity.getName().split(" ")[0],random.nextInt(1,7));
+        InputFile inputFile = null;
+        try{
+            inputFile = new InputFile(new File(imagePath));
+        }catch (Exception ignored){}
+        image.setPhoto(inputFile);
+        image.setCaption(String.format("Ты отправился в %s.%n%nВремя до возвращения - примерно %d мин.", activity.getName(), activity.getActivityDuration()));
 
-        return List.of(reply);
+        return List.of(image);
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> showActivities(User user) {
