@@ -405,9 +405,9 @@ insert into fixed.raid_boss (name, life, damage, armor, recommended_level, gold_
 VALUES ('Летучий единорог', 5000, 150, 150, 20, 500, 500, 20);
 
 insert into fixed.raid_boss_item_reward (boss_id, item_id)
-values (1, 1),(1, 2),(1, 3),
-       (2, 4),(2, 5),
-       (3, 6);
+values (1, 11),(1, 12),(1, 13),
+       (2, 14),(2, 15),
+       (3, 16);
 
 insert into fixed.base_item
 (name, description, damage, armor, type, max_in_stack, buy_price, is_for_sale)
