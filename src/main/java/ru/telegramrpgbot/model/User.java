@@ -5,11 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.telegramrpgbot.bot.enums.BotState;
-import ru.telegramrpgbot.repository.ClassRepository;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Entity
 @Table(name = "usr", schema = "public")
@@ -69,5 +67,26 @@ public class User {
     Boolean isGameMaster = false;
     @Builder.Default
     Long offlinePoints = 0L;
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+        if (!(other instanceof User))
+            return false;
+        User otherA = (User) other;
+        return
+                (chatId.equals(otherA.chatId)) && ((exp == null)
+                        ? otherA.exp == null
+                        : exp.equals(otherA.exp));
+    }
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = hash * 31 + chatId.hashCode();
+        hash = hash * 31
+                + (exp == null ? 0 : exp.hashCode());
+        return hash;
+    }
 
 }

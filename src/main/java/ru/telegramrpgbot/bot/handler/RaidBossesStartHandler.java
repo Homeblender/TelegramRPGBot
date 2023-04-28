@@ -60,7 +60,6 @@ public class RaidBossesStartHandler implements Handler {
             reply.setText("Кто-то из участников группы занят.");
             return List.of(reply);
         }
-
         try {
             raidBoss = raidBossRepository.findById(Long.parseLong(message.split("_")[1])).orElseThrow();
         }catch (Exception ignored){
